@@ -1,0 +1,52 @@
+name: Test Case Name
+beforeAll: |
+  BASE_TIMESTAMP = time.now()
+  STEP1_CID = faker.uuid()
+  STEP2_CID = faker.uuid()
+steps:
+  - name: Step n°1
+    before: TIMESTAMP = BASE_TIMESTAMP + 1000
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_LOCAL_PREFIX}.InputTopic
+    action: SEND
+    record:
+      headers:
+        correlation.id: "${STEP1_CID}"
+      key:
+        code: "P1"
+        label: "Product 1"
+      value:
+        sender: "Source"
+        eventType: "CREATE"
+        eventTsp: ${TIMESTAMP}
+        body:
+          code: "P1"
+          label: "Product 1"
+          commandAt: ${BASE_TIMESTAMP}
+          sentAt: ${BASE_TIMESTAMP + 100}
+          weight: 12030
+    after: pause(100)
+  - name: Step n°2
+    broker: ${KAFKA_CENTRAL_CONTEXT}
+    topic: ${KAFKA_CENTRAL_PREFIX}.OutputTopic
+    action: PRESENT
+    record:
+      timestamp: 123456789
+      key: "P1"
+      value:
+        code: "P1"
+        count: 1
+  - name: Unnamed
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_LOCAL_PREFIX}.InputTopic
+    action: ABSENT
+    record:
+      key: "P1"
+  - name: Last Step
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_LOCAL_PREFIX}.InputTopic
+    action: TODO
+    record:
+      key: "P1"
+
+afterAll:
