@@ -1,7 +1,8 @@
 package fr.dcotton.ktest.script;
 
 import fr.dcotton.ktest.script.func.Func;
-import fr.dcotton.ktest.script.token.Num;
+import fr.dcotton.ktest.script.token.Flt;
+import fr.dcotton.ktest.script.token.Int;
 import fr.dcotton.ktest.script.token.Token;
 import fr.dcotton.ktest.script.token.Txt;
 import io.quarkus.arc.All;
@@ -51,8 +52,12 @@ public final class Context {
         return this;
     }
 
+    public Context variable(final String pName, final Long pValue) {
+        return variable(pName, new Int(pValue));
+    }
+
     public Context variable(final String pName, final Double pValue) {
-        return variable(pName, new Num(pValue));
+        return variable(pName, new Flt(pValue));
     }
 
     public Context variable(final String pName, final String pValue) {

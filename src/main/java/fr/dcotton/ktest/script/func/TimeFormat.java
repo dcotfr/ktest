@@ -8,9 +8,7 @@ import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.TimeZone;
 
 @ApplicationScoped
 public class TimeFormat extends Func {
@@ -20,10 +18,10 @@ public class TimeFormat extends Func {
 
     @Override
     public Token apply(final Context pContext, final Stm pParam) {
-        final var params = extractParam(pContext, pParam, String.class, Double.class);
+        final var params = extractParam(pContext, pParam, String.class, Number.class);
         try {
             final var format = new SimpleDateFormat((String) params[0]);
-            return new Txt(format.format(new Date(((Double) params[1]).longValue())));
+            return new Txt(format.format(new Date(((Number) params[1]).longValue())));
         } catch (final NullPointerException | IllegalArgumentException e) {
             throw new ScriptException("Invalid date/time format in " + command() + ": " + params[0]);
         }

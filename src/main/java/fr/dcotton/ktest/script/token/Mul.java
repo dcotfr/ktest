@@ -10,9 +10,11 @@ final class Mul extends Token<Character> {
     @Override
     Token eval(final Context pContext, final Stm pStatement) {
         final var idx = pStatement.value().indexOf(this);
-        final var left = pStatement.evalAsNumAt(pContext, idx - 1, false).value();
-        final var right = pStatement.evalAsNumAt(pContext, idx + 1, false).value();
-        pStatement.replace3With(idx, new Num(left * right));
+        final var leftValue = (Number) pStatement.evalAsNumAt(pContext, idx - 1, false).value();
+        final var rightValue = (Number) pStatement.evalAsNumAt(pContext, idx + 1, false).value();
+        pStatement.replace3With(idx, leftValue instanceof Long && rightValue instanceof Long
+                ? new Int(leftValue.longValue() * rightValue.longValue())
+                : new Flt(leftValue.doubleValue() * rightValue.doubleValue()));
         return pStatement;
     }
 }

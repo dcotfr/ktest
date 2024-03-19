@@ -71,8 +71,9 @@ final class LineBuffer {
             while (isDigit()) {
                 raw.append(pop());
             }
+            return new Flt(Double.valueOf(raw.toString()));
         }
-        return new Num(Double.valueOf(raw.toString()));
+        return new Int(Long.valueOf(raw.toString()));
     }
 
     Var readIdentifier() {

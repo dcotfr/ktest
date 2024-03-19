@@ -1,0 +1,137 @@
+{
+  "namespace": "fr.dcotton.ktest",
+  "name": "KTestSampleTopicValue",
+  "type": "record",
+  "fields": [
+    {
+      "name": "nonNullableString",
+      "type": "string"
+    },
+    {
+      "name": "nonNullableBoolean",
+      "type": "boolean"
+    },
+    {
+      "name": "nonNullableInt",
+      "type": "int"
+    },
+    {
+      "name": "nonNullableLong",
+      "type": "long"
+    },
+    {
+      "name": "nonNullableFloat",
+      "type": "float"
+    },
+    {
+      "name": "nonNullableDouble",
+      "type": "double"
+    },
+    {
+      "name": "nonNullableEnum",
+      "type": {
+        "name": "TestEnum",
+        "type": "enum",
+        "symbols": [
+          "SEND",
+          "PRESENT",
+          "ABSENT",
+          "TODO"
+        ]
+      }
+    },
+    {
+      "name": "nonNullableArrayOfString",
+      "type": {
+        "type": "array",
+        "items": "string",
+        "default": []
+      }
+    },
+    {
+      "name": "nullableString",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "name": "nullableBoolean",
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    {
+      "name": "nullableInt",
+      "type": [
+        "null",
+        "int"
+      ]
+    },
+    {
+      "name": "nullableLong",
+      "type": [
+        "null",
+        "long"
+      ]
+    },
+    {
+      "name": "nullableFloat",
+      "type": [
+        "null",
+        "float"
+      ]
+    },
+    {
+      "name": "nullableDouble",
+      "type": [
+        "null",
+        "double"
+      ]
+    },
+    {
+      "name": "nullableSubRecord",
+      "type": [
+        "null",
+        {
+          "name": "SubRecord",
+          "type": "record",
+          "fields": [
+            {
+              "name": "SubLong",
+              "type": "long"
+            },
+            {
+              "name": "SubString",
+              "type": "string"
+            },
+            {
+              "name": "nonNullableSubSubRecord",
+              "type": {
+                "name": "SubSubRecord",
+                "type": "record",
+                "fields": [
+                  {
+                    "name": "nullableSubSubLong",
+                    "type": [
+                      "null",
+                      "long"
+                    ]
+                  },
+                  {
+                    "name": "nullableSubSubString",
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

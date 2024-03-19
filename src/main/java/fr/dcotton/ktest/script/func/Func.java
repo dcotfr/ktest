@@ -38,8 +38,8 @@ public abstract class Func implements BiFunction<Context, Stm, Token> {
         final var res = new Object[expected];
         for (int i = 0; i < expected; i++) {
             final var v = ((Stm) pParam.value().get(i)).evalValue(pContext);
-            if (pTypes[i] != v.getClass()) {
-                throw new ScriptException("Invalid type of argument in " + command() + ": " + v.getClass() + " expected, " + pTypes[i] + " found.");
+            if (!pTypes[i].isAssignableFrom(v.getClass())) {
+                throw new ScriptException("Invalid type of argument in " + command() + ": " + pTypes[i] + " expected, " + v.getClass() + " found.");
             }
             res[i] = v;
         }

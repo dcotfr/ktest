@@ -42,7 +42,7 @@ class EngineFunctionsTest {
     @Test
     void timeNowTest() {
         final var before = System.currentTimeMillis();
-        final var t = (Double) engine.eval("time.now()");
+        final var t = (Long) engine.eval("time.now()");
         final var after = System.currentTimeMillis();
         assertTrue(before <= t && t <= after);
     }
@@ -73,7 +73,7 @@ class EngineFunctionsTest {
             engine.eval("faker.regex(1)");
             fail();
         } catch (final ScriptException e) {
-            assertEquals("Invalid type of argument in faker.regex: class java.lang.Double expected, class java.lang.String found.", e.getMessage());
+            assertEquals("Invalid type of argument in faker.regex: class java.lang.String expected, class java.lang.Long found.", e.getMessage());
         }
     }
 

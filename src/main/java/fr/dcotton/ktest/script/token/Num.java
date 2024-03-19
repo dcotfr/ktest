@@ -1,7 +1,7 @@
 package fr.dcotton.ktest.script.token;
 
-public final class Num extends Token<Double> {
-    public Num(final double pValue) {
+abstract class Num<T extends Number> extends Token<T> {
+    Num(final T pValue) {
         super(0, pValue);
     }
 }

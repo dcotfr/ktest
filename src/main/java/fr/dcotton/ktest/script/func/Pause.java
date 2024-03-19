@@ -14,9 +14,9 @@ public class Pause extends Func {
 
     @Override
     public Token apply(final Context pContext, final Stm pParam) {
-        final var params = extractParam(pContext, pParam, Double.class);
+        final var params = extractParam(pContext, pParam, Number.class);
         try {
-            Thread.sleep(((Double) params[0]).longValue());
+            Thread.sleep(((Number) params[0]).longValue());
             return new Txt("");
         } catch (final InterruptedException e) {
             throw new RuntimeException(command() + " interrupted.", e);

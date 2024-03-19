@@ -14,11 +14,11 @@ class EngineMiscTest {
     @Test
     void letTest() {
         engine.reset().eval("a=(-10)");
-        assertEquals(-10.0, engine.context().variable("a").value());
-        engine.reset().eval("a=-10");
-        assertEquals(-10.0, engine.context().variable("a").value());
+        assertEquals(-10L, engine.context().variable("a").value());
+        engine.reset().eval("a=-10.5");
+        assertEquals(-10.5, engine.context().variable("a").value());
         engine.reset().eval("a=+2");
-        assertEquals(2.0, engine.context().variable("a").value());
+        assertEquals(2L, engine.context().variable("a").value());
 
         engine.reset().eval("x=(3*5.5)");
         assertEquals(16.5, engine.context().variable("x").value());
@@ -40,9 +40,10 @@ class EngineMiscTest {
 
     @Test
     void varTest() {
-        engine.reset().context().variable("x", 1.5).variable("str", "Essai");
+        engine.reset().context().variable("x", 1.5).variable("str", "Essai").variable("y", 2L);
         assertEquals(1.5, engine.eval("x"));
-        assertEquals(4.5, engine.eval("2*x+x"));
+        assertEquals(2L, engine.eval("y"));
+        assertEquals(4.5, engine.eval("y*x+x"));
         assertEquals("Essai", engine.eval("str"));
     }
 
@@ -59,13 +60,13 @@ class EngineMiscTest {
     @Test
     void varLetTest() {
         engine.reset().eval("x = 10");
-        assertEquals(10.0, engine.context().variable("x").value());
+        assertEquals(10L, engine.context().variable("x").value());
         engine.eval("y = x + 20");
-        assertEquals(10.0, engine.context().variable("x").value());
-        assertEquals(30.0, engine.context().variable("y").value());
-        engine.eval("z = y + x");
-        assertEquals(10.0, engine.context().variable("x").value());
-        assertEquals(30.0, engine.context().variable("y").value());
-        assertEquals(40.0, engine.context().variable("z").value());
+        assertEquals(10L, engine.context().variable("x").value());
+        assertEquals(30L, engine.context().variable("y").value());
+        engine.eval("z = y * x");
+        assertEquals(10L, engine.context().variable("x").value());
+        assertEquals(30L, engine.context().variable("y").value());
+        assertEquals(300L, engine.context().variable("z").value());
     }
 }

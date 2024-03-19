@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import fr.dcotton.ktest.domain.Action;
+import fr.dcotton.ktest.domain.Record;
 import fr.dcotton.ktest.domain.TestCase;
 import fr.dcotton.ktest.domain.xunit.XUnitReport;
 import fr.dcotton.ktest.script.Engine;
@@ -14,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import java.util.List;
+import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import static fr.dcotton.ktest.MainCommand.VERSION;
 import static fr.dcotton.ktest.core.AnsiColor.*;
@@ -57,9 +60,9 @@ public class RunCommand implements Runnable {
                 tab++;
                 evalScript("before", step.beforeScript());
                 engine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
-                LOG.debug("{}Broker: {}", tab(GRAY), step.broker());
-                LOG.debug("{}Topic : {}", tab(GRAY), step.topic());
-                LOG.debug("{}Record: {}", tab(GRAY), step.record());
+                LOG.debug("{}Broker: {}", tab(GRAY), evalInLine(step.broker()));
+                LOG.debug("{}Topic : {}", tab(GRAY), evalInLine(step.topic()));
+                LOG.debug("{}Record: {}", tab(GRAY), evalInLine(step.record()));
                 evalScript("after", step.afterScript());
                 tab--;
             }
@@ -94,6 +97,29 @@ public class RunCommand implements Runnable {
             variables.forEach(e -> LOG.debug("{}{} = {}", tab(GRAY), e.getKey(), e.getValue()));
             tab--;
         }
+    }
+
+    private String evalInLine(final String pAttribute) {
+        final var pattern = Pattern.compile("(\\$\\{.*?})");
+        final var matcher = pattern.matcher(pAttribute);
+        var res = pAttribute;
+        while (matcher.find()) {
+            final var group = matcher.group();
+            final var repl = engine.eval(group.substring(2, group.length() - 1)).toString();
+            res = res.replace(group, repl);
+        }
+        return res;
+    }
+
+    private Record evalInLine(final Record pRecord) {
+        final var headers = new TreeMap<String, String>();
+        for (final var e : pRecord.headers().entrySet()) {
+            headers.put(e.getKey(), evalInLine(e.getValue()));
+        }
+        System.err.println("k=" + evalInLine(pRecord.key().toString()));
+        System.err.println("v1=" + pRecord.value().toString());
+        System.err.println("v2=" + evalInLine(pRecord.value().toString()));
+        return new Record(pRecord.timestamp(), headers, pRecord.key(), pRecord.value());
     }
 
     private String tab(final String pColor) {

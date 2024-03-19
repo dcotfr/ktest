@@ -12,13 +12,13 @@ class TokenizerTest {
     @Test
     void letTest() {
         var res = tokenizer.tokenize("a=1").value();
-        assertEquals("[Let:a, Num:1.0]", res.toString());
+        assertEquals("[Let:a, Int:1]", res.toString());
 
         res = tokenizer.tokenize("essai = 2.5 - 3.6").value();
-        assertEquals("[Let:essai, Num:2.5, Sub:-, Num:3.6]", res.toString());
+        assertEquals("[Let:essai, Flt:2.5, Sub:-, Flt:3.6]", res.toString());
 
         res = tokenizer.tokenize("_A=5.6").value();
-        assertEquals("[Let:_A, Num:5.6]", res.toString());
+        assertEquals("[Let:_A, Flt:5.6]", res.toString());
 
         res = tokenizer.tokenize("txt=\"Liste d'éléments <=>+-/*\"").value();
         assertEquals("[Let:txt, Txt:Liste d'éléments <=>+-/*]", res.toString());
@@ -64,8 +64,8 @@ class TokenizerTest {
 
     @Test
     void expressionTest() {
-        var res = tokenizer.tokenize("(2*(3+4))/5").value();
-        assertEquals("[Stm:[Num:2.0, Mul:*, Stm:[Num:3.0, Add:+, Num:4.0]], Div:/, Num:5.0]", res.toString());
+        var res = tokenizer.tokenize("(2*(3.1+4.2))/5").value();
+        assertEquals("[Stm:[Int:2, Mul:*, Stm:[Flt:3.1, Add:+, Flt:4.2]], Div:/, Int:5]", res.toString());
     }
 
     @Test
@@ -74,19 +74,19 @@ class TokenizerTest {
         assertEquals("[Fun:func(Stm:[])]", res.toString());
 
         res = tokenizer.tokenize("func(1+2)").value();
-        assertEquals("[Fun:func(Stm:[Stm:[Num:1.0, Add:+, Num:2.0]])]", res.toString());
+        assertEquals("[Fun:func(Stm:[Stm:[Int:1, Add:+, Int:2]])]", res.toString());
 
         res = tokenizer.tokenize("func(1,var+3)").value();
-        assertEquals("[Fun:func(Stm:[Stm:[Num:1.0], Stm:[Var:var, Add:+, Num:3.0]])]", res.toString());
+        assertEquals("[Fun:func(Stm:[Stm:[Int:1], Stm:[Var:var, Add:+, Int:3]])]", res.toString());
 
         res = tokenizer.tokenize("func1(1,func2()+5)").value();
-        assertEquals("[Fun:func1(Stm:[Stm:[Num:1.0], Stm:[Fun:func2(Stm:[]), Add:+, Num:5.0]])]", res.toString());
+        assertEquals("[Fun:func1(Stm:[Stm:[Int:1], Stm:[Fun:func2(Stm:[]), Add:+, Int:5]])]", res.toString());
 
         res = tokenizer.tokenize("faker.regex(\"[A-Z]{13}\")").value();
         assertEquals("[Fun:faker.regex(Stm:[Stm:[Txt:[A-Z]{13}]])]", res.toString());
 
-        res = tokenizer.tokenize("1+f1(2/f2(),3+f3(f4()))*f5(1,2,3)").value();
-        assertEquals("[Num:1.0, Add:+, Fun:f1(Stm:[Stm:[Num:2.0, Div:/, Fun:f2(Stm:[])], Stm:[Num:3.0, Add:+, Fun:f3(Stm:[Stm:[Fun:f4(Stm:[])]])]]), Mul:*, Fun:f5(Stm:[Stm:[Num:1.0], Stm:[Num:2.0], Stm:[Num:3.0]])]", res.toString());
+        res = tokenizer.tokenize("1+f1(2/f2(),3.2+f3(f4()))*f5(1,2.1,3)").value();
+        assertEquals("[Int:1, Add:+, Fun:f1(Stm:[Stm:[Int:2, Div:/, Fun:f2(Stm:[])], Stm:[Flt:3.2, Add:+, Fun:f3(Stm:[Stm:[Fun:f4(Stm:[])]])]]), Mul:*, Fun:f5(Stm:[Stm:[Int:1], Stm:[Flt:2.1], Stm:[Int:3]])]", res.toString());
     }
 
     @Test

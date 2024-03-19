@@ -6,8 +6,8 @@ beforeAll: |
 steps:
   - name: Step n°1
     before: TIMESTAMP = BASE_TIMESTAMP + 1000
-    broker: ${KAFKA_LOCAL_CONTEXT}
-    topic: ${KAFKA_LOCAL_PREFIX}.InputTopic
+    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
+    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
     action: SEND
     record:
       headers:
@@ -27,8 +27,8 @@ steps:
           weight: 12030
     after: pause(100)
   - name: Step n°2
-    broker: ${KAFKA_CENTRAL_CONTEXT}
-    topic: ${KAFKA_CENTRAL_PREFIX}.OutputTopic
+    broker: ${TNR_KAFKA_CENTRAL_CONTEXT}
+    topic: ${TNR_KAFKA_CENTRAL_PREFIX}OutputTopic
     action: PRESENT
     record:
       timestamp: 123456789
@@ -37,14 +37,14 @@ steps:
         code: "P1"
         count: 1
   - name: Unnamed
-    broker: ${KAFKA_LOCAL_CONTEXT}
-    topic: ${KAFKA_LOCAL_PREFIX}.InputTopic
+    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
+    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
     action: ABSENT
     record:
       key: "P1"
   - name: Last Step
-    broker: ${KAFKA_LOCAL_CONTEXT}
-    topic: ${KAFKA_LOCAL_PREFIX}.InputTopic
+    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
+    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
     action: TODO
     record:
       key: "P1"
