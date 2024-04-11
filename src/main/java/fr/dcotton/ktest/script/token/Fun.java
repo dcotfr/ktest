@@ -12,7 +12,7 @@ final class Fun extends Token<String> {
     }
 
     @Override
-    Token eval(final Context pContext, final Stm pStatement) {
+    Stm eval(final Context pContext, final Stm pStatement) {
         final var idx = pStatement.value().indexOf(this);
         final var f = pContext.function(value());
         if (f != null) {

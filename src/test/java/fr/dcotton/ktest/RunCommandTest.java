@@ -73,10 +73,10 @@ class RunCommandTest {
         final var headers = rec.headers();
         assertEquals(1, headers.size());
         assertEquals("${STEP1_CID}", headers.get("correlation.id"));
-        assertEquals("{\"code\":\"P1\",\"label\":\"Product 1\"}", rec.key().toString());
+        assertEquals("{\"code\":\"P1\",\"label\":\"Product 1\"}", rec.keyNode().toString());
         assertEquals("{\"sender\":\"Source\",\"eventType\":\"CREATE\",\"eventTsp\":\"${TIMESTAMP}\","
                 + "\"body\":{\"code\":\"P1\",\"label\":\"Product 1\",\"commandAt\":\"${BASE_TIMESTAMP}\","
-                + "\"sentAt\":\"${BASE_TIMESTAMP + 100}\",\"weight\":12030}}", rec.value().toString());
+                + "\"sentAt\":\"${BASE_TIMESTAMP + 100}\",\"weight\":12030.5}}", rec.valueNode().toString());
 
         step = steps.get(1);
         assertEquals("Step n°2", step.name());
@@ -89,8 +89,8 @@ class RunCommandTest {
         rec = step.record();
         assertEquals(123456789L, rec.timestamp());
         assertTrue(rec.headers().isEmpty());
-        assertEquals("\"P1\"", rec.key().toString());
-        assertEquals("{\"code\":\"P1\",\"count\":1}", rec.value().toString());
+        assertEquals("\"P1\"", rec.keyNode().toString());
+        assertEquals("{\"code\":\"P1\",\"count\":1}", rec.valueNode().toString());
 
         step = steps.get(2);
         assertEquals("Unnamed", step.name());
@@ -103,7 +103,7 @@ class RunCommandTest {
         rec = step.record();
         assertNull(rec.timestamp());
         assertTrue(rec.headers().isEmpty());
-        assertEquals("\"P1\"", rec.key().toString());
+        assertEquals("\"P1\"", rec.keyNode().toString());
         assertNull(rec.value());
 
         step = steps.get(3);
@@ -117,7 +117,7 @@ class RunCommandTest {
         rec = step.record();
         assertNull(rec.timestamp());
         assertTrue(rec.headers().isEmpty());
-        assertEquals("\"P1\"", rec.key().toString());
+        assertEquals("\"P1\"", rec.keyNode().toString());
         assertNull(rec.value());
     }
 }

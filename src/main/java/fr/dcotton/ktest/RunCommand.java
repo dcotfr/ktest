@@ -1,9 +1,5 @@
 package fr.dcotton.ktest;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import fr.dcotton.ktest.domain.Action;
 import fr.dcotton.ktest.domain.Record;
 import fr.dcotton.ktest.domain.TestCase;
@@ -49,7 +45,7 @@ public class RunCommand implements Runnable {
         LOG.info("{}Test Case: {}", tab(WHITE), testCase.name());
         engine.eval(testCase.beforeAllScript());
         evalScript("beforeAll", testCase.beforeAllScript());
-        tab++;
+        ++tab;
         for (final var step : testCase.steps()) {
             final var xUnitCase = xUnitSuite.startNewCase(step.name());
             final var action = step.action();
@@ -57,29 +53,26 @@ public class RunCommand implements Runnable {
             if (action == Action.TODO) {
                 xUnitCase.skip("Marked as TODO");
             } else {
-                tab++;
+                ++tab;
                 evalScript("before", step.beforeScript());
                 engine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
-                LOG.debug("{}Broker: {}", tab(GRAY), evalInLine(step.broker()));
-                LOG.debug("{}Topic : {}", tab(GRAY), evalInLine(step.topic()));
-                LOG.debug("{}Record: {}", tab(GRAY), evalInLine(step.record()));
+                final var parsedTopic = evalInLine(step.topic());
+                final var parsedBroker = evalInLine(step.broker());
+                LOG.debug("{}Target: {}", tab(GRAY), parsedTopic + '@' + parsedBroker);
+                final var parsedRecord = evalInLine(step.record());
+                LOG.debug("{}Record: {}", tab(GRAY), parsedRecord);
+                xUnitCase.details(action, parsedBroker, parsedTopic);
+                xUnitCase.addProperty("$record", parsedRecord.toString());
                 evalScript("after", step.afterScript());
-                tab--;
+                --tab;
             }
             xUnitCase.end();
         }
-        tab--;
+        --tab;
         evalScript("afterAll", testCase.afterAllScript());
         xUnitSuite.end();
         xUnitReport.end();
-        final var xmlMapper = new XmlMapper();
-        xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        xmlMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        try {
-            System.out.println(xmlMapper.writerWithDefaultPrettyPrinter().writeValueAsString(xUnitReport));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        System.err.println(xUnitReport.toXml());
     }
 
     private void evalScript(final String pName, final List<String> pLines) {
@@ -100,6 +93,10 @@ public class RunCommand implements Runnable {
     }
 
     private String evalInLine(final String pAttribute) {
+        if (pAttribute == null) {
+            return null;
+        }
+
         final var pattern = Pattern.compile("(\\$\\{.*?})");
         final var matcher = pattern.matcher(pAttribute);
         var res = pAttribute;
@@ -116,10 +113,7 @@ public class RunCommand implements Runnable {
         for (final var e : pRecord.headers().entrySet()) {
             headers.put(e.getKey(), evalInLine(e.getValue()));
         }
-        System.err.println("k=" + evalInLine(pRecord.key().toString()));
-        System.err.println("v1=" + pRecord.value().toString());
-        System.err.println("v2=" + evalInLine(pRecord.value().toString()));
-        return new Record(pRecord.timestamp(), headers, pRecord.key(), pRecord.value());
+        return new Record(pRecord.timestamp(), headers, evalInLine(pRecord.key()), evalInLine(pRecord.value()));
     }
 
     private String tab(final String pColor) {

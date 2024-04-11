@@ -16,8 +16,7 @@ class JsonAssertTest {
                 "city": "Paris",
                 "country": null
               }
-            }   
-            """;
+            }""";
 
     @Test
     void matchTest() {

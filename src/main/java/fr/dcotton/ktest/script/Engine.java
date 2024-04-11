@@ -21,7 +21,7 @@ public final class Engine {
     private KTestConfig kConfig;
 
     @PostConstruct
-    private void init() {
+    void init() {
         reset();
     }
 
@@ -29,7 +29,7 @@ public final class Engine {
         context.reset();
         final var envConfig = kConfig.currentEnvironment();
         if (envConfig != null) {
-            envConfig.onStartScript().forEach(l -> eval(l));
+            envConfig.onStartScript().forEach(this::eval);
         }
         return this;
     }

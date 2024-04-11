@@ -9,7 +9,7 @@ final class Div extends Token<Character> {
     }
 
     @Override
-    Token eval(final Context pContext, final Stm pStatement) {
+    Stm eval(final Context pContext, final Stm pStatement) {
         final var idx = pStatement.value().indexOf(this);
         final var right = ((Number) pStatement.evalAsNumAt(pContext, idx + 1, false).value()).doubleValue();
         if (right == 0.0) {

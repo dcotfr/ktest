@@ -1,11 +1,13 @@
 package fr.dcotton.ktest.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@RegisterForReflection
 public record Step(String name, String before,
                    @JsonProperty(required = true) String broker, @JsonProperty(required = true) String topic,
                    @JsonProperty(required = true) Action action, @JsonProperty(required = true) Record record,

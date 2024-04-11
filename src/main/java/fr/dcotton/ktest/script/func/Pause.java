@@ -2,7 +2,6 @@ package fr.dcotton.ktest.script.func;
 
 import fr.dcotton.ktest.script.Context;
 import fr.dcotton.ktest.script.token.Stm;
-import fr.dcotton.ktest.script.token.Token;
 import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -13,7 +12,7 @@ public class Pause extends Func {
     }
 
     @Override
-    public Token apply(final Context pContext, final Stm pParam) {
+    public Txt apply(final Context pContext, final Stm pParam) {
         final var params = extractParam(pContext, pParam, Number.class);
         try {
             Thread.sleep(((Number) params[0]).longValue());

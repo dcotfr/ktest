@@ -3,7 +3,6 @@ package fr.dcotton.ktest.script.func;
 import fr.dcotton.ktest.faker.UuidFaker;
 import fr.dcotton.ktest.script.Context;
 import fr.dcotton.ktest.script.token.Stm;
-import fr.dcotton.ktest.script.token.Token;
 import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -16,7 +15,7 @@ public class FakerUuid extends Func {
     }
 
     @Override
-    public Token apply(final Context pContext, final Stm pParam) {
+    public Txt apply(final Context pContext, final Stm pParam) {
         extractParam(pContext, pParam);
         return new Txt(FAKER.random());
     }

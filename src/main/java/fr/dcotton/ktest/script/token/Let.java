@@ -9,7 +9,7 @@ final class Let extends Token<String> {
     }
 
     @Override
-    Token eval(final Context pContext, final Stm pStatement) {
+    Stm eval(final Context pContext, final Stm pStatement) {
         final var idx = pStatement.value().indexOf(this);
         final var rTok = pStatement.evalAt(pContext, idx + 1);
         if (rTok != null && rTok.priority() < priority()) {

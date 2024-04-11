@@ -3,8 +3,8 @@ package fr.dcotton.ktest.domain;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import fr.dcotton.ktest.core.KTestException;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@RegisterForReflection
 public record TestCase(String name, String beforeAll, List<Step> steps, String afterAll) implements Named {
     public List<String> beforeAllScript() {
         return beforeAll != null ? Arrays.stream(beforeAll.split("\n")).toList() : Collections.emptyList();
@@ -23,7 +24,7 @@ public record TestCase(String name, String beforeAll, List<Step> steps, String a
 
     public static TestCase load(final String pFile) {
         try {
-            return new ObjectMapper(new YAMLFactory().enable(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID)).readValue(readFile(pFile), TestCase.class);
+            return new ObjectMapper(new YAMLFactory()).readValue(readFile(pFile), TestCase.class);
         } catch (final JsonProcessingException e) {
             throw new KTestException("Invalid test case file syntax.", e);
         }

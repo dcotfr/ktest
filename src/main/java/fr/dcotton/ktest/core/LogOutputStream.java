@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 
@@ -20,7 +19,7 @@ class LogOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(final int pByte) throws IOException {
+    public void write(final int pByte) {
         if (pByte == 0) {
             return;
         }

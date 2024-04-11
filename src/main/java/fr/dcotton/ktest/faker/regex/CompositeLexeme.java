@@ -34,7 +34,7 @@ final class CompositeLexeme extends RepeatableLexeme<CompositeLexeme> {
     }
 
     private List<RepeatableLexeme<?>> activeLexemes() {
-        return orLexemes.get(orLexemes.size() - 1);
+        return orLexemes.getLast();
     }
 
     CompositeLexeme appendNewComposite() {
@@ -61,7 +61,7 @@ final class CompositeLexeme extends RepeatableLexeme<CompositeLexeme> {
             }
             final var min = parseLimit(limits[0]);
             final var max = nbLimit == 1 ? min : parseLimit(limits[1]);
-            activeLexemes().get(activeLexemes().size() - 1).repetitionLimits(min, max);
+            activeLexemes().getLast().repetitionLimits(min, max);
         } else {
             if (lexemeLength > 0) {
                 activeLexemes().add(pType == REGEX ? new RegexStyleLexeme(pLemexe.toString()) : new ConstantLexeme(pLemexe.toString()));

@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
  * base64.encode(String) -> String
  * base64.decode(String) -> String
  */
-public abstract class Func implements BiFunction<Context, Stm, Token> {
+public abstract class Func implements BiFunction<Context, Stm, Token<?>> {
     private final String command;
     private final FuncDoc doc;
 
@@ -29,7 +29,7 @@ public abstract class Func implements BiFunction<Context, Stm, Token> {
         return doc;
     }
 
-    protected final Object[] extractParam(final Context pContext, final Stm pParam, final Class... pTypes) {
+    protected final Object[] extractParam(final Context pContext, final Stm pParam, final Class<?>... pTypes) {
         final var expected = pTypes.length;
         final var found = pParam.value().size();
         if (expected != found) {

@@ -8,7 +8,7 @@ final class Add extends Token<Character> {
     }
 
     @Override
-    Token eval(final Context pContext, final Stm pStatement) {
+    Stm eval(final Context pContext, final Stm pStatement) {
         final var idx = pStatement.value().indexOf(this);
         final var rTokValue = (Number) pStatement.evalAsNumAt(pContext, idx + 1, false).value();
         final var lTok = pStatement.evalAsNumAt(pContext, idx - 1, true);

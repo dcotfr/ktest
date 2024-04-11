@@ -61,19 +61,18 @@ final class LineBuffer {
         return res;
     }
 
-    Num readNumber() {
+    Num<?> readNumber() {
         final StringBuilder raw = new StringBuilder();
         while (isDigit()) {
             raw.append(pop());
         }
         if (isDot()) {
-            raw.append(pop());
-            while (isDigit()) {
+            do {
                 raw.append(pop());
-            }
-            return new Flt(Double.valueOf(raw.toString()));
+            } while (isDigit());
+            return new Flt(Double.parseDouble(raw.toString()));
         }
-        return new Int(Long.valueOf(raw.toString()));
+        return new Int(Long.parseLong(raw.toString()));
     }
 
     Var readIdentifier() {

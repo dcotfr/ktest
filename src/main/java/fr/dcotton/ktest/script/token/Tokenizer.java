@@ -67,9 +67,6 @@ public final class Tokenizer {
     }
 
     private void error(final String pMessage, final String pLine, final int pPos) {
-        final var message = new StringBuilder(pMessage).append('\n');
-        message.append(pLine).append('\n');
-        message.append("-".repeat(pPos - 1)).append('^').append('\n');
-        throw new ScriptException(message.toString());
+        throw new ScriptException(pMessage + '\n' + pLine + '\n' + "-".repeat(pPos - 1) + '^' + '\n');
     }
 }

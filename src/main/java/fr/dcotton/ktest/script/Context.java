@@ -22,7 +22,7 @@ public final class Context {
     private List<Func> funcs;
 
     @PostConstruct
-    private void init() {
+    void init() {
         funcs.forEach(f -> functions.put(f.command(), f));
     }
 
@@ -47,7 +47,7 @@ public final class Context {
         return variables.get(pName);
     }
 
-    public Context variable(final String pName, final Token pValue) {
+    public Context variable(final String pName, final Token<?> pValue) {
         variables.put(pName, pValue);
         return this;
     }

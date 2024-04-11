@@ -1,53 +1,42 @@
 package fr.dcotton.ktest.domain.xunit;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-public class XUnitSuite {
-    @JacksonXmlProperty(isAttribute = true)
-    private final String name;
+public class XUnitSuite implements XmlUtils {
+    public final String name;
 
-    @JacksonXmlProperty(isAttribute = true)
-    int tests() {
+    public int tests() {
         return testcase.size();
     }
 
-    @JacksonXmlProperty(isAttribute = true)
-    int failures() {
+    public int failures() {
         return (int) testcase.stream().filter(tc -> tc.failure != null).count();
     }
 
-    @JacksonXmlProperty(isAttribute = true)
-    int errors() {
+    public int errors() {
         return (int) testcase.stream().filter(tc -> tc.error != null).count();
     }
 
-    @JacksonXmlProperty(isAttribute = true)
-    int skipped() {
+    public int skipped() {
         return (int) testcase.stream().filter(tc -> tc.skipped != null).count();
     }
 
-    @JacksonXmlProperty(isAttribute = true)
-    private double time() {
+    public double time() {
         return ((endTimestamp != 0L ? endTimestamp : System.currentTimeMillis()) - startTimestamp) / 1000.0;
     }
 
-    @JacksonXmlProperty(isAttribute = true)
-    private final Date timestamp;
+    public final OffsetDateTime timestamp;
 
-    @JacksonXmlElementWrapper(useWrapping = false)
-    private List<XUnitCase> testcase = new ArrayList<>();
+    public final List<XUnitCase> testcase = new ArrayList<>();
 
     private final long startTimestamp;
     private long endTimestamp;
 
     XUnitSuite(final String pName) {
         startTimestamp = System.currentTimeMillis();
-        timestamp = new Date(startTimestamp);
+        timestamp = OffsetDateTime.now();
         name = pName;
     }
 
@@ -59,5 +48,20 @@ public class XUnitSuite {
 
     public void end() {
         endTimestamp = System.currentTimeMillis();
+    }
+
+    public String toXml() {
+        final var res = new StringBuilder(" <testsuite");
+        res.append(" name=\"").append(cleanText(name)).append("\"");
+        res.append(" timestamp=\"").append(timestamp).append("\"");
+        res.append(" time=\"").append(time()).append("\"");
+        res.append(" errors=\"").append(errors()).append("\"");
+        res.append(" skipped=\"").append(skipped()).append("\"");
+        res.append(" tests=\"").append(tests()).append("\"");
+        res.append(" failures=\"").append(failures()).append("\"");
+        res.append(">\n");
+        testcase.stream().map(XUnitCase::toXml).forEach(res::append);
+        res.append(" </testsuite>\n");
+        return res.toString();
     }
 }

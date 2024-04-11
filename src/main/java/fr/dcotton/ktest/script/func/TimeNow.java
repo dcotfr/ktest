@@ -3,7 +3,6 @@ package fr.dcotton.ktest.script.func;
 import fr.dcotton.ktest.script.Context;
 import fr.dcotton.ktest.script.token.Int;
 import fr.dcotton.ktest.script.token.Stm;
-import fr.dcotton.ktest.script.token.Token;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -13,7 +12,7 @@ public class TimeNow extends Func {
     }
 
     @Override
-    public Token apply(final Context pContext, final Stm pParam) {
+    public Int apply(final Context pContext, final Stm pParam) {
         extractParam(pContext, pParam);
         return new Int(System.currentTimeMillis());
     }

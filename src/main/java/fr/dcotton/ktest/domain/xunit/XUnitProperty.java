@@ -1,7 +1,11 @@
 package fr.dcotton.ktest.domain.xunit;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-
-record XUnitProperty(@JacksonXmlProperty(isAttribute = true) String name,
-                     @JacksonXmlProperty(isAttribute = true) String value) {
+record XUnitProperty(String name, String value) implements XmlUtils {
+    public String toXml() {
+        final var res = new StringBuilder("    <property");
+        res.append(" name=\"").append(cleanText(name)).append("\"");
+        res.append(" value=\"").append(cleanText(value)).append("\"");
+        res.append("/>\n");
+        return res.toString();
+    }
 }
