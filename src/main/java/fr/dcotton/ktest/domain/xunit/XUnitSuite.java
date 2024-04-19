@@ -23,6 +23,10 @@ public class XUnitSuite implements XmlUtils {
         return (int) testcase.stream().filter(tc -> tc.skipped != null).count();
     }
 
+    public int assertions() {
+        return (int) testcase.stream().filter(tc -> tc.assertion).count();
+    }
+
     public double time() {
         return ((endTimestamp != 0L ? endTimestamp : System.currentTimeMillis()) - startTimestamp) / 1000.0;
     }
@@ -40,8 +44,8 @@ public class XUnitSuite implements XmlUtils {
         name = pName;
     }
 
-    public XUnitCase startNewCase(final String pName) {
-        final var res = new XUnitCase(pName);
+    public XUnitCase startNewCase(final String pName, final boolean pAssertion) {
+        final var res = new XUnitCase(pName, pAssertion);
         testcase.add(res);
         return res;
     }
@@ -51,7 +55,7 @@ public class XUnitSuite implements XmlUtils {
     }
 
     public String toXml() {
-        final var res = new StringBuilder(" <testsuite");
+        final var res = new StringBuilder("<testsuite");
         res.append(" name=\"").append(cleanText(name)).append("\"");
         res.append(" timestamp=\"").append(timestamp).append("\"");
         res.append(" time=\"").append(time()).append("\"");
@@ -59,9 +63,10 @@ public class XUnitSuite implements XmlUtils {
         res.append(" skipped=\"").append(skipped()).append("\"");
         res.append(" tests=\"").append(tests()).append("\"");
         res.append(" failures=\"").append(failures()).append("\"");
-        res.append(">\n");
+        res.append(" assertions=\"").append(assertions()).append("\"");
+        res.append('>');
         testcase.stream().map(XUnitCase::toXml).forEach(res::append);
-        res.append(" </testsuite>\n");
+        res.append("</testsuite>");
         return res.toString();
     }
 }

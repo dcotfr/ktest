@@ -26,6 +26,10 @@ public final class XUnitReport implements XmlUtils {
         return testsuite.stream().mapToInt(XUnitSuite::skipped).sum();
     }
 
+    public int assertions() {
+        return testsuite.stream().mapToInt(XUnitSuite::assertions).sum();
+    }
+
     public double time() {
         return ((endTimestamp != 0L ? endTimestamp : System.currentTimeMillis()) - startTimestamp) / 1000.0;
     }
@@ -61,7 +65,8 @@ public final class XUnitReport implements XmlUtils {
         res.append(" skipped=\"").append(skipped()).append("\"");
         res.append(" tests=\"").append(tests()).append("\"");
         res.append(" failures=\"").append(failures()).append("\"");
-        res.append(">\n");
+        res.append(" assertions=\"").append(assertions()).append("\"");
+        res.append('>');
         testsuite.stream().map(XUnitSuite::toXml).forEach(res::append);
         res.append("</testsuites>");
         return res.toString();

@@ -1,5 +1,12 @@
 package fr.dcotton.ktest.domain.xunit;
 
-public record XUnitFailure(String message) {
+public record XUnitFailure(String message) implements XmlUtils {
+    @Override
+    public String toXml() {
+        final var res = new StringBuilder("<failure");
+        res.append(" message=\"").append(cleanText(message)).append("\"");
+        res.append("/>");
+        return res.toString();
+    }
 }
 

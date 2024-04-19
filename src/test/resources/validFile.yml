@@ -8,6 +8,8 @@ steps:
     before: TIMESTAMP = BASE_TIMESTAMP + 1000
     broker: ${TNR_KAFKA_LOCAL_CONTEXT}
     topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
+    keySerde: STRING
+    valueSerde: STRING
     action: SEND
     record:
       headers:
@@ -29,6 +31,7 @@ steps:
   - name: Step n°2
     broker: ${TNR_KAFKA_CENTRAL_CONTEXT}
     topic: ${TNR_KAFKA_CENTRAL_PREFIX}OutputTopic
+    valueSerde: STRING
     action: PRESENT
     record:
       timestamp: 123456789

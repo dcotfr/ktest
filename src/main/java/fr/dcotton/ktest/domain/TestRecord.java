@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @RegisterForReflection
-public record Record(Long timestamp, Map<String, String> headers, String key, String value) {
+public record TestRecord(Long timestamp, Map<String, String> headers, String key, String value) {
     private static final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory());
 
     public Map<String, String> headers() {
@@ -35,7 +35,7 @@ public record Record(Long timestamp, Map<String, String> headers, String key, St
     }
 
     private static JsonNode toJsonNode(final String pString) throws JsonProcessingException {
-        return MAPPER.readValue(pString, JsonNode.class);
+        return pString != null ? MAPPER.readValue(pString, JsonNode.class) : null;
     }
 
     @Override

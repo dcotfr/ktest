@@ -8,6 +8,8 @@ import java.util.List;
 public final class XUnitCase implements XmlUtils {
     public final String name;
 
+    public final boolean assertion;
+
     public String classname;
 
     public double time() {
@@ -25,9 +27,10 @@ public final class XUnitCase implements XmlUtils {
     private final long startTimestamp;
     private long endTimestamp;
 
-    XUnitCase(final String pName) {
+    XUnitCase(final String pName, final boolean pAssertion) {
         startTimestamp = System.currentTimeMillis();
         name = pName;
+        assertion = pAssertion;
     }
 
     public void addProperty(final String pKey, final String pValue) {
@@ -55,15 +58,28 @@ public final class XUnitCase implements XmlUtils {
     }
 
     public String toXml() {
-        final var res = new StringBuilder("  <testcase");
+        final var res = new StringBuilder("<testcase");
         res.append(" name=\"").append(cleanText(name)).append("\"");
-        res.append(" classname=\"").append(cleanText(classname)).append("\"");
+        if (classname != null) {
+            res.append(" classname=\"").append(cleanText(classname)).append("\"");
+        }
         res.append(" time=\"").append(time()).append("\"");
-        res.append(">\n");
-        res.append("   <properties>\n");
-        properties.stream().map(XUnitProperty::toXml).forEach(res::append);
-        res.append("   </properties>\n");
-        res.append("  </testcase>\n");
+        res.append('>');
+        if (!properties.isEmpty()) {
+            res.append("<properties>");
+            properties.stream().map(XUnitProperty::toXml).forEach(res::append);
+            res.append("</properties>");
+        }
+        if (skipped != null) {
+            skipped.toXml();
+        }
+        if (failure != null) {
+            failure.toXml();
+        }
+        if (error != null) {
+            error.toXml();
+        }
+        res.append("</testcase>");
         return res.toString();
     }
 }

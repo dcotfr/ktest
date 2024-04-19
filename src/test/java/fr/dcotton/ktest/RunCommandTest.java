@@ -18,7 +18,7 @@ class RunCommandTest {
     @Launch(value = {"run", "-h"})
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
-                "I Usage: ktest run [-hV] [-c=<config>] -e=<env> [-f=<file>]",
+                "I Usage: ktest run [-hV] [-c=<config>] -e=<env> [-f=<file>] [-r=<report>]",
                 "I Run test case.",
                 "I   -c, --config=<config>   Path of the config file.",
                 "I                             Default: ktconfig.yml",
@@ -26,6 +26,8 @@ class RunCommandTest {
                 "I   -f, --file=<file>       Path of test case description file to execute.",
                 "I                             Default: ktestcase.yml",
                 "I   -h, --help              Show this help message and exit.",
+                "I   -r, --report=<report>   Path of the test report file.",
+                "I                             Default: ktreport.xml",
                 "I   -V, --version           Print version information and exit.\r");
         assertEquals(expected, pResult.getOutput());
     }

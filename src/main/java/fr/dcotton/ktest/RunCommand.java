@@ -1,15 +1,21 @@
 package fr.dcotton.ktest;
 
 import fr.dcotton.ktest.domain.Action;
-import fr.dcotton.ktest.domain.Record;
 import fr.dcotton.ktest.domain.TestCase;
+import fr.dcotton.ktest.domain.TestRecord;
 import fr.dcotton.ktest.domain.xunit.XUnitReport;
+import fr.dcotton.ktest.kafka.ClusterClient;
+import fr.dcotton.ktest.kafka.TopicRef;
 import fr.dcotton.ktest.script.Engine;
 import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -31,11 +37,17 @@ public class RunCommand implements Runnable {
     @CommandLine.Option(names = {"-c", "--config"}, description = "Path of the config file.", defaultValue = "ktconfig.yml")
     private String config;
 
+    @CommandLine.Option(names = {"-r", "--report"}, description = "Path of the test report file.", defaultValue = "ktreport.xml")
+    private String report;
+
     private String currentVariables = "";
     private int tab;
 
     @Inject
     Engine engine;
+
+    @Inject
+    ClusterClient kafkaClient;
 
     @Override
     public void run() {
@@ -47,9 +59,9 @@ public class RunCommand implements Runnable {
         evalScript("beforeAll", testCase.beforeAllScript());
         ++tab;
         for (final var step : testCase.steps()) {
-            final var xUnitCase = xUnitSuite.startNewCase(step.name());
             final var action = step.action();
-            LOG.info("{}- Step : {} ({})", tab(action == Action.TODO ? YELLOW : WHITE), step.name(), action);
+            final var xUnitCase = xUnitSuite.startNewCase(step.name(), action == Action.PRESENT || action == Action.ABSENT);
+            LOG.info("{}- Step : {} ({})", tab(action == Action.TODO ? BRIGHTYELLOW : WHITE), step.name(), action);
             if (action == Action.TODO) {
                 xUnitCase.skip("Marked as TODO");
             } else {
@@ -58,11 +70,13 @@ public class RunCommand implements Runnable {
                 engine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
                 final var parsedTopic = evalInLine(step.topic());
                 final var parsedBroker = evalInLine(step.broker());
-                LOG.debug("{}Target: {}", tab(GRAY), parsedTopic + '@' + parsedBroker);
+                final var topicRef = new TopicRef(parsedBroker, parsedTopic, step.keySerde(), step.valueSerde());
+                LOG.debug("{}Target: {}", tab(LIGHTGRAY), topicRef.id());
                 final var parsedRecord = evalInLine(step.record());
-                LOG.debug("{}Record: {}", tab(GRAY), parsedRecord);
+                LOG.debug("{}Record: {}", tab(LIGHTGRAY), parsedRecord);
                 xUnitCase.details(action, parsedBroker, parsedTopic);
                 xUnitCase.addProperty("$record", parsedRecord.toString());
+                kafkaClient.send(topicRef, parsedRecord);
                 evalScript("after", step.afterScript());
                 --tab;
             }
@@ -72,22 +86,26 @@ public class RunCommand implements Runnable {
         evalScript("afterAll", testCase.afterAllScript());
         xUnitSuite.end();
         xUnitReport.end();
-        System.err.println(xUnitReport.toXml());
+        try {
+            Files.write(Path.of(report), xUnitReport.toXml().getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void evalScript(final String pName, final List<String> pLines) {
         if (pLines.isEmpty()) {
             return;
         }
-        LOG.debug("{}Executing {} script...", tab(GRAY), pName);
+        LOG.debug("{}Executing {} script...", tab(LIGHTGRAY), pName);
         engine.eval(pLines);
         final var variables = engine.context().variables();
         final var newVariables = String.join("\n", variables.stream().map(e -> e.getKey() + ':' + e.getValue()).toList());
         if (!newVariables.equals(currentVariables)) {
             currentVariables = newVariables;
-            LOG.debug("{}Variables:", tab(GRAY));
+            LOG.debug("{}Variables:", tab(LIGHTGRAY));
             tab++;
-            variables.forEach(e -> LOG.debug("{}{} = {}", tab(GRAY), e.getKey(), e.getValue()));
+            variables.forEach(e -> LOG.debug("{}{} = {}", tab(LIGHTGRAY), e.getKey(), e.getValue()));
             tab--;
         }
     }
@@ -108,12 +126,12 @@ public class RunCommand implements Runnable {
         return res;
     }
 
-    private Record evalInLine(final Record pRecord) {
+    private TestRecord evalInLine(final TestRecord pRecord) {
         final var headers = new TreeMap<String, String>();
         for (final var e : pRecord.headers().entrySet()) {
             headers.put(e.getKey(), evalInLine(e.getValue()));
         }
-        return new Record(pRecord.timestamp(), headers, evalInLine(pRecord.key()), evalInLine(pRecord.value()));
+        return new TestRecord(pRecord.timestamp(), headers, evalInLine(pRecord.key()), evalInLine(pRecord.value()));
     }
 
     private String tab(final String pColor) {
