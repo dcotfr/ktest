@@ -40,9 +40,9 @@ class RegistryService {
         }
 
         Schema res = null;
-        final var registryClient = client(pTopic);
+        final var registryClient = registryClient(pTopic);
         if (registryClient != null) {
-            LOG.trace("{}      Trying to get last schema of {}.", BLUE, pTopic.id() + schemaSuffix);
+            LOG.trace("{}      Trying to get last active schema of {}.", BLUE, pTopic.id() + schemaSuffix);
             try {
                 final var rawSchemas = registryClient.getSchemas(pTopic.topic() + schemaSuffix, false, true);
                 final var rawSchema = (rawSchemas != null && !rawSchemas.isEmpty()) ? rawSchemas.getFirst() : null;
@@ -55,7 +55,7 @@ class RegistryService {
         return res;
     }
 
-    private SchemaRegistryClient client(final TopicRef pTopic) {
+    private SchemaRegistryClient registryClient(final TopicRef pTopic) {
         final var registryRef = kConfig.broker(pTopic.broker()).registry();
         final var registryConfig = registryRef != null ? kConfig.registry(registryRef) : null;
         if (registryConfig == null) {

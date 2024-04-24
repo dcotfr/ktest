@@ -9,7 +9,7 @@ steps:
     broker: ${TNR_KAFKA_LOCAL_CONTEXT}
     topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
     keySerde: STRING
-    valueSerde: STRING
+    valueSerde: AVRO
     action: SEND
     record:
       headers:
