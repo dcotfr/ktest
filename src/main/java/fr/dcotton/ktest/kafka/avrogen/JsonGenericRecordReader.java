@@ -11,7 +11,7 @@ import org.apache.avro.generic.GenericData;
 import java.util.Map;
 
 @ApplicationScoped
-final class JsonGenericRecordReader {
+public final class JsonGenericRecordReader {
     private final ObjectMapper mapper;
     private final JsonToAvroReader jsonToAvroReader;
 

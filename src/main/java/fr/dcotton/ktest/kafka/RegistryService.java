@@ -18,7 +18,7 @@ import java.util.Map;
 import static fr.dcotton.ktest.core.AnsiColor.BLUE;
 
 @ApplicationScoped
-class RegistryService {
+public class RegistryService {
     private static final Logger LOG = LoggerFactory.getLogger(RegistryService.class);
 
     private final Map<String, SchemaRegistryClient> registries = new HashMap<>();

@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -87,7 +86,7 @@ public class RunCommand implements Runnable {
         xUnitSuite.end();
         xUnitReport.end();
         try {
-            Files.write(Path.of(report), xUnitReport.toXml().getBytes(StandardCharsets.UTF_8));
+            Files.writeString(Path.of(report), xUnitReport.toXml());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ApplicationScoped
-class KafkaConfigProvider {
+public class KafkaConfigProvider {
     private final Map<String, Map<String, String>> kafkaConfigs = new HashMap<>();
     private final KTestConfig kConfig;
 

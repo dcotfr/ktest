@@ -75,7 +75,7 @@ public class ClusterClient {
                 .entrySet()
                 .stream()
                 .map(e -> new RecordHeader(e.getKey(), e.getValue().getBytes(StandardCharsets.UTF_8)))
-                .collect(Collectors.toCollection(() -> new ArrayList<>()));
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private Object convert(final TopicRef pTopic, final TestRecord pRecord, boolean pKey) {
