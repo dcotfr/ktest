@@ -28,14 +28,4 @@ final class IntTimeMillisConverter extends AbstractIntDateTimeConverter {
     protected LogicalType getLogicalType() {
         return LogicalTypes.timeMillis();
     }
-
-    @Override
-    protected String getValidStringFormat() {
-        return "time";
-    }
-
-    @Override
-    protected String getValidNumberFormat() {
-        return "millis";
-    }
 }

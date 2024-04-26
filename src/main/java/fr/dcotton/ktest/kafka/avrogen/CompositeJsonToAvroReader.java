@@ -54,17 +54,17 @@ final class CompositeJsonToAvroReader implements JsonToAvroReader {
 
     @Override
     public GenericData.Record read(Map<String, Object> json, Schema schema) {
-        return (GenericData.Record) this.mainRecordConverter.convert(null, schema, json, new ArrayDeque<>());
+        return (GenericData.Record) mainRecordConverter.convert(null, schema, json, new ArrayDeque<>());
     }
 
     @Override
-    public Object read(Schema.Field field, Schema schema, Object jsonValue, Deque<String> path, boolean silently) {
+    public Object read(Schema.Field field, Schema schema, Object jsonValue, Deque<String> path) {
         boolean pushed = !field.name().equals(path.peekLast());
         if (pushed) {
             path.addLast(field.name());
         }
 
-        AvroTypeConverter converter = this.converters.stream()
+        AvroTypeConverter converter = converters.stream()
                 .filter(c -> c.canManage(schema, path))
                 .findFirst()
                 .orElseThrow(() -> new AvroTypeException("Unsupported type: " + field.schema().getType()));

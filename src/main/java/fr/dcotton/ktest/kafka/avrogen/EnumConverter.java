@@ -1,6 +1,5 @@
 package fr.dcotton.ktest.kafka.avrogen;
 
-import fr.dcotton.ktest.core.KTestException;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
@@ -23,7 +22,7 @@ final class EnumConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Strin
         if (symbols.contains(pValue)) {
             return new GenericData.EnumSymbol(pSchema, pValue);
         }
-        throw new KTestException("Field " + pPath + " is expected to be of enum type and be one of " + symbols.stream().map(String::valueOf).collect(joining(", ")), null);
+        throw new AvroGenException("Field " + pPath + " is expected to be of enum type and be one of " + symbols.stream().map(String::valueOf).collect(joining(", ")));
     }
 
     @Override

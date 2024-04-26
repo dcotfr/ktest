@@ -28,14 +28,4 @@ final class LongTimeMicrosConverter extends AbstractLongDateTimeConverter {
     protected LogicalType getLogicalType() {
         return LogicalTypes.timeMicros();
     }
-
-    @Override
-    protected String getValidStringFormat() {
-        return "time";
-    }
-
-    @Override
-    protected String getValidNumberFormat() {
-        return "micros";
-    }
 }

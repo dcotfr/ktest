@@ -19,7 +19,7 @@ final class ArrayConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Coll
     @Override
     public Object convertValue(final Schema.Field pField, final Schema pSchema, final Collection pValue, final Deque<String> pPath) {
         return ((Collection<Object>) pValue).stream()
-                .map(item -> this.jsonToAvroReader.read(pField, pSchema.getElementType(), item, pPath, false))
+                .map(item -> jsonToAvroReader.read(pField, pSchema.getElementType(), item, pPath))
                 .collect(toList());
     }
 

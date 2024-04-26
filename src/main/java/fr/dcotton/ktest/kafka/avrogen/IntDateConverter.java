@@ -26,14 +26,4 @@ final class IntDateConverter extends AbstractIntDateTimeConverter {
     protected LogicalType getLogicalType() {
         return LogicalTypes.date();
     }
-
-    @Override
-    protected String getValidStringFormat() {
-        return "date";
-    }
-
-    @Override
-    protected String getValidNumberFormat() {
-        return "epoch days";
-    }
 }

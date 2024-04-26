@@ -21,7 +21,7 @@ final class BytesDecimalConverter implements AvroTypeConverter {
             final var scale = (int) pSchema.getObjectProp("scale");
             return convertDecimal(pValue, scale, pPath);
         } catch (final NumberFormatException e) {
-            throw new KTestException("Field " + pPath + " is expected to be a valid number. current value is " + pValue + '.', e);
+            throw new AvroGenException("Field " + pPath + " is expected to be a valid number. current value is " + pValue + '.', e);
         }
     }
 
@@ -35,7 +35,7 @@ final class BytesDecimalConverter implements AvroTypeConverter {
         if (bigDecimalInput.scale() <= pScale) {
             return bigDecimalInput.setScale(pScale, RoundingMode.UNNECESSARY);
         }
-        throw new KTestException("Field " + pPath + " is expected to be a number with scale up to " +
+        throw new AvroGenException("Field " + pPath + " is expected to be a number with scale up to " +
                 pScale + ". current value: " + bigDecimalInput + " is number with scale " + bigDecimalInput.scale() + '.', null);
     }
 

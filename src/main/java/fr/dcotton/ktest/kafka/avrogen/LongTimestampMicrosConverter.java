@@ -36,14 +36,4 @@ final class LongTimestampMicrosConverter extends AbstractLongDateTimeConverter {
     protected LogicalType getLogicalType() {
         return LogicalTypes.timestampMicros();
     }
-
-    @Override
-    protected String getValidStringFormat() {
-        return "date time";
-    }
-
-    @Override
-    protected String getValidNumberFormat() {
-        return "timestamp";
-    }
 }
