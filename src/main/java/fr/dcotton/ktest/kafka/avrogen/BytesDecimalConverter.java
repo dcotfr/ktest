@@ -1,6 +1,5 @@
 package fr.dcotton.ktest.kafka.avrogen;
 
-import fr.dcotton.ktest.core.KTestException;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.avro.Schema;
 
@@ -13,8 +12,6 @@ import static org.apache.avro.Schema.Type.BYTES;
 
 @ApplicationScoped
 final class BytesDecimalConverter implements AvroTypeConverter {
-    static final AvroTypeConverter INSTANCE = new BytesDecimalConverter();
-
     @Override
     public Object convert(final Schema.Field pField, final Schema pSchema, final Object pValue, final Deque<String> pPath) {
         try {
@@ -25,12 +22,12 @@ final class BytesDecimalConverter implements AvroTypeConverter {
         }
     }
 
-    protected Object convertDecimal(final Object pValue, final int scale, final Deque<String> pPath) {
+    private Object convertDecimal(final Object pValue, final int scale, final Deque<String> pPath) {
         final var bigDecimal = bigDecimalWithExpectedScale(pValue.toString(), scale, pPath);
         return ByteBuffer.wrap(bigDecimal.unscaledValue().toByteArray());
     }
 
-    protected BigDecimal bigDecimalWithExpectedScale(final String pDecimal, final int pScale, final Deque<String> pPath) {
+    private BigDecimal bigDecimalWithExpectedScale(final String pDecimal, final int pScale, final Deque<String> pPath) {
         final var bigDecimalInput = new BigDecimal(pDecimal);
         if (bigDecimalInput.scale() <= pScale) {
             return bigDecimalInput.setScale(pScale, RoundingMode.UNNECESSARY);

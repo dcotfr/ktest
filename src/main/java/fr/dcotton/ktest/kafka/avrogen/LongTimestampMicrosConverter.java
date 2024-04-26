@@ -8,13 +8,11 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
 @ApplicationScoped
-final class LongTimestampMicrosConverter extends AbstractLongDateTimeConverter {
-    static final AvroTypeConverter INSTANCE = new LongTimestampMicrosConverter();
-
+final class LongTimestampMicrosConverter extends LongDateTimeConverter {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
 
     @Override
-    protected Object convertDateTimeString(final String pDateTimeString) {
+    Object convertDateTimeString(final String pDateTimeString) {
         final var instant = parseInstant(pDateTimeString);
         // based on org.apache.avro.data.TimestampMicrosConversion
         final var seconds = instant.getEpochSecond();
@@ -28,12 +26,12 @@ final class LongTimestampMicrosConverter extends AbstractLongDateTimeConverter {
         return Math.addExact(micros, nanos / 1_000);
     }
 
-    protected Instant parseInstant(final String pDateTimeString) {
+    Instant parseInstant(final String pDateTimeString) {
         return Instant.from(dateTimeFormatter.parse(pDateTimeString));
     }
 
     @Override
-    protected LogicalType getLogicalType() {
+    LogicalType getLogicalType() {
         return LogicalTypes.timestampMicros();
     }
 }

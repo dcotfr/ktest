@@ -1,5 +1,7 @@
 package fr.dcotton.ktest.kafka.avrogen;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.apache.avro.Schema;
 
 import java.util.Collection;
@@ -7,12 +9,13 @@ import java.util.Deque;
 
 import static java.util.stream.Collectors.toList;
 
+@ApplicationScoped
 final class ArrayConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Collection> {
-    private final JsonToAvroReader jsonToAvroReader;
+    @Inject
+    private JsonToAvroReader jsonToAvroReader;
 
-    ArrayConverter(final JsonToAvroReader pJsonToAvroReader) {
+    ArrayConverter() {
         super(Collection.class);
-        jsonToAvroReader = pJsonToAvroReader;
     }
 
     @SuppressWarnings("unchecked")

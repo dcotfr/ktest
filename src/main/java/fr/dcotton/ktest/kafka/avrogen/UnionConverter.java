@@ -1,17 +1,17 @@
 package fr.dcotton.ktest.kafka.avrogen;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.apache.avro.AvroRuntimeException;
 import org.apache.avro.Schema;
 
 import java.util.ArrayList;
 import java.util.Deque;
 
+@ApplicationScoped
 final class UnionConverter implements AvroTypeConverter {
-    private final JsonToAvroReader jsonToAvroReader;
-
-    UnionConverter(final JsonToAvroReader pJsonToAvroReader) {
-        jsonToAvroReader = pJsonToAvroReader;
-    }
+    @Inject
+    private JsonToAvroReader jsonToAvroReader;
 
     @Override
     public Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath) {

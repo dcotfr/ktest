@@ -9,9 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
-final class LongTimeMicrosConverter extends AbstractLongDateTimeConverter {
-    static final AvroTypeConverter INSTANCE = new LongTimeMicrosConverter();
-
+final class LongTimeMicrosConverter extends LongDateTimeConverter {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_TIME;
 
     @Override
@@ -20,12 +18,12 @@ final class LongTimeMicrosConverter extends AbstractLongDateTimeConverter {
         return TimeUnit.NANOSECONDS.toMicros(nanoOfDay);
     }
 
-    protected LocalTime parseLocalTime(final String pDateTimeString) {
+    LocalTime parseLocalTime(final String pDateTimeString) {
         return LocalTime.from(dateTimeFormatter.parse(pDateTimeString));
     }
 
     @Override
-    protected LogicalType getLogicalType() {
+    LogicalType getLogicalType() {
         return LogicalTypes.timeMicros();
     }
 }

@@ -8,7 +8,7 @@ import org.apache.avro.generic.GenericData;
 
 // https://github.com/allegro/json-avro-converter/blob/master/converter/src/main/java/tech/allegro/schema/json2avro/converter/types/RecordConverter.java
 @ApplicationScoped
-public class JsonAvroConverter {
+public final class JsonAvroConverter {
     @Inject
     private JsonGenericRecordReader recordReader;
 

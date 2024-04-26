@@ -30,11 +30,11 @@ final class RecordConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map
         return builder.build();
     }
 
-    protected RecordBuilderBase<GenericData.Record> createRecordBuilder(final Schema pSchema) {
+    RecordBuilderBase<GenericData.Record> createRecordBuilder(final Schema pSchema) {
         return new GenericRecordBuilder(pSchema);
     }
 
-    protected void setField(final RecordBuilderBase<GenericData.Record> pBuilder, final Schema.Field pSubField, final Object pFieldValue) {
+    void setField(final RecordBuilderBase<GenericData.Record> pBuilder, final Schema.Field pSubField, final Object pFieldValue) {
         ((GenericRecordBuilder) pBuilder).set(pSubField, pFieldValue);
     }
 

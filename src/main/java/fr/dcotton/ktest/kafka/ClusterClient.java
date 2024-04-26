@@ -7,7 +7,6 @@ import fr.dcotton.ktest.kafka.avrogen.JsonAvroConverter;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.apache.avro.generic.GenericData;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
@@ -52,8 +51,7 @@ public class ClusterClient {
                 null,
                 pRecord.timestamp(),
                 convert(pTopic, pRecord, true),
-                // convert(pTopic, pRecord, false),
-                new GenericData.Record(null),
+                convert(pTopic, pRecord, false),
                 kafkaHeaders(pRecord.headers()));
         try {
             producer.send(rec).get(3, TimeUnit.SECONDS);

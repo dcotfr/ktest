@@ -10,8 +10,6 @@ import static java.util.stream.Collectors.joining;
 
 @ApplicationScoped
 final class EnumConverter extends AvroTypeConverterWithStrictJavaTypeCheck<String> {
-    static final AvroTypeConverter INSTANCE = new EnumConverter();
-
     private EnumConverter() {
         super(String.class);
     }

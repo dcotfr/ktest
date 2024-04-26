@@ -7,12 +7,12 @@ import java.util.Deque;
 abstract class AvroTypeConverterWithStrictJavaTypeCheck<T> implements AvroTypeConverter {
     private final Class<T> javaType;
 
-    protected AvroTypeConverterWithStrictJavaTypeCheck(final Class<T> pJavaType) {
+    AvroTypeConverterWithStrictJavaTypeCheck(final Class<T> pJavaType) {
         javaType = pJavaType;
     }
 
     @Override
-    public Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath) {
+    public final Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath) {
         if (javaType.isInstance(pJsonValue)) {
             return convertValue(pField, pSchema, (T) pJsonValue, pPath);
         }

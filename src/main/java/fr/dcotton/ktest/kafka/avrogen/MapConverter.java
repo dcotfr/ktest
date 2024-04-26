@@ -1,17 +1,20 @@
 package fr.dcotton.ktest.kafka.avrogen;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.apache.avro.Schema;
 
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
+@ApplicationScoped
 final class MapConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map> {
-    private final JsonToAvroReader recordRecord;
+    @Inject
+    private JsonToAvroReader recordRecord;
 
-    MapConverter(final JsonToAvroReader pRecordRecord) {
+    MapConverter() {
         super(Map.class);
-        recordRecord = pRecordRecord;
     }
 
     @SuppressWarnings("unchecked")

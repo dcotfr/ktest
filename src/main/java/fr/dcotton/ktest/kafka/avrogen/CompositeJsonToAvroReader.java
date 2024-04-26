@@ -1,7 +1,7 @@
 package fr.dcotton.ktest.kafka.avrogen;
 
-import fr.dcotton.ktest.script.func.Func;
 import io.quarkus.arc.All;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.avro.AvroTypeException;
@@ -12,66 +12,43 @@ import java.util.*;
 
 @ApplicationScoped
 final class CompositeJsonToAvroReader implements JsonToAvroReader {
-    private final List<AvroTypeConverter> converters;
+    private final List<AvroTypeConverter> converters = new ArrayList<>();
     private final AvroTypeConverter mainRecordConverter;
 
     @Inject
     @All
-    private List<AvroTypeConverter> funcs;
+    private List<AvroTypeConverter> foundConverters;
 
     CompositeJsonToAvroReader() {
-        this(Collections.emptyList());
+        mainRecordConverter = new RecordConverter(this);
     }
 
-    public CompositeJsonToAvroReader(List<AvroTypeConverter> additionalConverters) {
-        mainRecordConverter = createMainConverter();
-        converters = new ArrayList<>();
-        converters.addAll(additionalConverters);
-        converters.add(BytesDecimalConverter.INSTANCE);
-        converters.add(IntDateConverter.INSTANCE);
-        converters.add(IntTimeMillisConverter.INSTANCE);
-        converters.add(LongTimeMicrosConverter.INSTANCE);
-        converters.add(LongTimestampMillisConverter.INSTANCE);
-        converters.add(LongTimestampMicrosConverter.INSTANCE);
-        converters.add(PrimitiveConverter.BOOLEAN);
-        converters.add(PrimitiveConverter.STRING);
-        converters.add(PrimitiveConverter.INT);
-        converters.add(PrimitiveConverter.LONG);
-        converters.add(PrimitiveConverter.DOUBLE);
-        converters.add(PrimitiveConverter.FLOAT);
-        converters.add(PrimitiveConverter.BYTES);
-        converters.add(EnumConverter.INSTANCE);
-        converters.add(NullConverter.INSTANCE);
+    @PostConstruct
+    void init() {
         converters.add(mainRecordConverter);
-        converters.add(new ArrayConverter(this));
-        converters.add(new MapConverter(this));
-        converters.add(new UnionConverter(this));
-    }
-
-    protected AvroTypeConverter createMainConverter() {
-        return new RecordConverter(this);
+        converters.addAll(foundConverters);
     }
 
     @Override
-    public GenericData.Record read(Map<String, Object> json, Schema schema) {
-        return (GenericData.Record) mainRecordConverter.convert(null, schema, json, new ArrayDeque<>());
+    public GenericData.Record read(final Map<String, Object> pJson, final Schema pSchema) {
+        return (GenericData.Record) mainRecordConverter.convert(null, pSchema, pJson, new ArrayDeque<>());
     }
 
     @Override
-    public Object read(Schema.Field field, Schema schema, Object jsonValue, Deque<String> path) {
-        boolean pushed = !field.name().equals(path.peekLast());
+    public Object read(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath) {
+        final var pushed = !pField.name().equals(pPath.peekLast());
         if (pushed) {
-            path.addLast(field.name());
+            pPath.addLast(pField.name());
         }
 
-        AvroTypeConverter converter = converters.stream()
-                .filter(c -> c.canManage(schema, path))
+        final var converter = converters.stream()
+                .filter(c -> c.canManage(pSchema, pPath))
                 .findFirst()
-                .orElseThrow(() -> new AvroTypeException("Unsupported type: " + field.schema().getType()));
-        Object result = converter.convert(field, schema, jsonValue, path);
+                .orElseThrow(() -> new AvroTypeException("Unsupported type: " + pField.schema().getType()));
+        final var result = converter.convert(pField, pSchema, pJsonValue, pPath);
 
         if (pushed) {
-            path.removeLast();
+            pPath.removeLast();
         }
         return result;
     }
