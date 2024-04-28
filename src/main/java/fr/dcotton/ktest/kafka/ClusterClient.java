@@ -60,6 +60,10 @@ public class ClusterClient {
         }
     }
 
+    public boolean find(final TopicRef pTopic, final TestRecord pRecord) {
+        return true;
+    }
+
     private KafkaProducer producer(final TopicRef pTopic) {
         return producers.computeIfAbsent(pTopic.id(), k -> {
             final var kafkaConfig = kafkaConfigProvider.of(pTopic);

@@ -57,12 +57,15 @@ public class RunCommand implements Runnable {
         engine.eval(testCase.beforeAllScript());
         evalScript("beforeAll", testCase.beforeAllScript());
         ++tab;
+        var skipAfterFailureOrError = false;
         for (final var step : testCase.steps()) {
             final var action = step.action();
             final var xUnitCase = xUnitSuite.startNewCase(step.name(), action == Action.PRESENT || action == Action.ABSENT);
             LOG.info("{}- Step : {} ({})", tab(action == Action.TODO ? BRIGHTYELLOW : WHITE), step.name(), action);
             if (action == Action.TODO) {
                 xUnitCase.skip("Marked as TODO");
+            } else if (skipAfterFailureOrError) {
+                xUnitCase.skip("Skipped because of previous failure or error.");
             } else {
                 ++tab;
                 evalScript("before", step.beforeScript());
@@ -75,7 +78,16 @@ public class RunCommand implements Runnable {
                 LOG.debug("{}Record: {}", tab(LIGHTGRAY), parsedRecord);
                 xUnitCase.details(action, parsedBroker, parsedTopic);
                 xUnitCase.addProperty("$record", parsedRecord.toString());
-                kafkaClient.send(topicRef, parsedRecord);
+                if (action == Action.SEND) {
+                    kafkaClient.send(topicRef, parsedRecord);
+                } else {
+                    final var found = kafkaClient.find(topicRef, parsedRecord);
+                    if ((found && action == Action.ABSENT) || (!found && action == Action.PRESENT)) {
+                        LOG.info("{}{} assertion failed.", tab(RED), action);
+                        xUnitCase.fail("Assertion failed");
+                        skipAfterFailureOrError = true;
+                    }
+                }
                 evalScript("after", step.afterScript());
                 --tab;
             }

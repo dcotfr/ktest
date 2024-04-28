@@ -71,13 +71,13 @@ public final class XUnitCase implements XmlUtils {
             res.append("</properties>");
         }
         if (skipped != null) {
-            skipped.toXml();
+            res.append(skipped.toXml());
         }
         if (failure != null) {
-            failure.toXml();
+            res.append(failure.toXml());
         }
         if (error != null) {
-            error.toXml();
+            res.append(error.toXml());
         }
         res.append("</testcase>");
         return res.toString();
