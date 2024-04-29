@@ -2,19 +2,24 @@ package fr.dcotton.ktest.kafka;
 
 import fr.dcotton.ktest.core.KTestException;
 import fr.dcotton.ktest.domain.TestRecord;
-import fr.dcotton.ktest.domain.config.KTestConfig;
+import fr.dcotton.ktest.json.JsonAssert;
 import fr.dcotton.ktest.kafka.avrogen.JsonAvroConverter;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.PartitionInfo;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -29,15 +34,14 @@ public class ClusterClient {
     private static final Logger LOG = LoggerFactory.getLogger(ClusterClient.class);
 
     private final Map<String, KafkaProducer> producers = new HashMap<>();
-    private final KTestConfig kConfig;
+    private final Map<String, KafkaConsumer> consumers = new HashMap<>();
     private final KafkaConfigProvider kafkaConfigProvider;
     private final RegistryService registryService;
     private final JsonAvroConverter jsonAvroConverter;
 
     @Inject
-    public ClusterClient(final KTestConfig pConfig, final KafkaConfigProvider pKafkaConfigProvider,
-                         final RegistryService pRegistryService, final JsonAvroConverter pJsonAvroConverter) {
-        kConfig = pConfig;
+    public ClusterClient(final KafkaConfigProvider pKafkaConfigProvider, final RegistryService pRegistryService,
+                         final JsonAvroConverter pJsonAvroConverter) {
         kafkaConfigProvider = pKafkaConfigProvider;
         registryService = pRegistryService;
         jsonAvroConverter = pJsonAvroConverter;
@@ -61,7 +65,34 @@ public class ClusterClient {
     }
 
     public boolean find(final TopicRef pTopic, final TestRecord pRecord) {
-        return true;
+        final var consumer = consumer(pTopic);
+        final var topicPartitions = new ArrayList<TopicPartition>();
+        for (final var p : consumer.partitionsFor(pTopic.topic())) {
+            topicPartitions.add(new TopicPartition(pTopic.topic(), ((PartitionInfo) p).partition()));
+        }
+        if (topicPartitions.isEmpty()) {
+            return false;
+        }
+        consumer.assign(topicPartitions);
+        consumer.seekToBeginning(topicPartitions);
+        final var expectedKey = pRecord.keyNode().toString();
+        final var expectedValue = pRecord.valueNode().toString();
+        while (true) {
+            final var recs = consumer.poll(Duration.ofMillis(5000));
+            if (recs.isEmpty()) {
+                break;
+            }
+            final var iRecs = recs.iterator();
+            while (iRecs.hasNext()) {
+                if (iRecs.next() instanceof ConsumerRecord rec &&
+                        JsonAssert.contains(expectedKey, rec.key().toString()).isEmpty() &&
+                        JsonAssert.contains(expectedValue, rec.value().toString()).isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        consumer.unsubscribe();
+        return false;
     }
 
     private KafkaProducer producer(final TopicRef pTopic) {
@@ -71,6 +102,16 @@ public class ClusterClient {
             final var props = new Properties();
             props.putAll(kafkaConfig);
             return new KafkaProducer<>(props);
+        });
+    }
+
+    private KafkaConsumer consumer(final TopicRef pTopic) {
+        return consumers.computeIfAbsent(pTopic.id(), k -> {
+            final var kafkaConfig = kafkaConfigProvider.of(pTopic);
+            LOG.trace("{}      Creating new consumer for {}({}).", BLUE, pTopic.id(), kafkaConfig.get("bootstrap.servers"));
+            final var props = new Properties();
+            props.putAll(kafkaConfig);
+            return new KafkaConsumer(props);
         });
     }
 

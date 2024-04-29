@@ -1,5 +1,6 @@
 package fr.dcotton.ktest;
 
+import fr.dcotton.ktest.core.KTestException;
 import fr.dcotton.ktest.domain.Action;
 import fr.dcotton.ktest.domain.TestCase;
 import fr.dcotton.ktest.domain.TestRecord;
@@ -50,52 +51,60 @@ public class RunCommand implements Runnable {
 
     @Override
     public void run() {
-        final var testCase = TestCase.load(file);
+        final var testCases = TestCase.load(file);
         final var xUnitReport = new XUnitReport();
-        final var xUnitSuite = xUnitReport.startNewSuite(testCase.name());
-        LOG.info("{}Test Case: {}", tab(WHITE), testCase.name());
-        engine.eval(testCase.beforeAllScript());
-        evalScript("beforeAll", testCase.beforeAllScript());
-        ++tab;
-        var skipAfterFailureOrError = false;
-        for (final var step : testCase.steps()) {
-            final var action = step.action();
-            final var xUnitCase = xUnitSuite.startNewCase(step.name(), action == Action.PRESENT || action == Action.ABSENT);
-            LOG.info("{}- Step : {} ({})", tab(action == Action.TODO ? BRIGHTYELLOW : WHITE), step.name(), action);
-            if (action == Action.TODO) {
-                xUnitCase.skip("Marked as TODO");
-            } else if (skipAfterFailureOrError) {
-                xUnitCase.skip("Skipped because of previous failure or error.");
-            } else {
-                ++tab;
-                evalScript("before", step.beforeScript());
-                engine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
-                final var parsedTopic = evalInLine(step.topic());
-                final var parsedBroker = evalInLine(step.broker());
-                final var topicRef = new TopicRef(parsedBroker, parsedTopic, step.keySerde(), step.valueSerde());
-                LOG.debug("{}Target: {}", tab(LIGHTGRAY), topicRef.id());
-                final var parsedRecord = evalInLine(step.record());
-                LOG.debug("{}Record: {}", tab(LIGHTGRAY), parsedRecord);
-                xUnitCase.details(action, parsedBroker, parsedTopic);
-                xUnitCase.addProperty("$record", parsedRecord.toString());
-                if (action == Action.SEND) {
-                    kafkaClient.send(topicRef, parsedRecord);
+        for (final var testCase : testCases) {
+            final var xUnitSuite = xUnitReport.startNewSuite(testCase.name());
+            LOG.info("{}Test Case: {}", tab(WHITE), testCase.name());
+            engine.eval(testCase.beforeAllScript());
+            evalScript("beforeAll", testCase.beforeAllScript());
+            ++tab;
+            var skipAfterFailureOrError = false;
+            for (final var step : testCase.steps()) {
+                final var action = step.action();
+                final var xUnitCase = xUnitSuite.startNewCase(step.name(), action == Action.PRESENT || action == Action.ABSENT);
+                LOG.info("{}- Step : {} ({})", tab(action == Action.TODO ? BRIGHTYELLOW : WHITE), step.name(), action);
+                if (action == Action.TODO) {
+                    xUnitCase.skip("Marked as TODO");
+                } else if (skipAfterFailureOrError) {
+                    xUnitCase.skip("Skipped because of previous failure or error.");
                 } else {
-                    final var found = kafkaClient.find(topicRef, parsedRecord);
-                    if ((found && action == Action.ABSENT) || (!found && action == Action.PRESENT)) {
-                        LOG.info("{}{} assertion failed.", tab(RED), action);
-                        xUnitCase.fail("Assertion failed");
+                    ++tab;
+                    evalScript("before", step.beforeScript());
+                    engine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
+                    final var parsedTopic = evalInLine(step.topic());
+                    final var parsedBroker = evalInLine(step.broker());
+                    final var topicRef = new TopicRef(parsedBroker, parsedTopic, step.keySerde(), step.valueSerde());
+                    LOG.debug("{}Target: {}", tab(LIGHTGRAY), topicRef.id());
+                    final var parsedRecord = evalInLine(step.record());
+                    LOG.debug("{}Record: {}", tab(LIGHTGRAY), parsedRecord);
+                    xUnitCase.details(action, parsedBroker, parsedTopic);
+                    xUnitCase.addProperty("$record", parsedRecord.toString());
+                    try {
+                        if (action == Action.SEND) {
+                            kafkaClient.send(topicRef, parsedRecord);
+                        } else {
+                            final var found = kafkaClient.find(topicRef, parsedRecord);
+                            if ((found && action == Action.ABSENT) || (!found && action == Action.PRESENT)) {
+                                LOG.warn("{}{} assertion failed.", tab(RED), action);
+                                xUnitCase.fail("Assertion failed");
+                                skipAfterFailureOrError = true;
+                            }
+                        }
+                    } catch (final KTestException e) {
+                        LOG.error("{}{} assertion error.", tab(RED), action, e);
+                        xUnitCase.error("Assertion error: " + e.getMessage());
                         skipAfterFailureOrError = true;
                     }
+                    evalScript("after", step.afterScript());
+                    --tab;
                 }
-                evalScript("after", step.afterScript());
-                --tab;
+                xUnitCase.end();
             }
-            xUnitCase.end();
+            --tab;
+            evalScript("afterAll", testCase.afterAllScript());
+            xUnitSuite.end();
         }
-        --tab;
-        evalScript("afterAll", testCase.afterAllScript());
-        xUnitSuite.end();
         xUnitReport.end();
         try {
             Files.writeString(Path.of(report), xUnitReport.toXml());

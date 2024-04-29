@@ -24,6 +24,7 @@ class JsonAssertTest {
         assertTrue(JsonAssert.contains("{\"lastname\":\"Dupont\",\"address\":{\"zip\":13520}}", ACTUAL).isEmpty());
         assertTrue(JsonAssert.contains("{\"address\":{\"lines\":[\"Lieu dit\",\"10 avenue du lac\"]}}", ACTUAL).isEmpty());
         assertTrue(JsonAssert.contains("{\"address\":{\"country\":null}}", ACTUAL).isEmpty());
+        assertTrue(JsonAssert.contains("{\"sender\":\"Source\",\"eventTsp\":1714424613038,\"body\":{\"code\":\"P1\",\"label\":\"Product 1\"}}", "{\"sender\": \"Source\", \"eventType\": \"CREATE\", \"eventTsp\": 1714424613038, \"body\": {\"code\": \"P1\", \"label\": \"Product 1\", \"commandAt\": 1714424612038, \"sentAt\": 1714424612138, \"weight\": 12030.5}}").isEmpty());
     }
 
     @Test
@@ -49,11 +50,9 @@ class JsonAssertTest {
         assertEquals("Bad array size of field 'address.lines': expected 1 value but got 2.", res.getFirst().message());
 
         res = JsonAssert.contains("{\"address\":{\"lines\":[\"10 avenue du lac\",\"Rue du pont\"]}}", ACTUAL);
-        assertEquals(2, res.size());
-        assertEquals(new ContentMismatch("address.lines[0]", "10 avenue du lac", "Lieu dit"), res.getFirst());
-        assertEquals("Content mismatch of field 'address.lines[0]': '10 avenue du lac' expected, 'Lieu dit' found.", res.getFirst().message());
-        assertEquals(new ContentMismatch("address.lines[1]", "Rue du pont", "10 avenue du lac"), res.get(1));
-        assertEquals("Content mismatch of field 'address.lines[1]': 'Rue du pont' expected, '10 avenue du lac' found.", res.get(1).message());
+        assertEquals(1, res.size());
+        assertEquals(new MissingField("Rue du pont"), res.getFirst());
+        assertEquals("Missing field 'Rue du pont'.", res.getFirst().message());
     }
 
     @Test

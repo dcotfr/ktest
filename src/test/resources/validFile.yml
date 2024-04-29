@@ -1,4 +1,4 @@
-name: Test Case Name
+name: Test Case 1
 beforeAll: |
   BASE_TIMESTAMP = time.now()
   STEP1_CID = faker.uuid()
@@ -29,10 +29,10 @@ steps:
           weight: 12030.5
     after: pause(100)
   - name: Step n°2
-    broker: ${TNR_KAFKA_CENTRAL_CONTEXT}
-    topic: ${TNR_KAFKA_CENTRAL_PREFIX}OutputTopic
+    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
+    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
     valueSerde: STRING
-    action: PRESENT
+    action: ABSENT
     record:
       timestamp: 123456789
       key: "P1"
@@ -42,14 +42,65 @@ steps:
   - name: Unnamed
     broker: ${TNR_KAFKA_LOCAL_CONTEXT}
     topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
-    action: ABSENT
+    action: PRESENT
     record:
-      key: "P1"
+      key: |
+        code: P1
+      value: |
+        sender: Source
+        eventTsp: ${TIMESTAMP}
+        body:
+          code: P1
+          label: Product 1
   - name: Last Step
     broker: ${TNR_KAFKA_LOCAL_CONTEXT}
     topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
     action: TODO
     record:
-      key: "P1"
+      key: "K1"
 
 afterAll:
+---
+name: Test Case 2
+beforeAll: |
+  BASE_TIMESTAMP = time.now()
+  STEP1_CID = faker.uuid()
+  STEP2_CID = faker.uuid()
+steps:
+  - name: Step n°1
+    before: TIMESTAMP = BASE_TIMESTAMP + 1000
+    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
+    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
+    keySerde: STRING
+    valueSerde: AVRO
+    action: SEND
+    record:
+      headers:
+        correlation.id: "${STEP1_CID}"
+      key: |
+        code: P1
+        label: Product 1
+      value: |
+        sender: Source
+        eventType: CREATE
+        eventTsp: ${TIMESTAMP}
+        body:
+          code: P1
+          label: Product 1
+          commandAt: ${BASE_TIMESTAMP}
+          sentAt: ${BASE_TIMESTAMP + 100}
+          weight: 12030.5
+    after: pause(100)
+  - name: Step n°2
+    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
+    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
+    action: PRESENT
+    record:
+      key: |
+        code: P1
+      value: |
+        sender: Source
+        eventTsp: ${TIMESTAMP}
+        body:
+          code: P1
+          label: Product 1

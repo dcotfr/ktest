@@ -15,7 +15,7 @@ public final class JsonAssert {
     public static List<Failure> contains(final String pExpected, final String pActual) {
         try {
             final var res = new ArrayList<Failure>();
-            final var comp = JSONCompare.compareJSON(pExpected, pActual, JSONCompareMode.STRICT_ORDER);
+            final var comp = JSONCompare.compareJSON(pExpected, pActual, JSONCompareMode.LENIENT);
             if (comp.failed()) {
                 final var cols = comp.getMessage().split("\\[\\]: ");
                 if (cols.length == 2) {

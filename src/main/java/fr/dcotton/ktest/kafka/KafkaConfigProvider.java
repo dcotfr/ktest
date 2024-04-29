@@ -26,6 +26,10 @@ public class KafkaConfigProvider {
             res.put("bootstrap.servers", brokerConfig.bootstrapServers());
             res.put("key.serializer", pTopic.keySerde().serializer);
             res.put("value.serializer", pTopic.valueSerde().serializer);
+            res.put("key.deserializer", pTopic.keySerde().deserializer);
+            res.put("value.deserializer", pTopic.valueSerde().deserializer);
+            res.put("group.id", "ktest");
+            res.put("auto.offset.reset", "earliest");
             if (!Strings.isNullOrEmpty(brokerConfig.saslJaasConfig())) {
                 res.put("sasl.jaas.config", brokerConfig.saslJaasConfig());
             }
@@ -35,7 +39,6 @@ public class KafkaConfigProvider {
             if (!Strings.isNullOrEmpty(brokerConfig.securityProtocol())) {
                 res.put("security.protocol", brokerConfig.securityProtocol());
             }
-
             final var registryConfig = brokerConfig.registry() != null ? kConfig.registry(brokerConfig.registry()) : null;
             if (registryConfig != null) {
                 if (!Strings.isNullOrEmpty(registryConfig.url())) {

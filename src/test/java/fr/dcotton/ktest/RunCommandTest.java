@@ -53,8 +53,10 @@ class RunCommandTest {
     @Test
     @Launch(value = {"run", "-e=pi", "-f=src\\test\\resources\\validFile.yml"})
     void validFileTest(final LaunchResult pResult) {
-        final var testCase = TestCase.load("src\\test\\resources\\validFile.yml");
-        assertEquals("Test Case Name", testCase.name());
+        final var testCases = TestCase.load("src\\test\\resources\\validFile.yml");
+        assertEquals(2, testCases.size());
+        final var testCase = testCases.getFirst();
+        assertEquals("Test Case 1", testCase.name());
         assertEquals(List.of("BASE_TIMESTAMP = time.now()", "STEP1_CID = faker.uuid()", "STEP2_CID = faker.uuid()"),
                 testCase.beforeAllScript());
         assertEquals(Collections.emptyList(), testCase.afterAllScript());
@@ -83,9 +85,9 @@ class RunCommandTest {
         step = steps.get(1);
         assertEquals("Step n°2", step.name());
         assertEquals(Collections.emptyList(), step.beforeScript());
-        assertEquals("${TNR_KAFKA_CENTRAL_CONTEXT}", step.broker());
-        assertEquals("${TNR_KAFKA_CENTRAL_PREFIX}OutputTopic", step.topic());
-        assertEquals(Action.PRESENT, step.action());
+        assertEquals("${TNR_KAFKA_LOCAL_CONTEXT}", step.broker());
+        assertEquals("${TNR_KAFKA_LOCAL_PREFIX}InputTopic", step.topic());
+        assertEquals(Action.ABSENT, step.action());
         assertEquals(Collections.emptyList(), step.afterScript());
 
         rec = step.record();
@@ -99,14 +101,14 @@ class RunCommandTest {
         assertEquals(Collections.emptyList(), step.beforeScript());
         assertEquals("${TNR_KAFKA_LOCAL_CONTEXT}", step.broker());
         assertEquals("${TNR_KAFKA_LOCAL_PREFIX}InputTopic", step.topic());
-        assertEquals(Action.ABSENT, step.action());
+        assertEquals(Action.PRESENT, step.action());
         assertEquals(Collections.emptyList(), step.afterScript());
 
         rec = step.record();
         assertNull(rec.timestamp());
         assertTrue(rec.headers().isEmpty());
-        assertEquals("\"P1\"", rec.keyNode().toString());
-        assertNull(rec.value());
+        assertEquals("{\"code\":\"P1\"}", rec.keyNode().toString());
+        assertEquals("{\"sender\":\"Source\",\"eventTsp\":\"${TIMESTAMP}\",\"body\":{\"code\":\"P1\",\"label\":\"Product 1\"}}", rec.valueNode().toString());
 
         step = steps.get(3);
         assertEquals("Last Step", step.name());
@@ -119,7 +121,7 @@ class RunCommandTest {
         rec = step.record();
         assertNull(rec.timestamp());
         assertTrue(rec.headers().isEmpty());
-        assertEquals("\"P1\"", rec.keyNode().toString());
+        assertEquals("\"K1\"", rec.keyNode().toString());
         assertNull(rec.value());
     }
 }
