@@ -64,35 +64,66 @@ public class ClusterClient {
         }
     }
 
-    public boolean find(final TopicRef pTopic, final TestRecord pRecord) {
+    public boolean find(final TopicRef pTopic, final TestRecord pRecord, final int pBackOffset) {
         final var consumer = consumer(pTopic);
-        final var topicPartitions = new ArrayList<TopicPartition>();
-        for (final var p : consumer.partitionsFor(pTopic.topic())) {
-            topicPartitions.add(new TopicPartition(pTopic.topic(), ((PartitionInfo) p).partition()));
-        }
-        if (topicPartitions.isEmpty()) {
-            return false;
-        }
-        consumer.assign(topicPartitions);
-        consumer.seekToBeginning(topicPartitions);
-        final var expectedKey = pRecord.keyNode().toString();
-        final var expectedValue = pRecord.valueNode().toString();
-        while (true) {
-            final var recs = consumer.poll(Duration.ofMillis(5000));
-            if (recs.isEmpty()) {
-                break;
-            }
-            final var iRecs = recs.iterator();
-            while (iRecs.hasNext()) {
-                if (iRecs.next() instanceof ConsumerRecord rec &&
-                        JsonAssert.contains(expectedKey, rec.key().toString()).isEmpty() &&
-                        JsonAssert.contains(expectedValue, rec.value().toString()).isEmpty()) {
-                    return true;
+        if (resetConsumer(consumer, pTopic.topic(), pBackOffset)) {
+            while (true) {
+                final var recs = consumer.poll(Duration.ofMillis(5000));
+                if (recs.isEmpty()) {
+                    break;
+                }
+                final var iRecs = recs.iterator();
+                while (iRecs.hasNext()) {
+                    if (iRecs.next() instanceof ConsumerRecord rec && assertRecord(pRecord, rec)) {
+                        return true;
+                    }
                 }
             }
+            consumer.unsubscribe();
         }
-        consumer.unsubscribe();
         return false;
+    }
+
+    private boolean resetConsumer(final KafkaConsumer pConsumer, final String pTopicName, final int pBackOffset) {
+        final var partitions = new ArrayList<TopicPartition>();
+        for (final var p : pConsumer.partitionsFor(pTopicName)) {
+            partitions.add(new TopicPartition(pTopicName, ((PartitionInfo) p).partition()));
+        }
+        if (partitions.isEmpty()) {
+            return false;
+        }
+        pConsumer.assign(partitions);
+        for (final var e : ((Map<TopicPartition, Long>) pConsumer.endOffsets(partitions)).entrySet()) {
+            pConsumer.seek(e.getKey(), Math.max(e.getValue() - pBackOffset, 0));
+        }
+        return true;
+    }
+
+    private boolean assertRecord(final TestRecord pExpected, final ConsumerRecord pActual) {
+        if (pExpected.timestamp() != null && pExpected.timestamp() != pActual.timestamp()) {
+            return false;
+        }
+        for (final var h : pExpected.headers().entrySet()) {
+            final var actuelHeader = pActual.headers().lastHeader(h.getKey());
+            if (actuelHeader == null || !Objects.equals(h.getValue(), new String(actuelHeader.value()))) {
+                return false;
+            }
+        }
+        final var expectedKey = pExpected.keyNode();
+        if (expectedKey != null) {
+            final var actualKey = pActual.key();
+            if (actualKey == null || !JsonAssert.contains(expectedKey.toString(), actualKey.toString()).isEmpty()) {
+                return false;
+            }
+        }
+        final var expectedValue = pExpected.valueNode();
+        if (expectedValue != null) {
+            final var actualValue = pActual.value();
+            if (actualValue == null || !JsonAssert.contains(expectedValue.toString(), actualValue.toString()).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private KafkaProducer producer(final TopicRef pTopic) {

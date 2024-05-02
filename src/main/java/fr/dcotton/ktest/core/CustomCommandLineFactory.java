@@ -23,7 +23,7 @@ class CustomCommandLineFactory {
                 .setExecutionExceptionHandler((e, commandLine, parseResult) -> {
                     if (e instanceof KTestException knownException) {
                         LOG.error(knownException.getMessage());
-                        LOG.trace("Internal trace", knownException);
+                        LOG.debug("Internal trace.", knownException);
                         return 1;
                     }
                     LOG.error("Unexpected exception.", e);

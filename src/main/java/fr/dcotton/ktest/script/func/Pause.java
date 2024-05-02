@@ -1,6 +1,7 @@
 package fr.dcotton.ktest.script.func;
 
 import fr.dcotton.ktest.script.Context;
+import fr.dcotton.ktest.script.ScriptException;
 import fr.dcotton.ktest.script.token.Stm;
 import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -18,7 +19,7 @@ public class Pause extends Func {
             Thread.sleep(((Number) params[0]).longValue());
             return new Txt("");
         } catch (final InterruptedException e) {
-            throw new RuntimeException(command() + " interrupted.", e);
+            throw new ScriptException(command() + " interrupted.", e);
         }
     }
 }

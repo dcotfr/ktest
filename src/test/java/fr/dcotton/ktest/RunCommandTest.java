@@ -41,13 +41,13 @@ class RunCommandTest {
     @Test
     @Launch(value = {"run", "-e=dev", "-f=</->>"}, exitCode = 1)
     void invalidFilePathTest(final LaunchResult pResult) {
-        assertEquals("E Failed to read test case file </->>\r", pResult.getOutput());
+        assertEquals("E Failed to read test case file </->>\r", pResult.getOutputStream().getFirst());
     }
 
     @Test
     @Launch(value = {"run", "-e=dev", "-f=unknownFile.yml"}, exitCode = 1)
     void fileNotFoundTest(final LaunchResult pResult) {
-        assertEquals("E Failed to read test case file C:\\Users\\David\\IdeaProjects\\ktest\\unknownFile.yml\r", pResult.getOutput());
+        assertEquals("E Failed to read test case file C:\\Users\\David\\IdeaProjects\\ktest\\unknownFile.yml\r", pResult.getOutputStream().getFirst());
     }
 
     @Test
@@ -75,8 +75,9 @@ class RunCommandTest {
         var rec = step.record();
         assertNull(rec.timestamp());
         final var headers = rec.headers();
-        assertEquals(1, headers.size());
+        assertEquals(2, headers.size());
         assertEquals("${STEP1_CID}", headers.get("correlation.id"));
+        assertEquals("machin", headers.get("truc"));
         assertEquals("{\"code\":\"P1\",\"label\":\"Product 1\"}", rec.keyNode().toString());
         assertEquals("{\"sender\":\"Source\",\"eventType\":\"CREATE\",\"eventTsp\":\"${TIMESTAMP}\","
                 + "\"body\":{\"code\":\"P1\",\"label\":\"Product 1\",\"commandAt\":\"${BASE_TIMESTAMP}\","

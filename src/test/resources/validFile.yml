@@ -14,6 +14,7 @@ steps:
     record:
       headers:
         correlation.id: "${STEP1_CID}"
+        truc: machin
       key: |
         code: P1
         label: Product 1
@@ -68,7 +69,7 @@ beforeAll: |
   STEP2_CID = faker.uuid()
 steps:
   - name: Step n°1
-    before: TIMESTAMP = BASE_TIMESTAMP + 1000
+    before: TIMESTAMP = BASE_TIMESTAMP + 2000
     broker: ${TNR_KAFKA_LOCAL_CONTEXT}
     topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
     keySerde: STRING
@@ -77,30 +78,35 @@ steps:
     record:
       headers:
         correlation.id: "${STEP1_CID}"
+        truc: bidule
       key: |
-        code: P1
-        label: Product 1
+        code: P2
+        label: Product 2
       value: |
         sender: Source
         eventType: CREATE
         eventTsp: ${TIMESTAMP}
         body:
-          code: P1
-          label: Product 1
+          code: P2
+          label: Product 2
           commandAt: ${BASE_TIMESTAMP}
-          sentAt: ${BASE_TIMESTAMP + 100}
+          sentAt: ${BASE_TIMESTAMP + 200}
           weight: 12030.5
-    after: pause(100)
+    after: pause(500)
   - name: Step n°2
+    before: pause(500)
     broker: ${TNR_KAFKA_LOCAL_CONTEXT}
     topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
     action: PRESENT
     record:
+      headers:
+        correlation.id: "${STEP1_CID}"
+        truc: bidule
       key: |
-        code: P1
+        code: P2
       value: |
         sender: Source
         eventTsp: ${TIMESTAMP}
         body:
-          code: P1
-          label: Product 1
+          code: P2
+          label: Product 2

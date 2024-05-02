@@ -51,6 +51,7 @@ public class RunCommand implements Runnable {
 
     @Override
     public void run() {
+        var finalFailureOrError = false;
         final var testCases = TestCase.load(file);
         final var xUnitReport = new XUnitReport();
         for (final var testCase : testCases) {
@@ -59,14 +60,14 @@ public class RunCommand implements Runnable {
             engine.eval(testCase.beforeAllScript());
             evalScript("beforeAll", testCase.beforeAllScript());
             ++tab;
-            var skipAfterFailureOrError = false;
+            var localSkipAfterFailureOrError = false;
             for (final var step : testCase.steps()) {
                 final var action = step.action();
-                final var xUnitCase = xUnitSuite.startNewCase(step.name(), action == Action.PRESENT || action == Action.ABSENT);
+                final var xUnitCase = xUnitSuite.startNewCase(step.name() + " (" + action + ')', action == Action.PRESENT || action == Action.ABSENT);
                 LOG.info("{}- Step : {} ({})", tab(action == Action.TODO ? BRIGHTYELLOW : WHITE), step.name(), action);
                 if (action == Action.TODO) {
                     xUnitCase.skip("Marked as TODO");
-                } else if (skipAfterFailureOrError) {
+                } else if (localSkipAfterFailureOrError) {
                     xUnitCase.skip("Skipped because of previous failure or error.");
                 } else {
                     ++tab;
@@ -78,23 +79,22 @@ public class RunCommand implements Runnable {
                     LOG.debug("{}Target: {}", tab(LIGHTGRAY), topicRef.id());
                     final var parsedRecord = evalInLine(step.record());
                     LOG.debug("{}Record: {}", tab(LIGHTGRAY), parsedRecord);
-                    xUnitCase.details(action, parsedBroker, parsedTopic);
-                    xUnitCase.addProperty("$record", parsedRecord.toString());
+                    xUnitCase.className(testCase.name());
                     try {
                         if (action == Action.SEND) {
                             kafkaClient.send(topicRef, parsedRecord);
                         } else {
-                            final var found = kafkaClient.find(topicRef, parsedRecord);
+                            final var found = kafkaClient.find(topicRef, parsedRecord, 500);
                             if ((found && action == Action.ABSENT) || (!found && action == Action.PRESENT)) {
                                 LOG.warn("{}{} assertion failed.", tab(RED), action);
-                                xUnitCase.fail("Assertion failed");
-                                skipAfterFailureOrError = true;
+                                xUnitCase.fail(action + " assertion failed.", parsedRecord.toString());
+                                localSkipAfterFailureOrError = true;
                             }
                         }
-                    } catch (final KTestException e) {
-                        LOG.error("{}{} assertion error.", tab(RED), action, e);
-                        xUnitCase.error("Assertion error: " + e.getMessage());
-                        skipAfterFailureOrError = true;
+                    } catch (final RuntimeException e) {
+                        LOG.error("{}{} error.", tab(RED), action, e);
+                        xUnitCase.error("Action error: " + e.getMessage(), e);
+                        localSkipAfterFailureOrError = true;
                     }
                     evalScript("after", step.afterScript());
                     --tab;
@@ -104,12 +104,18 @@ public class RunCommand implements Runnable {
             --tab;
             evalScript("afterAll", testCase.afterAllScript());
             xUnitSuite.end();
+            if (localSkipAfterFailureOrError) {
+                finalFailureOrError = true;
+            }
         }
         xUnitReport.end();
         try {
             Files.writeString(Path.of(report), xUnitReport.toXml());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new KTestException("Failed to write test report.", e);
+        }
+        if (finalFailureOrError) {
+            throw new KTestException("Ends with " + xUnitReport.failures() + " failures and " + xUnitReport.errors() + " errors.", null);
         }
     }
 

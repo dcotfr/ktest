@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * https://github.com/testmoapp/junitxml
+ * https://lotterfriends.github.io/online-junit-parser/#case.0.0
  */
 public final class XUnitReport implements XmlUtils {
     public int tests() {

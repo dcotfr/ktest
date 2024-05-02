@@ -56,7 +56,7 @@ public class XUnitSuite implements XmlUtils {
 
     public String toXml() {
         final var res = new StringBuilder("<testsuite");
-        res.append(" name=\"").append(cleanText(name)).append("\"");
+        res.append(" name=\"").append(fullClean(name)).append("\"");
         res.append(" timestamp=\"").append(timestamp).append("\"");
         res.append(" time=\"").append(time()).append("\"");
         res.append(" errors=\"").append(errors()).append("\"");

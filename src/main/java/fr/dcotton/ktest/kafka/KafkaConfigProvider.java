@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @ApplicationScoped
 public class KafkaConfigProvider {
@@ -28,7 +29,8 @@ public class KafkaConfigProvider {
             res.put("value.serializer", pTopic.valueSerde().serializer);
             res.put("key.deserializer", pTopic.keySerde().deserializer);
             res.put("value.deserializer", pTopic.valueSerde().deserializer);
-            res.put("group.id", "ktest");
+            res.put("client.id", brokerConfig.clientIdPrefix() + UUID.randomUUID());
+            res.put("group.id", brokerConfig.groupId());
             res.put("auto.offset.reset", "earliest");
             if (!Strings.isNullOrEmpty(brokerConfig.saslJaasConfig())) {
                 res.put("sasl.jaas.config", brokerConfig.saslJaasConfig());
