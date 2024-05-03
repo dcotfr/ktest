@@ -68,13 +68,12 @@ public class ClusterClient {
         final var consumer = consumer(pTopic);
         if (resetConsumer(consumer, pTopic.topic(), pBackOffset)) {
             while (true) {
-                final var recs = consumer.poll(Duration.ofMillis(5000));
+                final var recs = consumer.poll(Duration.ofMillis(2500));
                 if (recs.isEmpty()) {
                     break;
                 }
-                final var iRecs = recs.iterator();
-                while (iRecs.hasNext()) {
-                    if (iRecs.next() instanceof ConsumerRecord rec && assertRecord(pRecord, rec)) {
+                for (final var o : recs) {
+                    if (o instanceof ConsumerRecord rec && assertRecord(pRecord, rec)) {
                         return true;
                     }
                 }
@@ -119,9 +118,7 @@ public class ClusterClient {
         final var expectedValue = pExpected.valueNode();
         if (expectedValue != null) {
             final var actualValue = pActual.value();
-            if (actualValue == null || !JsonAssert.contains(expectedValue.toString(), actualValue.toString()).isEmpty()) {
-                return false;
-            }
+            return actualValue != null && JsonAssert.contains(expectedValue.toString(), actualValue.toString()).isEmpty();
         }
         return true;
     }
