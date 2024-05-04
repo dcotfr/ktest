@@ -12,7 +12,7 @@ abstract class DateTimeConverter implements AvroTypeConverter {
         if (pJsonValue instanceof String dateTimeString) {
             try {
                 return convertDateTimeString(dateTimeString);
-            } catch (DateTimeParseException e) {
+            } catch (final DateTimeParseException e) {
                 throw new AvroGenException("Field " + pPath + " is invalid.", e);
             }
         } else if (pJsonValue instanceof Number nbr) {

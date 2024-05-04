@@ -58,44 +58,53 @@ public class ClusterClient {
                 convert(pTopic, pRecord, false),
                 kafkaHeaders(pRecord.headers()));
         try {
-            producer.send(rec).get(3, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            producer.send(rec).get(5, TimeUnit.SECONDS);
+        } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             throw new KTestException("Failed to send record to " + pTopic.id(), e);
         }
     }
 
     public boolean find(final TopicRef pTopic, final TestRecord pRecord, final int pBackOffset) {
         final var consumer = consumer(pTopic);
-        if (resetConsumer(consumer, pTopic.topic(), pBackOffset)) {
+        var lastOffsetReached = false;
+        final var lastOffset = resetConsumer(consumer, pTopic.topic(), pBackOffset);
+        if (lastOffset >= 0) {
             while (true) {
-                final var recs = consumer.poll(Duration.ofMillis(2500));
-                if (recs.isEmpty()) {
+                final var recs = consumer.poll(Duration.ofMillis(1000));
+                if (lastOffsetReached && recs.isEmpty()) {
                     break;
                 }
                 for (final var o : recs) {
-                    if (o instanceof ConsumerRecord rec && assertRecord(pRecord, rec)) {
-                        return true;
+                    if (o instanceof ConsumerRecord rec) {
+                        if (assertRecord(pRecord, rec)) {
+                            consumer.unsubscribe();
+                            return true;
+                        }
+                        if (rec.offset() >= lastOffset) {
+                            lastOffsetReached = true;
+                        }
                     }
                 }
             }
-            consumer.unsubscribe();
         }
+        consumer.unsubscribe();
         return false;
     }
 
-    private boolean resetConsumer(final KafkaConsumer pConsumer, final String pTopicName, final int pBackOffset) {
+    private long resetConsumer(final KafkaConsumer pConsumer, final String pTopicName, final int pBackOffset) {
         final var partitions = new ArrayList<TopicPartition>();
         for (final var p : pConsumer.partitionsFor(pTopicName)) {
             partitions.add(new TopicPartition(pTopicName, ((PartitionInfo) p).partition()));
         }
-        if (partitions.isEmpty()) {
-            return false;
+        var lastOffset = 0L;
+        if (!partitions.isEmpty()) {
+            pConsumer.assign(partitions);
+            for (final var e : ((Map<TopicPartition, Long>) pConsumer.endOffsets(partitions)).entrySet()) {
+                lastOffset = Math.max(lastOffset, e.getValue());
+                pConsumer.seek(e.getKey(), Math.max(e.getValue() - pBackOffset, 0));
+            }
         }
-        pConsumer.assign(partitions);
-        for (final var e : ((Map<TopicPartition, Long>) pConsumer.endOffsets(partitions)).entrySet()) {
-            pConsumer.seek(e.getKey(), Math.max(e.getValue() - pBackOffset, 0));
-        }
-        return true;
+        return lastOffset - 1;
     }
 
     private boolean assertRecord(final TestRecord pExpected, final ConsumerRecord pActual) {

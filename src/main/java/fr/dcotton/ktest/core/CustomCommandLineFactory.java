@@ -1,5 +1,6 @@
 package fr.dcotton.ktest.core;
 
+import fr.dcotton.ktest.TestFailureOrError;
 import io.quarkus.picocli.runtime.PicocliCommandLineFactory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
@@ -23,7 +24,9 @@ class CustomCommandLineFactory {
                 .setExecutionExceptionHandler((e, commandLine, parseResult) -> {
                     if (e instanceof KTestException knownException) {
                         LOG.error(knownException.getMessage());
-                        LOG.debug("Internal trace.", knownException);
+                        if (!(knownException instanceof TestFailureOrError)) {
+                            LOG.debug("{}Internal trace", AnsiColor.RED, knownException);
+                        }
                         return 1;
                     }
                     LOG.error("Unexpected exception.", e);
