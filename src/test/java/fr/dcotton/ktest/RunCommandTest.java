@@ -22,7 +22,7 @@ class RunCommandTest {
                 "I                  [-r=<report>]",
                 "I Run test case.",
                 "I   -b, --back=<backOffset>   Back offset.",
-                "I                               Default: 500",
+                "I                               Default: 250",
                 "I   -c, --config=<config>     Path of the config file.",
                 "I                               Default: ktconfig.yml",
                 "I   -e, --env=<env>           Name of the environment to use.",

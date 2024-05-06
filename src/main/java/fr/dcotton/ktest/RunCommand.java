@@ -41,7 +41,7 @@ public class RunCommand implements Runnable {
     @CommandLine.Option(names = {"-r", "--report"}, description = "Path of the test report file.", defaultValue = "ktreport.xml")
     private String report;
 
-    @CommandLine.Option(names = {"-b", "--back"}, description = "Back offset.", defaultValue = "500")
+    @CommandLine.Option(names = {"-b", "--back"}, description = "Back offset.", defaultValue = "250")
     private Integer backOffset;
 
     private String currentVariables = "";
@@ -108,7 +108,11 @@ public class RunCommand implements Runnable {
                     if (action == Action.SEND) {
                         kafkaClient.send(topicRef, parsedRecord);
                     } else {
-                        final var found = kafkaClient.find(topicRef, parsedRecord, backOffset);
+                        var found = kafkaClient.find(topicRef, parsedRecord, backOffset);
+                        if (!found && action == Action.PRESENT) {
+                            LOG.trace("{}Retrying find with larger range...", tab(LIGHTGRAY));
+                            found = kafkaClient.find(topicRef, parsedRecord, 2 * backOffset);
+                        }
                         if ((found && action == Action.ABSENT) || (!found && action == Action.PRESENT)) {
                             LOG.warn("{}{} assertion failed for record {}.", tab(RED), action, parsedRecord);
                             xUnitCase.fail(action + " assertion failed.", parsedRecord.toString());

@@ -58,7 +58,9 @@ public class ClusterClient {
                 convert(pTopic, pRecord, false),
                 kafkaHeaders(pRecord.headers()));
         try {
-            producer.send(rec).get(5, TimeUnit.SECONDS);
+            final var futur = producer.send(rec);
+            producer.flush();
+            futur.get(30, TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             throw new KTestException("Failed to send record to " + pTopic.id(), e);
         }
@@ -77,7 +79,6 @@ public class ClusterClient {
                 for (final var o : recs) {
                     if (o instanceof ConsumerRecord rec) {
                         if (assertRecord(pRecord, rec)) {
-                            consumer.unsubscribe();
                             return true;
                         }
                         if (rec.offset() >= lastOffset) {
@@ -87,7 +88,6 @@ public class ClusterClient {
                 }
             }
         }
-        consumer.unsubscribe();
         return false;
     }
 

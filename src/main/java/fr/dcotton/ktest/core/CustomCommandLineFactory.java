@@ -11,6 +11,8 @@ import picocli.CommandLine;
 
 import java.io.PrintWriter;
 
+import static fr.dcotton.ktest.core.AnsiColor.RED;
+
 @ApplicationScoped
 class CustomCommandLineFactory {
     private static final Logger LOG = LoggerFactory.getLogger(CustomCommandLineFactory.class);
@@ -23,13 +25,13 @@ class CustomCommandLineFactory {
                 .setErr(new PrintWriter(new LogOutputStream(Level.ERROR), true))
                 .setExecutionExceptionHandler((e, commandLine, parseResult) -> {
                     if (e instanceof KTestException knownException) {
-                        LOG.error(knownException.getMessage());
+                        LOG.error("{}{}", RED, knownException.getMessage());
                         if (!(knownException instanceof TestFailureOrError)) {
-                            LOG.debug("{}Internal trace", AnsiColor.RED, knownException);
+                            LOG.debug("{}Internal trace", RED, knownException);
                         }
                         return 1;
                     }
-                    LOG.error("Unexpected exception.", e);
+                    LOG.error("{}Unexpected exception.", RED, e);
                     return 2;
                 });
     }
