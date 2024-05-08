@@ -6,9 +6,9 @@ import java.util.List;
 public final class XUnitCase implements XmlUtils {
     public final String name;
 
-    public final boolean assertion;
+    public final String classname;
 
-    public String classname;
+    public final boolean assertion;
 
     public double time() {
         return ((endTimestamp != 0L ? endTimestamp : System.currentTimeMillis()) - startTimestamp) / 1000.0;
@@ -27,9 +27,10 @@ public final class XUnitCase implements XmlUtils {
     private final long startTimestamp;
     private long endTimestamp;
 
-    XUnitCase(final String pName, final boolean pAssertion) {
+    XUnitCase(final String pName, final String pClassName, final boolean pAssertion) {
         startTimestamp = System.currentTimeMillis();
         name = pName;
+        classname = pClassName;
         assertion = pAssertion;
     }
 
@@ -47,10 +48,6 @@ public final class XUnitCase implements XmlUtils {
 
     public void skip(final String pMessage) {
         skipped = new XUnitSkipped(pMessage);
-    }
-
-    public void className(final String pClassName) {
-        classname = pClassName;
     }
 
     public void end() {

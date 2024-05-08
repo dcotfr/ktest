@@ -89,8 +89,8 @@ public class RunCommand implements Runnable {
         var skipAfterFailureOrError = false;
         for (final var step : pTestCase.steps()) {
             final var action = step.action();
-            final var xUnitCase = pTestSuite.startNewCase(step.name() + " (" + action + ')', action == Action.PRESENT || action == Action.ABSENT);
-            LOG.info("{}- Step : {} ({})", tab(action == Action.TODO ? BRIGHTYELLOW : WHITE), step.name(), action);
+            final var xUnitCase = pTestSuite.startNewCase(step.name() + " (" + action + ')', pTestCase.name(), action == Action.PRESENT || action == Action.ABSENT);
+            LOG.info("{}- Step : {} ({})", tab(action == Action.TODO || skipAfterFailureOrError ? BRIGHTYELLOW : WHITE), step.name(), action);
             if (action == Action.TODO) {
                 xUnitCase.skip("Marked as TODO");
             } else if (skipAfterFailureOrError) {
@@ -103,7 +103,6 @@ public class RunCommand implements Runnable {
                 LOG.debug("{}Target: {}", tab(LIGHTGRAY), topicRef.id());
                 final var parsedRecord = evalInLine(step.record());
                 LOG.debug("{}Record: {}", tab(LIGHTGRAY), parsedRecord);
-                xUnitCase.className(pTestCase.name());
                 try {
                     if (action == Action.SEND) {
                         kafkaClient.send(topicRef, parsedRecord);
@@ -170,7 +169,7 @@ public class RunCommand implements Runnable {
         for (final var e : pRecord.headers().entrySet()) {
             headers.put(e.getKey(), evalInLine(e.getValue()));
         }
-        return new TestRecord(pRecord.timestamp(), headers, evalInLine(pRecord.key()), evalInLine(pRecord.value()));
+        return new TestRecord(evalInLine(pRecord.timestamp()), headers, evalInLine(pRecord.key()), evalInLine(pRecord.value()));
     }
 
     private String tab(final String pColor) {

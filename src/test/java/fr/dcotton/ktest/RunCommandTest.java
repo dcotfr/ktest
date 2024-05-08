@@ -95,7 +95,7 @@ class RunCommandTest {
         assertEquals(Collections.emptyList(), step.afterScript());
 
         rec = step.record();
-        assertEquals(123456789L, rec.timestamp());
+        assertEquals(123456789L, rec.longTimestamp());
         assertTrue(rec.headers().isEmpty());
         assertEquals("\"P1\"", rec.keyNode().toString());
         assertEquals("{\"code\":\"P1\",\"count\":1}", rec.valueNode().toString());

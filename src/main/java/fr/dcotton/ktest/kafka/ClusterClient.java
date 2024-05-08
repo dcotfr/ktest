@@ -53,7 +53,7 @@ public class ClusterClient {
 
         final var rec = new ProducerRecord<>(pTopic.topic(),
                 null,
-                pRecord.timestamp(),
+                pRecord.longTimestamp(),
                 convert(pTopic, pRecord, true),
                 convert(pTopic, pRecord, false),
                 kafkaHeaders(pRecord.headers()));
@@ -108,7 +108,7 @@ public class ClusterClient {
     }
 
     private boolean assertRecord(final TestRecord pExpected, final ConsumerRecord pActual) {
-        if (pExpected.timestamp() != null && pExpected.timestamp() != pActual.timestamp()) {
+        if (pExpected.longTimestamp() != null && pExpected.longTimestamp() != pActual.timestamp()) {
             return false;
         }
         for (final var h : pExpected.headers().entrySet()) {
