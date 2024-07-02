@@ -84,4 +84,19 @@ class EngineFunctionsTest {
         final var after = System.currentTimeMillis();
         assertTrue(after - before >= 2000);
     }
+
+    @Test
+    void hashMd5Test() {
+        assertEquals("ec1dd92925cb06934c047fb3f5380cba", engine.eval("hash.md5(\"SampleString\")"));
+    }
+
+    @Test
+    void hashSha256Test() {
+        assertEquals("77b12c9c6213a05fb60cd8151c51ca522e7ebd8e55096a6a8b2c34769ec4fc20", engine.eval("hash.sha256(\"SampleString\")"));
+    }
+
+    @Test
+    void hashSha512Test() {
+        assertEquals("aee8e20df4b3ce730e2e4f04ca8a1becb522d769559c0791a04a4d18745caa8c6eb43c48ce265f1ceca33c65e789faace6e75bfa40dab0ece7e03c6fcda75961", engine.eval("hash.sha512(\"SampleString\")"));
+    }
 }

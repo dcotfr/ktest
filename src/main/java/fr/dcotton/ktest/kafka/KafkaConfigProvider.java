@@ -32,6 +32,7 @@ public class KafkaConfigProvider {
             res.put("client.id", brokerConfig.clientIdPrefix() + UUID.randomUUID());
             res.put("group.id", brokerConfig.groupId());
             res.put("auto.offset.reset", "earliest");
+            res.put("acks", "all");
             if (!Strings.isNullOrEmpty(brokerConfig.saslJaasConfig())) {
                 res.put("sasl.jaas.config", brokerConfig.saslJaasConfig());
             }
