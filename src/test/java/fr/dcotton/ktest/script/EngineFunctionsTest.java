@@ -99,4 +99,50 @@ class EngineFunctionsTest {
     void hashSha512Test() {
         assertEquals("aee8e20df4b3ce730e2e4f04ca8a1becb522d769559c0791a04a4d18745caa8c6eb43c48ce265f1ceca33c65e789faace6e75bfa40dab0ece7e03c6fcda75961", engine.eval("hash.sha512(\"SampleString\")"));
     }
+
+    @Test
+    void base64DecodeTest() {
+        assertEquals("Text", engine.eval("base64.decode(\"VGV4dA==\")"));
+    }
+
+    @Test
+    void invalidBase64DecodeTest() {
+        try {
+            engine.eval("base64.decode(\"!InvalidString!\")");
+            fail();
+        } catch (final ScriptException e) {
+            assertEquals("Invalid base64 string in base64.decode: !InvalidString!", e.getMessage());
+        }
+    }
+
+
+    @Test
+    void base64EncodeTest() {
+        assertEquals("U2FtcGxlU3RyaW5n", engine.eval("base64.encode(\"SampleString\")"));
+        assertEquals("", engine.eval("base64.encode(\"\")"));
+    }
+
+    @Test
+    void envTest() {
+        assertEquals(System.getenv("JAVA_HOME"), engine.eval("env(\"JAVA_HOME\")"));
+        assertEquals("", engine.eval("env(\"DoesNotExistEnvVariable\")"));
+    }
+
+    @Test
+    void mathAbsTest() {
+        assertEquals(3.14, engine.eval("math.abs(-3.14)"));
+        assertEquals(5.4321, engine.eval("math.abs(5.4321)"));
+        assertEquals(123L, engine.eval("math.abs(-123)"));
+        assertEquals(321L, engine.eval("math.abs(321)"));
+    }
+
+    @Test
+    void mathCeilTest() {
+        assertEquals(4L, engine.eval("math.ceil(3.14)"));
+    }
+
+    @Test
+    void mathFloorTest() {
+        assertEquals(3L, engine.eval("math.floor(3.14)"));
+    }
 }
