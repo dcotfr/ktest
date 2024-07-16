@@ -1,14 +1,16 @@
-package fr.dcotton.ktest.script.func;
+package fr.dcotton.ktest.script.func.math;
 
 import fr.dcotton.ktest.script.Context;
+import fr.dcotton.ktest.script.func.Func;
+import fr.dcotton.ktest.script.func.FuncDoc;
 import fr.dcotton.ktest.script.token.Int;
 import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class MathFloor extends Func {
-    protected MathFloor() {
-        super("math.floor", new FuncDoc("3.14", "3", "Returns the greatest integer value <= to given number."));
+public class Floor extends Func {
+    protected Floor() {
+        super("floor", new FuncDoc("3.14", "3", "Returns the greatest integer value <= to given number."));
     }
 
     @Override

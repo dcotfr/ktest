@@ -10,9 +10,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @ApplicationScoped
-public class TimeFormat extends Func {
-    protected TimeFormat() {
-        super("time.format", new FuncDoc("\"yyyy-MM-dd HH:mm:ss\", 1708854821321", "\"2024-02-25 10:53:41\"", "Returns the formatted date/string of a timestamp at current TimeZone."));
+public class Time2Txt extends Func {
+    protected Time2Txt() {
+        super("time2txt", new FuncDoc("\"yyyy-MM-dd HH:mm:ss\", 1708854821321", "\"2024-02-25 10:53:41\"", "Returns the formatted date/string of a timestamp at current TimeZone."));
     }
 
     @Override

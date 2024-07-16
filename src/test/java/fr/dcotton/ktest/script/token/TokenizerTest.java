@@ -1,6 +1,6 @@
-package fr.dcotton.ktest.script;
+package fr.dcotton.ktest.script.token;
 
-import fr.dcotton.ktest.script.token.Tokenizer;
+import fr.dcotton.ktest.script.ScriptException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

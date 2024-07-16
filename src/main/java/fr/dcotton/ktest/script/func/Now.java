@@ -6,9 +6,9 @@ import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class TimeNow extends Func {
-    protected TimeNow() {
-        super("time.now", new FuncDoc("", "1708808432990", "Returns the current time in millis."));
+public class Now extends Func {
+    protected Now() {
+        super("now", new FuncDoc("", "1708808432990", "Returns the current time in millis."));
     }
 
     @Override

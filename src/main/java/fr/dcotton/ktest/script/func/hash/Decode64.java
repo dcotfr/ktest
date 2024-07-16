@@ -1,7 +1,9 @@
-package fr.dcotton.ktest.script.func;
+package fr.dcotton.ktest.script.func.hash;
 
 import fr.dcotton.ktest.script.Context;
 import fr.dcotton.ktest.script.ScriptException;
+import fr.dcotton.ktest.script.func.Func;
+import fr.dcotton.ktest.script.func.FuncDoc;
 import fr.dcotton.ktest.script.token.Stm;
 import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -9,9 +11,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Base64;
 
 @ApplicationScoped
-public class Base64Decode extends Func {
-    protected Base64Decode() {
-        super("base64.decode", new FuncDoc("\"VGV4dA==\"", "\"Text\"", "Returns the decoded text of a base64 encoding string."));
+public class Decode64 extends Func {
+    protected Decode64() {
+        super("decode64", new FuncDoc("\"VGV4dA==\"", "\"Text\"", "Returns the decoded text of a base64 encoding string."));
     }
 
     @Override

@@ -60,7 +60,7 @@ class RunCommandTest {
         assertEquals(2, testCases.size());
         final var testCase = testCases.getFirst();
         assertEquals("Test Case 1", testCase.name());
-        assertEquals(List.of("BASE_TIMESTAMP = time.now()", "STEP1_CID = faker.uuid()", "STEP2_CID = faker.uuid()"),
+        assertEquals(List.of("BASE_TIMESTAMP = now()", "STEP1_CID = uuid()", "STEP2_CID = uuid()"),
                 testCase.beforeAllScript());
         assertEquals(Collections.emptyList(), testCase.afterAllScript());
 

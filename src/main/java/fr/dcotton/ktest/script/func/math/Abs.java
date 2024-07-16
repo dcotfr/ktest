@@ -1,6 +1,8 @@
-package fr.dcotton.ktest.script.func;
+package fr.dcotton.ktest.script.func.math;
 
 import fr.dcotton.ktest.script.Context;
+import fr.dcotton.ktest.script.func.Func;
+import fr.dcotton.ktest.script.func.FuncDoc;
 import fr.dcotton.ktest.script.token.Flt;
 import fr.dcotton.ktest.script.token.Int;
 import fr.dcotton.ktest.script.token.Num;
@@ -8,9 +10,9 @@ import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class MathAbs extends Func {
-    protected MathAbs() {
-        super("math.abs", new FuncDoc("-3.14", "3.14", "Returns the absolute value of a number."));
+public class Abs extends Func {
+    protected Abs() {
+        super("abs", new FuncDoc("-3.14", "3.14", "Returns the absolute value of a number."));
     }
 
     @Override

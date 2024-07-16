@@ -7,11 +7,11 @@ import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class FakerUuid extends Func {
+public class Uuid extends Func {
     private static final UuidFaker FAKER = new UuidFaker();
 
-    protected FakerUuid() {
-        super("faker.uuid", new FuncDoc("", "\"fd48147a-58ba-461b-b71c-f44c89ba67ca\"", "Returns a new random UUID."));
+    protected Uuid() {
+        super("uuid", new FuncDoc("", "\"fd48147a-58ba-461b-b71c-f44c89ba67ca\"", "Returns a new random UUID."));
     }
 
     @Override

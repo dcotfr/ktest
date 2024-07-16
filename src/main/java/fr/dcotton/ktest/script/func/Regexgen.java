@@ -7,9 +7,9 @@ import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class FakerRegex extends Func {
-    protected FakerRegex() {
-        super("faker.regex", new FuncDoc("\"E-[A-Z]{2,4}#{2}\"", "\"E-AJD##\"", "Returns a new random string matching provided regex."));
+public class Regexgen extends Func {
+    protected Regexgen() {
+        super("regexgen", new FuncDoc("\"E-[A-Z]{2,4}#{2}\"", "\"E-AJD##\"", "Returns a new random string matching provided regex."));
     }
 
     @Override

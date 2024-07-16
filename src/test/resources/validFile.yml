@@ -1,8 +1,8 @@
 name: Test Case 1
 beforeAll: |
-  BASE_TIMESTAMP = time.now()
-  STEP1_CID = faker.uuid()
-  STEP2_CID = faker.uuid()
+  BASE_TIMESTAMP = now()
+  STEP1_CID = uuid()
+  STEP2_CID = uuid()
 steps:
   - name: Step n°1
     before: TIMESTAMP = BASE_TIMESTAMP + 1000
@@ -64,9 +64,9 @@ afterAll:
 ---
 name: Test Case 2
 beforeAll: |
-  BASE_TIMESTAMP = time.now()
-  STEP1_CID = faker.uuid()
-  STEP2_CID = faker.uuid()
+  BASE_TIMESTAMP = now()
+  STEP1_CID = uuid()
+  STEP2_CID = uuid()
 steps:
   - name: Step n°1
     before: TIMESTAMP = BASE_TIMESTAMP + 2000
