@@ -34,7 +34,7 @@ public class RegistryService {
 
     Schema lastActiveSchema(final TopicRef pTopic, final boolean pKey) {
         final var schemaSuffix = pKey ? "-key" : "-value";
-        final var schemaKey = pTopic.id() + schemaSuffix;
+        final var schemaKey = pTopic.topic() + schemaSuffix + "@" + pTopic.broker();
         if (schemas.containsKey(schemaKey)) {
             return schemas.get(schemaKey);
         }
@@ -42,7 +42,7 @@ public class RegistryService {
         Schema res = null;
         final var registryClient = registryClient(pTopic);
         if (registryClient != null) {
-            LOG.trace("{}      Trying to get last active schema of {}.", BLUE, pTopic.id() + schemaSuffix);
+            LOG.trace("{}      Trying to get last active schema of {}.", BLUE, schemaKey);
             try {
                 final var rawSchemas = registryClient.getSchemas(pTopic.topic() + schemaSuffix, false, true);
                 final var rawSchema = (rawSchemas != null && !rawSchemas.isEmpty()) ? rawSchemas.getFirst() : null;
