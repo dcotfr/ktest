@@ -27,29 +27,6 @@ class MiscFunctionsTest {
     }
 
     @Test
-    void time2txtTest() {
-        assertEquals("2024-02-25 10:53:41", engine.eval("time2txt(\"yyyy-MM-dd HH:mm:ss\", 1708854821321)"));
-    }
-
-    @Test
-    void invalidTime2TxtTest() {
-        try {
-            engine.eval("time2txt(\"aaaa-MM-jj\", 1708854821321)");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Invalid date/time format in time2txt: aaaa-MM-jj", e.getMessage());
-        }
-    }
-
-    @Test
-    void nowTest() {
-        final var before = System.currentTimeMillis();
-        final var t = (Long) engine.eval("now()");
-        final var after = System.currentTimeMillis();
-        assertTrue(before <= t && t <= after);
-    }
-
-    @Test
     void unknownFunctionTest() {
         try {
             engine.eval("plouf()");

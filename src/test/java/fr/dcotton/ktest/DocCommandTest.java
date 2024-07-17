@@ -36,6 +36,7 @@ class DocCommandTest {
                 "  sha256  (\"SampleString\")                       \"77b12c9c6213a05f...8b2c34769ec4fc20\"  Returns the SHA-256 hash of the string parameter.",
                 "  sha512  (\"SampleString\")                       \"aee8e20df4b3ce73...e7e03c6fcda75961\"  Returns the SHA-512 hash of the string parameter.",
                 "  time2txt(\"yyyy-MM-dd HH:mm:ss\", 1708854821321) \"2024-02-25 10:53:41\"                  Returns the formatted date/string of a timestamp at current TimeZone.",
+                "  txt2time(\"yyyy/MM/dd\", \"2024/07/17\")           1721174400000                          Returns the timestamp of a formatted date string.",
                 "  upper   (\"ToUpper\")                            \"TOUPPER\"                              Returns the upper cased string.",
                 "  uuid    ()                                     \"fd48147a-58ba-461b-b71c-f44c89ba67ca\" Returns a new random UUID.");
         assertEquals(expected, pResult.getOutput());

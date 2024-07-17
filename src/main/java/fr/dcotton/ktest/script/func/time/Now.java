@@ -1,6 +1,8 @@
-package fr.dcotton.ktest.script.func;
+package fr.dcotton.ktest.script.func.time;
 
 import fr.dcotton.ktest.script.Context;
+import fr.dcotton.ktest.script.func.Func;
+import fr.dcotton.ktest.script.func.FuncDoc;
 import fr.dcotton.ktest.script.token.Int;
 import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
