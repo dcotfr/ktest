@@ -64,7 +64,7 @@ public class RunCommand implements Runnable {
         for (final var testCase : testCases) {
             final var xUnitSuite = xUnitReport.startNewSuite(testCase.name());
             LOG.info("{}Test Case: {}", tab(WHITE), testCase.name());
-            engine.eval(testCase.beforeAllScript());
+            engine.reset().eval(testCase.beforeAllScript());
             evalScript("beforeAll", testCase.beforeAllScript());
             ++tab;
             if (executeTestCase(testCase, xUnitSuite)) {

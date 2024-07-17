@@ -1,8 +1,7 @@
 name: Test Case 1
 beforeAll: |
   BASE_TIMESTAMP = now()
-  STEP1_CID = uuid()
-  STEP2_CID = uuid()
+  STEP1_1_CID = uuid()
 steps:
   - name: Step n°1
     before: TIMESTAMP = BASE_TIMESTAMP + 1000
@@ -13,7 +12,7 @@ steps:
     action: SEND
     record:
       headers:
-        correlation.id: "${STEP1_CID}"
+        correlation.id: "${STEP1_1_CID}"
         truc: machin
       key: |
         code: P1
@@ -65,8 +64,7 @@ afterAll:
 name: Test Case 2
 beforeAll: |
   BASE_TIMESTAMP = now()
-  STEP1_CID = uuid()
-  STEP2_CID = uuid()
+  STEP2_1_CID = uuid()
 steps:
   - name: Step n°1
     before: TIMESTAMP = BASE_TIMESTAMP + 2000
@@ -77,7 +75,7 @@ steps:
     action: SEND
     record:
       headers:
-        correlation.id: "${STEP1_CID}"
+        correlation.id: "${STEP2_1_CID}"
         truc: bidule
       key: |
         code: P2
@@ -100,7 +98,7 @@ steps:
     action: PRESENT
     record:
       headers:
-        correlation.id: "${STEP1_CID}"
+        correlation.id: "${STEP2_1_CID}"
         truc: bidule
       key: |
         code: P2

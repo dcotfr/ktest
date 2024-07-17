@@ -60,7 +60,7 @@ class RunCommandTest {
         assertEquals(2, testCases.size());
         final var testCase = testCases.getFirst();
         assertEquals("Test Case 1", testCase.name());
-        assertEquals(List.of("BASE_TIMESTAMP = now()", "STEP1_CID = uuid()", "STEP2_CID = uuid()"),
+        assertEquals(List.of("BASE_TIMESTAMP = now()", "STEP1_1_CID = uuid()"),
                 testCase.beforeAllScript());
         assertEquals(Collections.emptyList(), testCase.afterAllScript());
 
@@ -79,7 +79,7 @@ class RunCommandTest {
         assertNull(rec.timestamp());
         final var headers = rec.headers();
         assertEquals(2, headers.size());
-        assertEquals("${STEP1_CID}", headers.get("correlation.id"));
+        assertEquals("${STEP1_1_CID}", headers.get("correlation.id"));
         assertEquals("machin", headers.get("truc"));
         assertEquals("{\"code\":\"P1\",\"label\":\"Product 1\"}", rec.keyNode().toString());
         assertEquals("{\"sender\":\"Source\",\"eventType\":\"CREATE\",\"eventTsp\":\"${TIMESTAMP}\","
