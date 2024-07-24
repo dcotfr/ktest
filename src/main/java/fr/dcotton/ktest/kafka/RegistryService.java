@@ -8,6 +8,7 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.avro.Schema;
+import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ public class RegistryService {
         kafkaConfigProvider = pKafkaConfigProvider;
     }
 
+    @Retry(maxRetries = 2)
     Schema lastActiveSchema(final TopicRef pTopic, final boolean pKey) {
         final var schemaSuffix = pKey ? "-key" : "-value";
         final var schemaKey = pTopic.topic() + schemaSuffix + "@" + pTopic.broker();

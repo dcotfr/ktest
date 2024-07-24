@@ -29,6 +29,7 @@ class DocCommandTest {
                 "  min     (5, -2)                                -2                                     Returns the minimal value of 2 numbers.",
                 "  now     ()                                     1708808432990                          Returns the current time in millis.",
                 "  pause   (3000)                                                                        Pause treatment during provided milliseconds.",
+                "  print   (2+3)                                  5                                      Display the evaluated expression as INFO log output.",
                 "  regexgen(\"E-[A-Z]{2,4}#{2}\")                   \"E-AJD##\"                              Returns a new random string matching provided regex.",
                 "  right   (\"Sample\", 3)                          \"ple\"                                  Returns the x last characters of a string.",
                 "  round   (2.43)                                 2                                      Returns the nearest integer, rounding half away from zero.",

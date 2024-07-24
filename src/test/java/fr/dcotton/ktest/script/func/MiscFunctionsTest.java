@@ -65,6 +65,13 @@ class MiscFunctionsTest {
     }
 
     @Test
+    void printTest() {
+        assertEquals(5L, engine.eval("print(2+3)"));
+        assertEquals("", engine.eval("print(\"\")"));
+        assertEquals("To be displayed", engine.eval("print(\"To be displayed\")"));
+    }
+
+    @Test
     void envTest() {
         assertEquals(System.getenv("JAVA_HOME"), engine.eval("env(\"JAVA_HOME\")"));
         assertEquals("", engine.eval("env(\"DoesNotExistEnvVariable\")"));
