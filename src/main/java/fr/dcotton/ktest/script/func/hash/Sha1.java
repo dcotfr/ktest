@@ -15,18 +15,18 @@ import java.util.HexFormat;
 import static fr.dcotton.ktest.script.func.FuncType.HASH;
 
 @ApplicationScoped
-public class Sha512 extends Func {
-    protected Sha512() {
-        super("sha512", new FuncDoc(HASH, "\"SampleString\"", "\"aee8e20df4b3ce73...e7e03c6fcda75961\"", "Returns the SHA-512 hash of the string parameter."));
+public class Sha1 extends Func {
+    protected Sha1() {
+        super("sha1", new FuncDoc(HASH, "\"SampleString\"", "\"ac7fc7261c573830...f20bf0d74d1443cd\"", "Returns the SHA-1 hash of the string parameter."));
     }
 
     @Override
     public Txt apply(final Context pContext, final Stm pParam) {
         final var params = extractParam(pContext, pParam, String.class);
         try {
-            final var sha512Digest = MessageDigest.getInstance("SHA-512");
-            sha512Digest.update(params[0].toString().getBytes());
-            return new Txt(HexFormat.of().formatHex(sha512Digest.digest()));
+            final var sha1Digest = MessageDigest.getInstance("SHA-1");
+            sha1Digest.update(params[0].toString().getBytes());
+            return new Txt(HexFormat.of().formatHex(sha1Digest.digest()));
         } catch (final NoSuchAlgorithmException e) {
             throw new ScriptException(command() + " interrupted.", e);
         }

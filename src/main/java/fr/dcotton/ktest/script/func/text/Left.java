@@ -7,10 +7,12 @@ import fr.dcotton.ktest.script.token.Stm;
 import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.TEXT;
+
 @ApplicationScoped
 public class Left extends Func {
     protected Left() {
-        super("left", new FuncDoc("\"Sample\", 3", "\"Sam\"", "Returns the x first characters of a string."));
+        super("left", new FuncDoc(TEXT, "\"Sample\", 3", "\"Sam\"", "Returns the x first characters of a string."));
     }
 
     @Override

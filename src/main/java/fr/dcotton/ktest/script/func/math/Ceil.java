@@ -7,10 +7,12 @@ import fr.dcotton.ktest.script.token.Int;
 import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.MATH;
+
 @ApplicationScoped
 public class Ceil extends Func {
     protected Ceil() {
-        super("ceil", new FuncDoc("3.14", "4", "Returns the least integer value >= to given number."));
+        super("ceil", new FuncDoc(MATH, "3.14", "4", "Returns the least integer value >= to given number."));
     }
 
     @Override

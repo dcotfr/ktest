@@ -1,18 +1,21 @@
-package fr.dcotton.ktest.script.func;
+package fr.dcotton.ktest.script.func.log;
 
 import fr.dcotton.ktest.script.Context;
 import fr.dcotton.ktest.script.ScriptException;
+import fr.dcotton.ktest.script.func.Func;
+import fr.dcotton.ktest.script.func.FuncDoc;
+import fr.dcotton.ktest.script.func.FuncType;
 import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-public class Print extends Func {
-    private static final Logger LOG = LoggerFactory.getLogger(Print.class);
+public class Error extends Func {
+    private static final Logger LOG = LoggerFactory.getLogger(Error.class);
 
-    protected Print() {
-        super("print", new FuncDoc("2+3", "5", "Display the evaluated expression as INFO log output."));
+    protected Error() {
+        super("error", new FuncDoc(FuncType.LOG, "2+3", "5", "Display the evaluated expression as ERROR log output."));
     }
 
     @Override

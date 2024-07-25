@@ -7,20 +7,21 @@ import fr.dcotton.ktest.script.token.Stm;
 import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import java.util.zip.CRC32;
 
 import static fr.dcotton.ktest.script.func.FuncType.HASH;
 
 @ApplicationScoped
-public class Encode64 extends Func {
-    protected Encode64() {
-        super("encode64", new FuncDoc(HASH, "\"SampleString\"", "\"U2FtcGxlU3RyaW5n\"", "Returns the base64 encoding of a string."));
+public class Crc32 extends Func {
+    protected Crc32() {
+        super("crc32", new FuncDoc(HASH, "\"SampleString\"", "\"3ca8bf4\"", "Returns the CRC-32 hash of the string parameter."));
     }
 
     @Override
     public Txt apply(final Context pContext, final Stm pParam) {
         final var params = extractParam(pContext, pParam, String.class);
-        return new Txt(Base64.getEncoder().encodeToString(((String) params[0]).getBytes(StandardCharsets.UTF_8)));
+        final var crc32 = new CRC32();
+        crc32.update(params[0].toString().getBytes());
+        return new Txt(Long.toHexString(crc32.getValue()));
     }
 }

@@ -7,10 +7,12 @@ import fr.dcotton.ktest.script.token.Stm;
 import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.TEXT;
+
 @ApplicationScoped
 public class Concat extends Func {
     protected Concat() {
-        super("concat", new FuncDoc("\"Aaa\", \"Bbb\"", "\"AaaBbb\"", "Returns the concatenation of 2 strings."));
+        super("concat", new FuncDoc(TEXT, "\"Aaa\", \"Bbb\"", "\"AaaBbb\"", "Returns the concatenation of 2 strings."));
     }
 
     @Override

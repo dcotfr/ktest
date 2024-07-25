@@ -5,10 +5,12 @@ import fr.dcotton.ktest.script.token.Stm;
 import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.MISC;
+
 @ApplicationScoped
 public class Env extends Func {
     protected Env() {
-        super("env", new FuncDoc("\"PATH\"", "\"C:\\Windows\\...\"", "Returns the value of an ENV variable."));
+        super("env", new FuncDoc(MISC,"\"PATH\"", "\"C:\\Windows\\...\"", "Returns the value of an ENV variable."));
     }
 
     @Override

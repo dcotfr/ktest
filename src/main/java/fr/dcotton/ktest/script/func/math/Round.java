@@ -7,10 +7,12 @@ import fr.dcotton.ktest.script.token.Int;
 import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.MATH;
+
 @ApplicationScoped
 public class Round extends Func {
     protected Round() {
-        super("round", new FuncDoc("2.43", "2", "Returns the nearest integer, rounding half away from zero."));
+        super("round", new FuncDoc(MATH, "2.43", "2", "Returns the nearest integer, rounding half away from zero."));
     }
 
     @Override

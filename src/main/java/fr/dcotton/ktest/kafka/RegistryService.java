@@ -33,7 +33,7 @@ public class RegistryService {
         kafkaConfigProvider = pKafkaConfigProvider;
     }
 
-    @Retry(maxRetries = 2)
+    @Retry
     Schema lastActiveSchema(final TopicRef pTopic, final boolean pKey) {
         final var schemaSuffix = pKey ? "-key" : "-value";
         final var schemaKey = pTopic.topic() + schemaSuffix + "@" + pTopic.broker();

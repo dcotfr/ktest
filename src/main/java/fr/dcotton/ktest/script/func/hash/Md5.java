@@ -12,10 +12,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 
+import static fr.dcotton.ktest.script.func.FuncType.HASH;
+
 @ApplicationScoped
 public class Md5 extends Func {
     protected Md5() {
-        super("md5", new FuncDoc("\"SampleString\"", "\"ec1dd92925cb06934c047fb3f5380cba\"", "Returns the MD5 hash of the string parameter."));
+        super("md5", new FuncDoc(HASH, "\"SampleString\"", "\"ec1dd92925cb06934c047fb3f5380cba\"", "Returns the MD5 hash of the string parameter."));
     }
 
     @Override

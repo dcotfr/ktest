@@ -10,10 +10,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Base64;
 
+import static fr.dcotton.ktest.script.func.FuncType.HASH;
+
 @ApplicationScoped
 public class Decode64 extends Func {
     protected Decode64() {
-        super("decode64", new FuncDoc("\"VGV4dA==\"", "\"Text\"", "Returns the decoded text of a base64 encoding string."));
+        super("decode64", new FuncDoc(HASH, "\"VGV4dA==\"", "\"Text\"", "Returns the decoded text of a base64 encoding string."));
     }
 
     @Override

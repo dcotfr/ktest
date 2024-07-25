@@ -15,7 +15,6 @@ import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +47,6 @@ public class ClusterClient {
         jsonAvroConverter = pJsonAvroConverter;
     }
 
-    @Retry(maxRetries = 2)
     public void send(final TopicRef pTopic, final TestRecord pRecord) {
         final var producer = producer(pTopic);
         LOG.trace("{}      Sending record to {}.", BLUE, pTopic.id());
@@ -68,7 +66,6 @@ public class ClusterClient {
         }
     }
 
-    @Retry(maxRetries = 2)
     public boolean find(final TopicRef pTopic, final TestRecord pRecord, final int pBackOffset) {
         final var consumer = consumer(pTopic);
         var lastOffsetReached = false;

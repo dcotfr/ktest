@@ -9,10 +9,12 @@ import fr.dcotton.ktest.script.token.Num;
 import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.MATH;
+
 @ApplicationScoped
 public class Max extends Func {
     protected Max() {
-        super("max", new FuncDoc("5, -2", "5", "Returns the maximal value of 2 numbers."));
+        super("max", new FuncDoc(MATH, "5, -2", "5", "Returns the maximal value of 2 numbers."));
     }
 
     @Override

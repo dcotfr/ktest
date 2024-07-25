@@ -6,10 +6,12 @@ import fr.dcotton.ktest.script.token.Stm;
 import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.MISC;
+
 @ApplicationScoped
 public class Pause extends Func {
     protected Pause() {
-        super("pause", new FuncDoc("3000", "", "Pause treatment during provided milliseconds."));
+        super("pause", new FuncDoc(MISC, "3000", "", "Pause treatment during provided milliseconds."));
     }
 
     @Override

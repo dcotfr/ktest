@@ -110,6 +110,7 @@ public class RunCommand implements Runnable {
                         var found = kafkaClient.find(topicRef, parsedRecord, backOffset);
                         if (!found && action == Action.PRESENT) {
                             LOG.trace("{}Retrying find with larger range...", tab(LIGHTGRAY));
+                            Thread.sleep(250);
                             found = kafkaClient.find(topicRef, parsedRecord, 2 * backOffset);
                         }
                         if ((found && action == Action.ABSENT) || (!found && action == Action.PRESENT)) {
@@ -118,7 +119,7 @@ public class RunCommand implements Runnable {
                             skipAfterFailureOrError = true;
                         }
                     }
-                } catch (final RuntimeException e) {
+                } catch (final RuntimeException | InterruptedException e) {
                     LOG.error("{}{} error.", tab(RED), action, e);
                     xUnitCase.error("Action error: " + e.getMessage(), e);
                     skipAfterFailureOrError = true;

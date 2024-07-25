@@ -7,10 +7,12 @@ import fr.dcotton.ktest.script.token.Stm;
 import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.TEXT;
+
 @ApplicationScoped
 public class RTrim extends Func {
     protected RTrim() {
-        super("rtrim", new FuncDoc("\" Test \"", "\" Test\"", "Returns the with all right spaces removed."));
+        super("rtrim", new FuncDoc(TEXT, "\" Test \"", "\" Test\"", "Returns the with all right spaces removed."));
     }
 
     @Override

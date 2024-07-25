@@ -7,10 +7,12 @@ import fr.dcotton.ktest.script.token.Int;
 import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.TIME;
+
 @ApplicationScoped
 public class Now extends Func {
     protected Now() {
-        super("now", new FuncDoc("", "1708808432990", "Returns the current time in millis."));
+        super("now", new FuncDoc(TIME, "", "1708808432990", "Returns the current time in millis."));
     }
 
     @Override

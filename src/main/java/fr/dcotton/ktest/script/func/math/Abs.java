@@ -9,10 +9,12 @@ import fr.dcotton.ktest.script.token.Num;
 import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.MATH;
+
 @ApplicationScoped
 public class Abs extends Func {
     protected Abs() {
-        super("abs", new FuncDoc("-3.14", "3.14", "Returns the absolute value of a number."));
+        super("abs", new FuncDoc(MATH, "-3.14", "3.14", "Returns the absolute value of a number."));
     }
 
     @Override

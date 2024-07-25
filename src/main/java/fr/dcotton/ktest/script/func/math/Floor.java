@@ -7,10 +7,12 @@ import fr.dcotton.ktest.script.token.Int;
 import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.MATH;
+
 @ApplicationScoped
 public class Floor extends Func {
     protected Floor() {
-        super("floor", new FuncDoc("3.14", "3", "Returns the greatest integer value <= to given number."));
+        super("floor", new FuncDoc(MATH, "3.14", "3", "Returns the greatest integer value <= to given number."));
     }
 
     @Override

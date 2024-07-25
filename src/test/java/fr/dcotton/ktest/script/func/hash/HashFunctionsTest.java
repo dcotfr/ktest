@@ -15,8 +15,18 @@ class HashFunctionsTest {
     private Engine engine;
 
     @Test
+    void crc32Test() {
+        assertEquals("3ca8bf4", engine.eval("crc32(\"SampleString\")"));
+    }
+
+    @Test
     void md5Test() {
         assertEquals("ec1dd92925cb06934c047fb3f5380cba", engine.eval("md5(\"SampleString\")"));
+    }
+
+    @Test
+    void sha1Test() {
+        assertEquals("ac7fc7261c573830d19bf25ef20bf0d74d1443cd", engine.eval("sha1(\"SampleString\")"));
     }
 
     @Test

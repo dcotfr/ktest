@@ -9,10 +9,12 @@ import fr.dcotton.ktest.script.token.Num;
 import fr.dcotton.ktest.script.token.Stm;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.MATH;
+
 @ApplicationScoped
 public class Min extends Func {
     protected Min() {
-        super("min", new FuncDoc("5, -2", "-2", "Returns the minimal value of 2 numbers."));
+        super("min", new FuncDoc(MATH, "5, -2", "-2", "Returns the minimal value of 2 numbers."));
     }
 
     @Override

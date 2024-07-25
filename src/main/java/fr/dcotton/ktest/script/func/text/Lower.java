@@ -7,10 +7,12 @@ import fr.dcotton.ktest.script.token.Stm;
 import fr.dcotton.ktest.script.token.Txt;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import static fr.dcotton.ktest.script.func.FuncType.TEXT;
+
 @ApplicationScoped
 public class Lower extends Func {
     protected Lower() {
-        super("lower", new FuncDoc("\"ToLower\"", "\"tolower\"", "Returns the lower cased string."));
+        super("lower", new FuncDoc(TEXT, "\"ToLower\"", "\"tolower\"", "Returns the lower cased string."));
     }
 
     @Override
