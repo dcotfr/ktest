@@ -12,12 +12,12 @@ abstract class AvroTypeConverterWithStrictJavaTypeCheck<T> implements AvroTypeCo
     }
 
     @Override
-    public final Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath) {
+    public final Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath, final boolean pLenient) {
         if (javaType.isInstance(pJsonValue)) {
-            return convertValue(pField, pSchema, (T) pJsonValue, pPath);
+            return convertValue(pField, pSchema, (T) pJsonValue, pPath, pLenient);
         }
         throw new AvroGenException("Field " + pPath + " is expected to be type: " + javaType.getTypeName());
     }
 
-    abstract Object convertValue(final Schema.Field pField, final Schema pSchema, final T pValue, final Deque<String> pPath);
+    abstract Object convertValue(final Schema.Field pField, final Schema pSchema, final T pValue, final Deque<String> pPath, final boolean pLenient);
 }

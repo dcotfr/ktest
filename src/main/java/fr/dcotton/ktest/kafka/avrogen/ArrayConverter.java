@@ -20,9 +20,9 @@ final class ArrayConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Coll
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object convertValue(final Schema.Field pField, final Schema pSchema, final Collection pValue, final Deque<String> pPath) {
+    public Object convertValue(final Schema.Field pField, final Schema pSchema, final Collection pValue, final Deque<String> pPath, final boolean pLenient) {
         return ((Collection<Object>) pValue).stream()
-                .map(item -> jsonToAvroReader.read(pField, pSchema.getElementType(), item, pPath))
+                .map(item -> jsonToAvroReader.read(pField, pSchema.getElementType(), item, pPath, pLenient))
                 .collect(toList());
     }
 

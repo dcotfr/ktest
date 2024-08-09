@@ -18,7 +18,7 @@ class RunCommandTest {
     @Launch(value = {"run", "-h"})
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
-                "I Usage: ktest run [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
+                "I Usage: ktest run [-hsV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
                 "I                  [-r=<report>]",
                 "I Run test case.",
                 "I   -b, --back=<backOffset>   Back offset.",
@@ -31,6 +31,7 @@ class RunCommandTest {
                 "I   -h, --help                Show this help message and exit.",
                 "I   -r, --report=<report>     Path of the test report file.",
                 "I                               Default: ktreport.xml",
+                "I   -s, --strict              Strict producer.",
                 "I   -V, --version             Print version information and exit.\r");
         assertEquals(expected, pResult.getOutput());
     }

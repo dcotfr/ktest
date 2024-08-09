@@ -5,7 +5,7 @@ import org.apache.avro.Schema;
 import java.util.Deque;
 
 interface AvroTypeConverter {
-    Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath);
+    Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath, final boolean pLenient);
 
     boolean canManage(final Schema pSchema, final Deque<String> pPath);
 

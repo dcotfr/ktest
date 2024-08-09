@@ -13,7 +13,7 @@ import static org.apache.avro.Schema.Type.BYTES;
 @ApplicationScoped
 final class BytesDecimalConverter implements AvroTypeConverter {
     @Override
-    public Object convert(final Schema.Field pField, final Schema pSchema, final Object pValue, final Deque<String> pPath) {
+    public Object convert(final Schema.Field pField, final Schema pSchema, final Object pValue, final Deque<String> pPath, final boolean pLenient) {
         try {
             final var scale = (int) pSchema.getObjectProp("scale");
             return convertDecimal(pValue, scale, pPath);

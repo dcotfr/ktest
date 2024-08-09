@@ -15,7 +15,7 @@ final class EnumConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Strin
     }
 
     @Override
-    public Object convertValue(final Schema.Field pField, final Schema pSchema, final String pValue, final Deque<String> pPath) {
+    public Object convertValue(final Schema.Field pField, final Schema pSchema, final String pValue, final Deque<String> pPath, final boolean pLenient) {
         final var symbols = pSchema.getEnumSymbols();
         if (symbols.contains(pValue)) {
             return new GenericData.EnumSymbol(pSchema, pValue);

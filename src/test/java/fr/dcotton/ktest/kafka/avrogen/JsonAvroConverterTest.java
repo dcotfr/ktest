@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 @QuarkusTest
 class JsonAvroConverterTest {
     @Inject
@@ -34,7 +37,44 @@ class JsonAvroConverterTest {
                 {"type":"record","name":"InputTopicValue","namespace":"fr.dcotton.ktest","fields":[{"name":"sender","type":"string"},{"name":"eventType","type":"string"},{"name":"eventTsp","type":{"type":"long","logicalType":"timestamp-millis"}},{"name":"body","type":{"type":"record","name":"Body","fields":[{"name":"code","type":["null","string"],"default":null},{"name":"label","type":["null","string"],"default":null},{"name":"commandAt","type":["null",{"type":"long","logicalType":"timestamp-millis"}],"default":null},{"name":"sentAt","type":["null",{"type":"long","logicalType":"timestamp-millis"}],"default":null},{"name":"weight","type":["null","double"],"default":null}]}}]}
                 """);
 
-        final var avro = converter.toAvro(jsonNode, schema);
-        System.out.println(avro);
+        final var avro = converter.toAvro(jsonNode, schema, true);
+        assertEquals("{\"sender\": \"Source\", \"eventType\": \"CREATE\", \"eventTsp\": 1713648197189, \"body\": {\"code\": \"P1\", \"label\": \"Product 1\", \"commandAt\": 1713648196189, \"sentAt\": null, \"weight\": 12030.5}}",
+                avro.toString());
+    }
+
+    @Test
+    void lenientConvertToGenericDataRecordWithNullTest() throws IOException {
+        final var schema = new Schema.Parser().setValidateDefaults(false).parse("""
+                {"type":"record","name":"InputTopicValue","namespace":"fr.dcotton.ktest","fields":[{"name":"firstname","type":["null","string"],"default":null},{"name":"lastname","type":["string","null"],"default":null}]}
+                """);
+
+        var avro = converter.toAvro(mapper.readTree("{\"firstname\": \"Nom\",\"lastname\": \"Prénom\"}"), schema, true);
+        assertEquals("{\"firstname\": \"Nom\", \"lastname\": \"Prénom\"}", avro.toString());
+
+        avro = converter.toAvro(mapper.readTree("{\"lastname\": \"Prénom\"}"), schema, true);
+        assertEquals("{\"firstname\": null, \"lastname\": \"Prénom\"}", avro.toString());
+
+        avro = converter.toAvro(mapper.readTree("{\"firstname\": \"Nom\"}"), schema, true);
+        assertEquals("{\"firstname\": \"Nom\", \"lastname\": null}", avro.toString());
+    }
+
+    @Test
+    void strictConvertToGenericDataRecordWithNullTest() throws IOException {
+        final var schema = new Schema.Parser().setValidateDefaults(false).parse("""
+                {"type":"record","name":"InputTopicValue","namespace":"fr.dcotton.ktest","fields":[{"name":"firstname","type":["null","string"],"default":null},{"name":"lastname","type":["string","null"],"default":null}]}
+                """);
+
+        var avro = converter.toAvro(mapper.readTree("{\"firstname\": \"Nom\",\"lastname\": \"Prénom\"}"), schema, false);
+        assertEquals("{\"firstname\": \"Nom\", \"lastname\": \"Prénom\"}", avro.toString());
+
+        avro = converter.toAvro(mapper.readTree("{\"lastname\": \"Prénom\"}"), schema, false);
+        assertEquals("{\"firstname\": null, \"lastname\": \"Prénom\"}", avro.toString());
+
+        try {
+            converter.toAvro(mapper.readTree("{\"firstname\": \"Nom\"}"), schema, false);
+            fail("Should have failed");
+        } catch (final AvroGenException e) {
+            assertEquals("Failed to convert JSON to Avro (Non-string default value for string: null).", e.getMessage());
+        }
     }
 }

@@ -47,15 +47,15 @@ public class ClusterClient {
         jsonAvroConverter = pJsonAvroConverter;
     }
 
-    public void send(final TopicRef pTopic, final TestRecord pRecord) {
+    public void send(final TopicRef pTopic, final TestRecord pRecord, final boolean pLenient) {
         final var producer = producer(pTopic);
         LOG.trace("{}      Sending record to {}.", BLUE, pTopic.id());
 
         final var rec = new ProducerRecord<>(pTopic.topic(),
                 null,
                 pRecord.longTimestamp(),
-                convert(pTopic, pRecord, true),
-                convert(pTopic, pRecord, false),
+                convert(pTopic, pRecord, true, pLenient),
+                convert(pTopic, pRecord, false, pLenient),
                 kafkaHeaders(pRecord.headers()));
         try {
             final var futur = producer.send(rec);
@@ -160,7 +160,7 @@ public class ClusterClient {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private Object convert(final TopicRef pTopic, final TestRecord pRecord, boolean pKey) {
+    private Object convert(final TopicRef pTopic, final TestRecord pRecord, final boolean pKey, final boolean pLenient) {
         final var jsonNode = pKey ? pRecord.keyNode() : pRecord.valueNode();
         if (jsonNode == null) {
             return null;
@@ -171,6 +171,6 @@ public class ClusterClient {
             throw new KTestException("Expected Avro schema not found for " + pTopic.id() + (pKey ? "key" : "value"), null);
         }
         return (availableSchema == null || expectedSerde == Serde.STRING) ?
-                jsonNode.toString() : jsonAvroConverter.toAvro(jsonNode, availableSchema);
+                jsonNode.toString() : jsonAvroConverter.toAvro(jsonNode, availableSchema, pLenient);
     }
 }

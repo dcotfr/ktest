@@ -7,7 +7,7 @@ import java.util.Deque;
 import java.util.Map;
 
 interface JsonToAvroReader {
-    GenericData.Record read(final Map<String, Object> pJson, final Schema pSchema);
+    GenericData.Record read(final Map<String, Object> pJson, final Schema pSchema, final boolean pLenient);
 
-    Object read(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath);
+    Object read(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath, final boolean pLenient);
 }

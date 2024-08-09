@@ -8,7 +8,7 @@ import java.util.Deque;
 
 abstract class DateTimeConverter implements AvroTypeConverter {
     @Override
-    public final Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath) {
+    public final Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath, final boolean pLenient) {
         if (pJsonValue instanceof String dateTimeString) {
             try {
                 return convertDateTimeString(dateTimeString);

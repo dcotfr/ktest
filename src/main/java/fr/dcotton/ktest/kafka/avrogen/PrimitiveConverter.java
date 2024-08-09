@@ -16,7 +16,7 @@ class PrimitiveConverter<T> extends AvroTypeConverterWithStrictJavaTypeCheck<T> 
     }
 
     @Override
-    public final Object convertValue(final Schema.Field pField, final Schema pSchema, final T pValue, final Deque<String> pPath) {
+    public final Object convertValue(final Schema.Field pField, final Schema pSchema, final T pValue, final Deque<String> pPath, final boolean pLenient) {
         return mapper.apply(pValue);
     }
 

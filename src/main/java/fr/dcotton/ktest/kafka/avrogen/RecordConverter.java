@@ -18,12 +18,12 @@ final class RecordConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object convertValue(final Schema.Field pField, final Schema pSchema, final Map pJsonValue, final Deque<String> pPath) {
+    public Object convertValue(final Schema.Field pField, final Schema pSchema, final Map pJsonValue, final Deque<String> pPath, final boolean pLenient) {
         final var builder = createRecordBuilder(pSchema);
         ((Map<String, Object>) pJsonValue).forEach((key, value) -> {
             final var subField = pSchema.getField(key);
             if (subField != null) {
-                final var fieldValue = jsonToAvroReader.read(subField, subField.schema(), value, pPath);
+                final var fieldValue = jsonToAvroReader.read(subField, subField.schema(), value, pPath, pLenient);
                 setField(builder, subField, fieldValue);
             }
         });

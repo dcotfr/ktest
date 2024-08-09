@@ -3,6 +3,7 @@ package fr.dcotton.ktest.kafka.avrogen;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.avro.AvroRuntimeException;
+import org.apache.avro.JsonProperties;
 import org.apache.avro.Schema;
 
 import java.util.ArrayList;
@@ -14,12 +15,16 @@ final class UnionConverter implements AvroTypeConverter {
     private JsonToAvroReader jsonToAvroReader;
 
     @Override
-    public Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath) {
+    public Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath, final boolean pLenient) {
         final var types = pSchema.getTypes();
+        if (pLenient && pField.hasDefaultValue() && pField.defaultVal() instanceof JsonProperties.Null) {
+            // Path to support badly declared null default support (null not at first place)...
+            types.sort((o1, o2) -> o1.getType() == Schema.Type.NULL ? -1 : 0);
+        }
         final var incompatibleTypes = new ArrayList<String>();
         for (final Schema type : types) {
             try {
-                final var nestedValue = jsonToAvroReader.read(pField, type, pJsonValue, pPath);
+                final var nestedValue = jsonToAvroReader.read(pField, type, pJsonValue, pPath, pLenient);
                 if (nestedValue instanceof Incompatible incomp) {
                     incompatibleTypes.add(incomp.expected());
                 } else {

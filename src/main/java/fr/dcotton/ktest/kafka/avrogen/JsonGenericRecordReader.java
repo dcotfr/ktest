@@ -21,11 +21,11 @@ public final class JsonGenericRecordReader {
         jsonToAvroReader = pJsonToAvroReader;
     }
 
-    GenericData.Record read(final JsonNode pJsonNode, final Schema pSchema) {
+    GenericData.Record read(final JsonNode pJsonNode, final Schema pSchema, final boolean pLenient) {
         try {
-            return jsonToAvroReader.read(mapper.convertValue(pJsonNode, Map.class), pSchema);
+            return jsonToAvroReader.read(mapper.convertValue(pJsonNode, Map.class), pSchema, pLenient);
         } catch (final AvroRuntimeException e) {
-            throw new AvroGenException("Failed to convert JSON to Avro.", e);
+            throw new AvroGenException("Failed to convert JSON to Avro (" + e.getMessage() + ").", e);
         }
     }
 }

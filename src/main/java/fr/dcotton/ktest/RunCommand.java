@@ -44,6 +44,9 @@ public class RunCommand implements Runnable {
     @CommandLine.Option(names = {"-b", "--back"}, description = "Back offset.", defaultValue = "250")
     private Integer backOffset;
 
+    @CommandLine.Option(names = {"-s", "--strict"}, description = "Strict producer.", defaultValue = "false")
+    private boolean strict;
+
     private String currentVariables = "";
     private int tab;
 
@@ -105,7 +108,7 @@ public class RunCommand implements Runnable {
                 LOG.debug("{}Record: {}", tab(LIGHTGRAY), parsedRecord);
                 try {
                     if (action == Action.SEND) {
-                        kafkaClient.send(topicRef, parsedRecord);
+                        kafkaClient.send(topicRef, parsedRecord, !strict);
                     } else {
                         var found = kafkaClient.find(topicRef, parsedRecord, backOffset);
                         if (!found && action == Action.PRESENT) {

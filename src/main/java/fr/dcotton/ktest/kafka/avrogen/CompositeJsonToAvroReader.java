@@ -30,12 +30,12 @@ final class CompositeJsonToAvroReader implements JsonToAvroReader {
     }
 
     @Override
-    public GenericData.Record read(final Map<String, Object> pJson, final Schema pSchema) {
-        return (GenericData.Record) mainRecordConverter.convert(null, pSchema, pJson, new ArrayDeque<>());
+    public GenericData.Record read(final Map<String, Object> pJson, final Schema pSchema, final boolean pLenient) {
+        return (GenericData.Record) mainRecordConverter.convert(null, pSchema, pJson, new ArrayDeque<>(), pLenient);
     }
 
     @Override
-    public Object read(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath) {
+    public Object read(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath, final boolean pLenient) {
         final var pushed = !pField.name().equals(pPath.peekLast());
         if (pushed) {
             pPath.addLast(pField.name());
@@ -45,7 +45,7 @@ final class CompositeJsonToAvroReader implements JsonToAvroReader {
                 .filter(c -> c.canManage(pSchema, pPath))
                 .findFirst()
                 .orElseThrow(() -> new AvroTypeException("Unsupported type: " + pField.schema().getType()));
-        final var result = converter.convert(pField, pSchema, pJsonValue, pPath);
+        final var result = converter.convert(pField, pSchema, pJsonValue, pPath, pLenient);
 
         if (pushed) {
             pPath.removeLast();

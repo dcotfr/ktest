@@ -16,7 +16,7 @@ public final class JsonAvroConverter {
         recordReader = pRecordReader;
     }
 
-    public GenericData.Record toAvro(final JsonNode pJsonNode, final Schema pSchema) {
-        return recordReader.read(pJsonNode, pSchema);
+    public GenericData.Record toAvro(final JsonNode pJsonNode, final Schema pSchema, final boolean pLenient) {
+        return recordReader.read(pJsonNode, pSchema, pLenient);
     }
 }
