@@ -1,5 +1,5 @@
 {
-  "namespace": "fr.dcotton.ktest",
+  "namespace": "ktest",
   "name": "KTestSampleTopicValue",
   "type": "record",
   "fields": [
