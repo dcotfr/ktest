@@ -17,9 +17,9 @@ import picocli.CommandLine;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import static ktest.MainCommand.VERSION;
@@ -135,9 +135,10 @@ public class RunCommand implements Runnable {
     }
 
     private void logSynthesis(final XUnitReport pReport) {
-        LOG.info("{}Synthesis:", tab(WHITE));
-        final var successes = new ArrayList<>();
-        final var failures = new ArrayList<>();
+        LOG.info("", tab(WHITE));
+        LOG.info("{}SUMMARY:", tab(WHITE));
+        final var successes = new TreeSet<>();
+        final var failures = new TreeSet<>();
         pReport.testsuite.forEach(ts -> {
             if (ts.failures() == 0 && ts.errors() == 0) {
                 successes.add(ts.name);
@@ -145,12 +146,14 @@ public class RunCommand implements Runnable {
                 failures.add(ts.name);
             }
         });
-        if (successes.size() > 0) {
-            LOG.info("{} - Successful:", tab(GREEN));
+        final var successCount = successes.size();
+        if (successCount > 0) {
+            LOG.info("{} - Success: {}", tab(GREEN), successCount);
             successes.forEach(n -> LOG.info("{}    - {}", tab(GREEN), n));
         }
-        if (failures.size() > 0) {
-            LOG.warn("{} - Failed:", tab(RED));
+        final var failureCount = failures.size();
+        if (failureCount > 0) {
+            LOG.warn("{} - Failure: {}", tab(RED), failureCount);
             failures.forEach(n -> LOG.warn("{}    - {}", tab(RED), n));
         }
     }
