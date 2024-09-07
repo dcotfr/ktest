@@ -16,7 +16,7 @@ final class UnionConverter implements AvroTypeConverter {
 
     @Override
     public Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath) {
-        final var types = pSchema.getTypes();
+        final var types = new ArrayList<>(pSchema.getTypes());
         if (pField.hasDefaultValue() && pField.defaultVal() instanceof JsonProperties.Null) {
             // Path to support badly declared null default support (null not at first place)...
             types.sort((o1, o2) -> o1.getType() == Schema.Type.NULL ? -1 : 0);
@@ -34,11 +34,7 @@ final class UnionConverter implements AvroTypeConverter {
                 // thrown only for union of more complex types like records
             }
         }
-        throw new AvroGenException("Could not evaluate union, field " +
-                pField.name() +
-                " is expected to be one of these: " +
-                String.join(", ", incompatibleTypes) +
-                ". If this is a complex type, check if offending field: " + pPath + " adheres to schema.");
+        throw new AvroGenException(STR."Could not evaluate union, field \{pField.name()} is expected to be one of these: \{String.join(", ", incompatibleTypes)}. If this is a complex type, check if offending field: \{pPath} adheres to schema.");
     }
 
     @Override

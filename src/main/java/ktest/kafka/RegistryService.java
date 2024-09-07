@@ -1,12 +1,12 @@
 package ktest.kafka;
 
-import ktest.core.KTestException;
-import ktest.domain.config.KTestConfig;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import ktest.core.KTestException;
+import ktest.domain.config.KTestConfig;
 import org.apache.avro.Schema;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class RegistryService {
     @Retry
     Schema lastActiveSchema(final TopicRef pTopic, final boolean pKey) {
         final var schemaSuffix = pKey ? "-key" : "-value";
-        final var schemaKey = pTopic.topic() + schemaSuffix + "@" + pTopic.broker();
+        final var schemaKey = STR."\{pTopic.topic()}\{schemaSuffix}@\{pTopic.broker()}";
         if (schemas.containsKey(schemaKey)) {
             return schemas.get(schemaKey);
         }
@@ -50,14 +50,14 @@ public class RegistryService {
                 final var rawSchema = (rawSchemas != null && !rawSchemas.isEmpty()) ? rawSchemas.getFirst() : null;
                 res = rawSchema != null ? new Schema.Parser().parse(rawSchema.canonicalString()) : null;
             } catch (final IOException | RestClientException e) {
-                throw new KTestException("Error while getting schema of " + schemaKey, e);
+                throw new KTestException(STR."Error while getting schema of \{schemaKey}", e);
             }
         }
         schemas.put(schemaKey, res);
         return res;
     }
 
-    private SchemaRegistryClient registryClient(final TopicRef pTopic) {
+    private synchronized SchemaRegistryClient registryClient(final TopicRef pTopic) {
         final var registryRef = kConfig.broker(pTopic.broker()).registry();
         final var registryConfig = registryRef != null ? kConfig.registry(registryRef) : null;
         if (registryConfig == null) {

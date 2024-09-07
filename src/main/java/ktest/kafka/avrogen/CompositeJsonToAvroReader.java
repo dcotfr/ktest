@@ -44,7 +44,7 @@ final class CompositeJsonToAvroReader implements JsonToAvroReader {
         final var converter = converters.stream()
                 .filter(c -> c.canManage(pSchema, pPath))
                 .findFirst()
-                .orElseThrow(() -> new AvroTypeException("Unsupported type: " + pField.schema().getType()));
+                .orElseThrow(() -> new AvroTypeException(STR."Unsupported type: \{pField.schema().getType()}"));
         final var result = converter.convert(pField, pSchema, pJsonValue, pPath);
 
         if (pushed) {

@@ -26,9 +26,9 @@ public class Txt2Time extends Func {
             final var format = new SimpleDateFormat((String) params[0]);
             return new Int(format.parse((String) params[1]).getTime());
         } catch (final NullPointerException | IllegalArgumentException e) {
-            throw new ScriptException("Invalid date/time format in " + command() + ": " + params[0]);
+            throw new ScriptException(STR."Invalid date/time format in \{command()}: \{params[0]}");
         } catch (final ParseException e) {
-            throw new ScriptException("Invalid date string in " + command() + ": " + params[1]);
+            throw new ScriptException(STR."Invalid date string in \{command()}: \{params[1]}");
         }
     }
 }

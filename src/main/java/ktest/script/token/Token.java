@@ -39,6 +39,6 @@ public abstract class Token<T> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ":" + value();
+        return STR."\{getClass().getSimpleName()}:\{value()}";
     }
 }

@@ -22,7 +22,7 @@ public class Info extends Func {
     public Stm apply(final Context pContext, final Stm pParam) {
         final var found = pParam.value().size();
         if (found != 1) {
-            throw new ScriptException("Invalid number of arguments in " + command() + ": 1 expected, " + found + " found.");
+            throw new ScriptException(STR."Invalid number of arguments in \{command()}: 1 expected, \{found} found.");
         }
         LOG.info("{}", ((Stm) pParam.value().getFirst()).evalValue(pContext));
         return pParam;

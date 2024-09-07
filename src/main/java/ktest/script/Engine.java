@@ -1,14 +1,14 @@
 package ktest.script;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 import ktest.domain.config.KTestConfig;
 import ktest.script.token.Tokenizer;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 import java.util.List;
 
-@ApplicationScoped
+@Dependent
 public final class Engine {
     @Inject
     private Context context;

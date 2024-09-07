@@ -42,7 +42,7 @@ public record TestCase(String name, String beforeAll, List<Step> steps, String a
             absolutePath = Path.of(pFile).toAbsolutePath();
             return Files.readString(absolutePath);
         } catch (final Throwable e) {
-            throw new KTestException("Failed to read test case file " + (absolutePath != null ? absolutePath : pFile), e);
+            throw new KTestException(STR."Failed to read test case file \{absolutePath != null ? absolutePath : pFile}", e);
         }
     }
 }

@@ -9,7 +9,7 @@ import static ktest.MainCommand.VERSION;
 @TopCommand
 @CommandLine.Command(name = "ktest", description = "Kafka test utility.",
         mixinStandardHelpOptions = true, version = VERSION,
-        subcommands = {RunCommand.class, DocCommand.class})
+        subcommands = {SRunCommand.class, PRunCommand.class, DocCommand.class})
 @RegisterForReflection(classNames = {"org.apache.kafka.common.security.scram.ScramLoginModule",
         "org.apache.kafka.common.security.scram.internals.ScramSaslClient",
         "org.apache.kafka.common.security.scram.internals.ScramSaslClient$ScramSaslClientFactory",

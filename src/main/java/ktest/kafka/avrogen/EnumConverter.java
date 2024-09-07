@@ -20,7 +20,7 @@ final class EnumConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Strin
         if (symbols.contains(pValue)) {
             return new GenericData.EnumSymbol(pSchema, pValue);
         }
-        throw new AvroGenException("Field " + pPath + " is expected to be of enum type and be one of " + symbols.stream().map(String::valueOf).collect(joining(", ")));
+        throw new AvroGenException(STR."Field \{pPath} is expected to be of enum type and be one of \{symbols.stream().map(String::valueOf).collect(joining(", "))}");
     }
 
     @Override

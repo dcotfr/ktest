@@ -32,7 +32,7 @@ final class KTestConfigProducer {
                 final var envOpt = subCommand != null ? subCommand.matchedOption("e") : null;
                 kConfig.currentEnvironment(envOpt != null ? envOpt.getValue() : "");
             } catch (final JsonProcessingException e) {
-                throw new KTestException("Invalid syntax in config file " + cfgPath, e);
+                throw new KTestException(STR."Invalid syntax in config file \{cfgPath}", e);
             }
         }
         return kConfig;
@@ -44,7 +44,7 @@ final class KTestConfigProducer {
             absolutePath = Path.of(pFile).toAbsolutePath();
             return Files.readString(absolutePath);
         } catch (final Throwable e) {
-            throw new KTestException("Failed to read config file " + (absolutePath != null ? absolutePath : pFile), e);
+            throw new KTestException(STR."Failed to read config file \{absolutePath != null ? absolutePath : pFile}", e);
         }
     }
 }

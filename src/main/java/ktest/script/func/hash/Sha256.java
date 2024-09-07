@@ -28,7 +28,7 @@ public class Sha256 extends Func {
             sha256Digest.update(params[0].toString().getBytes());
             return new Txt(HexFormat.of().formatHex(sha256Digest.digest()));
         } catch (final NoSuchAlgorithmException e) {
-            throw new ScriptException(command() + " interrupted.", e);
+            throw new ScriptException(STR."\{command()} interrupted.", e);
         }
     }
 }

@@ -28,7 +28,7 @@ public class Sha1 extends Func {
             sha1Digest.update(params[0].toString().getBytes());
             return new Txt(HexFormat.of().formatHex(sha1Digest.digest()));
         } catch (final NoSuchAlgorithmException e) {
-            throw new ScriptException(command() + " interrupted.", e);
+            throw new ScriptException(STR."\{command()} interrupted.", e);
         }
     }
 }

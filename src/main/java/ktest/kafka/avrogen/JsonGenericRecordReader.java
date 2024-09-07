@@ -25,7 +25,7 @@ public final class JsonGenericRecordReader {
         try {
             return jsonToAvroReader.read(mapper.convertValue(pJsonNode, Map.class), pSchema);
         } catch (final AvroRuntimeException e) {
-            throw new AvroGenException("Failed to convert JSON to Avro (" + e.getMessage() + ").", e);
+            throw new AvroGenException(STR."Failed to convert JSON to Avro (\{e.getMessage()}).", e);
         }
     }
 }

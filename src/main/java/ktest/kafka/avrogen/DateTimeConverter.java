@@ -13,13 +13,13 @@ abstract class DateTimeConverter implements AvroTypeConverter {
             try {
                 return convertDateTimeString(dateTimeString);
             } catch (final DateTimeParseException e) {
-                throw new AvroGenException("Field " + pPath + " is invalid.", e);
+                throw new AvroGenException(STR."Field \{pPath} is invalid.", e);
             }
         } else if (pJsonValue instanceof Number nbr) {
             return convertNumber(nbr);
         }
 
-        throw new AvroGenException("Field " + pPath + " is expected to be type: java.lang.String or java.lang.Number.");
+        throw new AvroGenException(STR."Field \{pPath} is expected to be type: java.lang.String or java.lang.Number.");
     }
 
     @Override

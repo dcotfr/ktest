@@ -18,8 +18,9 @@ class MainCommandTest {
                 "I   -h, --help      Show this help message and exit.",
                 "I   -V, --version   Print version information and exit.",
                 "I Commands:",
-                "I   run  Run test case.",
-                "I   doc  Display full documentation.\r");
+                "I   srun  Sequential run of test case(s).",
+                "I   prun  Parallel run of test case(s).",
+                "I   doc   Display full documentation.\r");
         assertEquals(expected, pResult.getOutput());
     }
 

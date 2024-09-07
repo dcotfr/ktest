@@ -28,7 +28,7 @@ public class Md5 extends Func {
             md5Digest.update(params[0].toString().getBytes());
             return new Txt(HexFormat.of().formatHex(md5Digest.digest()));
         } catch (final NoSuchAlgorithmException e) {
-            throw new ScriptException(command() + " interrupted.", e);
+            throw new ScriptException(STR."\{command()} interrupted.", e);
         }
     }
 }

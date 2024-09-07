@@ -13,14 +13,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusMainTest
-class RunCommandTest {
+class SRunCommandTest {
     @Test
-    @Launch(value = {"run", "-h"})
+    @Launch(value = {"srun", "-h"})
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
-                "I Usage: ktest run [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
-                "I                  [-r=<report>]",
-                "I Run test case.",
+                "I Usage: ktest srun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
+                "I                   [-r=<report>]",
+                "I Sequential run of test case(s).",
                 "I   -b, --back=<backOffset>   Back offset.",
                 "I                               Default: 250",
                 "I   -c, --config=<config>     Path of the config file.",
@@ -36,25 +36,25 @@ class RunCommandTest {
     }
 
     @Test
-    @Launch(value = {"run", "-V"})
+    @Launch(value = {"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
         assertEquals("I ktest v1.0.0\r", pResult.getOutput());
     }
 
     @Test
-    @Launch(value = {"run", "-e=dev", "-f=</->>"}, exitCode = 1)
+    @Launch(value = {"srun", "-e=dev", "-f=</->>"}, exitCode = 1)
     void invalidFilePathTest(final LaunchResult pResult) {
         assertEquals("E Failed to read test case file </->>\r", pResult.getOutputStream().getFirst());
     }
 
     @Test
-    @Launch(value = {"run", "-e=dev", "-f=unknownFile.yml"}, exitCode = 1)
+    @Launch(value = {"srun", "-e=dev", "-f=unknownFile.yml"}, exitCode = 1)
     void fileNotFoundTest(final LaunchResult pResult) {
         assertEquals("E Failed to read test case file C:\\Users\\David\\IdeaProjects\\ktest\\unknownFile.yml\r", pResult.getOutputStream().getFirst());
     }
 
     @Test
-    @Launch(value = {"run", "-e=pi", "-f=src\\test\\resources\\validFile.yml"})
+    @Launch(value = {"srun", "-e=pi", "-f=src\\test\\resources\\validFile.yml"})
     void validFileTest(final LaunchResult pResult) {
         final var testCases = TestCase.load("src\\test\\resources\\validFile.yml");
         assertEquals(2, testCases.size());

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * https://www.ibm.com/docs/en/developer-for-zos/16.0?topic=formats-junit-xml-format
+ * https://github.com/windyroad/JUnit-Schema/blob/master/JUnit.xsd
  * https://github.com/testmoapp/junitxml
  * https://lotterfriends.github.io/online-junit-parser/#case.0.0
  */
@@ -32,7 +34,7 @@ public final class XUnitReport implements XmlUtils {
     }
 
     public double time() {
-        return ((endTimestamp != 0L ? endTimestamp : System.currentTimeMillis()) - startTimestamp) / 1000.0;
+        return ((endTimestamp > 0L ? endTimestamp : System.currentTimeMillis()) - startTimestamp) / 1000.0;
     }
 
     @JsonIgnore
@@ -46,6 +48,27 @@ public final class XUnitReport implements XmlUtils {
     public XUnitReport() {
         startTimestamp = System.currentTimeMillis();
         timestamp = OffsetDateTime.now();
+    }
+
+    public XUnitReport(final List<XUnitReport> pReports) {
+        var minStartTimestamp = Long.MAX_VALUE;
+        var maxEndTimestamp = Long.MIN_VALUE;
+        var minTimestamp = OffsetDateTime.MAX;
+        for (final var report : pReports) {
+            if (report.startTimestamp < minStartTimestamp) {
+                minStartTimestamp = report.startTimestamp;
+            }
+            if (report.endTimestamp > maxEndTimestamp) {
+                maxEndTimestamp = report.endTimestamp;
+            }
+            if (report.timestamp.isBefore(minTimestamp)) {
+                minTimestamp = report.timestamp;
+            }
+            testsuite.addAll(report.testsuite);
+        }
+        startTimestamp = minStartTimestamp;
+        endTimestamp = maxEndTimestamp;
+        timestamp = minTimestamp;
     }
 
     public XUnitSuite startNewSuite(final String pName) {
