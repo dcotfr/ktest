@@ -1,0 +1,25 @@
+registries:
+  - name: pi_registry
+    url: http://192.168.0.105:8081
+
+brokers:
+  - name: pi_broker
+    bootstrap.servers: 192.168.0.105:9092
+    registry: pi_registry
+  - name: local_broker
+    bootstrap.servers: 127.0.0.1:9092
+    registry: pi_registry
+
+environments:
+  - name: pi
+    onStart: |
+      TNR_KAFKA_LOCAL_CONTEXT="pi_broker"
+      TNR_KAFKA_LOCAL_PREFIX=""
+      TNR_KAFKA_CENTRAL_CONTEXT=TNR_KAFKA_LOCAL_CONTEXT
+      TNR_KAFKA_CENTRAL_PREFIX=TNR_KAFKA_LOCAL_PREFIX
+  - name: local
+    onStart: |
+      TNR_KAFKA_LOCAL_CONTEXT="local_broker"
+      TNR_KAFKA_LOCAL_PREFIX=""
+      TNR_KAFKA_CENTRAL_CONTEXT="pi_broker"
+      TNR_KAFKA_CENTRAL_PREFIX=TNR_KAFKA_LOCAL_PREFIX
