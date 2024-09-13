@@ -1,12 +1,14 @@
 package ktest.script;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import ktest.domain.config.KTestConfig;
+import ktest.script.token.Token;
 import ktest.script.token.Tokenizer;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Dependent
 public final class Engine {
@@ -15,11 +17,6 @@ public final class Engine {
 
     @Inject
     private KTestConfig kConfig;
-
-    @PostConstruct
-    void init() {
-        reset();
-    }
 
     public Engine reset() {
         context.reset();
@@ -30,19 +27,28 @@ public final class Engine {
         return this;
     }
 
+    public Engine init(final Collection<Map.Entry<String, Token<?>>> pVariables) {
+        context.init(pVariables);
+        return this;
+    }
+
+    public Engine end() {
+        final var envConfig = kConfig.currentEnvironment();
+        if (envConfig != null) {
+            envConfig.onEndScript().forEach(this::eval);
+        }
+        return this;
+    }
+
     public Object eval(final String pLine) {
         final var stm = new Tokenizer().tokenize(pLine);
         return stm.evalValue(context);
     }
 
-    public Object eval(final List<String> pScript) {
-        Object res = null;
+    public void eval(final List<String> pScript) {
         if (pScript != null) {
-            for (final var line : pScript) {
-                res = eval(line);
-            }
+            pScript.forEach(this::eval);
         }
-        return res;
     }
 
     public Context context() {

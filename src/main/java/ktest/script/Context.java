@@ -1,14 +1,14 @@
 package ktest.script;
 
+import io.quarkus.arc.All;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 import ktest.script.func.Func;
 import ktest.script.token.Flt;
 import ktest.script.token.Int;
 import ktest.script.token.Token;
 import ktest.script.token.Txt;
-import io.quarkus.arc.All;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.Dependent;
-import jakarta.inject.Inject;
 
 import java.util.*;
 
@@ -31,12 +31,20 @@ public final class Context {
         return this;
     }
 
-    public Collection<Func> functions() {
-        return functions.values();
+    Context init(final Collection<Map.Entry<String, Token<?>>> pVariables) {
+        reset();
+        if (pVariables != null) {
+            pVariables.forEach(entry -> variables.put(entry.getKey(), entry.getValue()));
+        }
+        return this;
     }
 
-    public Set<Map.Entry<String, Token<?>>> variables() {
-        return variables.entrySet();
+    public Collection<Func> functions() {
+        return new ArrayList<>(functions.values());
+    }
+
+    public Collection<Map.Entry<String, Token<?>>> variables() {
+        return new ArrayList<>(variables.entrySet());
     }
 
     public Func function(final String pName) {

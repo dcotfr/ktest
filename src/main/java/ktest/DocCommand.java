@@ -38,6 +38,8 @@ public class DocCommand implements Runnable {
     - name: pi
       onStart: |
         BROKER_USED="pi_broker"
+        ...
+      onEnd: info("Test finished")
     - name: dev
       ...
 """;

@@ -70,8 +70,8 @@ class SRunCommandTest {
         var step = steps.getFirst();
         assertEquals("Step n°1", step.name());
         assertEquals(List.of("TIMESTAMP = BASE_TIMESTAMP + 1000"), step.beforeScript());
-        assertEquals("${TNR_KAFKA_LOCAL_CONTEXT}", step.broker());
-        assertEquals("${TNR_KAFKA_LOCAL_PREFIX}InputTopic", step.topic());
+        assertEquals("${KAFKA_LOCAL_CONTEXT}", step.broker());
+        assertEquals("${KAFKA_PREFIX}InputTopic", step.topic());
         assertEquals(Action.SEND, step.action());
         assertEquals(List.of("pause(100)"), step.afterScript());
 
@@ -89,8 +89,8 @@ class SRunCommandTest {
         step = steps.get(1);
         assertEquals("Step n°2", step.name());
         assertEquals(Collections.emptyList(), step.beforeScript());
-        assertEquals("${TNR_KAFKA_LOCAL_CONTEXT}", step.broker());
-        assertEquals("${TNR_KAFKA_LOCAL_PREFIX}InputTopic", step.topic());
+        assertEquals("${KAFKA_LOCAL_CONTEXT}", step.broker());
+        assertEquals("${KAFKA_PREFIX}InputTopic", step.topic());
         assertEquals(Action.ABSENT, step.action());
         assertEquals(Collections.emptyList(), step.afterScript());
 
@@ -103,8 +103,8 @@ class SRunCommandTest {
         step = steps.get(2);
         assertEquals("Unnamed", step.name());
         assertEquals(Collections.emptyList(), step.beforeScript());
-        assertEquals("${TNR_KAFKA_LOCAL_CONTEXT}", step.broker());
-        assertEquals("${TNR_KAFKA_LOCAL_PREFIX}InputTopic", step.topic());
+        assertEquals("${KAFKA_LOCAL_CONTEXT}", step.broker());
+        assertEquals("${KAFKA_PREFIX}InputTopic", step.topic());
         assertEquals(Action.PRESENT, step.action());
         assertEquals(Collections.emptyList(), step.afterScript());
 
@@ -117,8 +117,8 @@ class SRunCommandTest {
         step = steps.get(3);
         assertEquals("Last Step", step.name());
         assertEquals(Collections.emptyList(), step.beforeScript());
-        assertEquals("${TNR_KAFKA_LOCAL_CONTEXT}", step.broker());
-        assertEquals("${TNR_KAFKA_LOCAL_PREFIX}InputTopic", step.topic());
+        assertEquals("${KAFKA_LOCAL_CONTEXT}", step.broker());
+        assertEquals("${KAFKA_PREFIX}InputTopic", step.topic());
         assertEquals(Action.TODO, step.action());
         assertEquals(Collections.emptyList(), step.afterScript());
 

@@ -4,6 +4,7 @@ import ktest.script.Context;
 import ktest.script.ScriptException;
 import ktest.script.token.Stm;
 import ktest.script.token.Token;
+import ktest.script.token.Txt;
 
 import java.util.function.BiFunction;
 
@@ -46,7 +47,7 @@ public abstract class Func implements BiFunction<Context, Stm, Token<?>> {
         return res;
     }
 
-    protected final Object[] extractUnboundParams(final Context pContext, final Stm pParam, final Class<?> pType) {
+    private Object[] extractUnboundParams(final Context pContext, final Stm pParam, final Class<?> pType) {
         final var expected = pParam.value().size();
         final var res = new Object[expected];
         for (int i = 0; i < expected; i++) {
@@ -57,5 +58,14 @@ public abstract class Func implements BiFunction<Context, Stm, Token<?>> {
             res[i] = v;
         }
         return res;
+    }
+
+    protected final Txt extractUnboundParamsAsTxt(final Context pContext, final Stm pParam) {
+        final var params = extractUnboundParams(pContext, pParam, Object.class);
+        final var res = new StringBuilder();
+        for (final var s : params) {
+            res.append(s.toString());
+        }
+        return new Txt(res.toString());
     }
 }

@@ -56,10 +56,11 @@ public class SRunCommand implements Runnable {
         var finalFailureOrError = false;
         final var testCases = TestCase.load(file);
         final var xUnitReport = new XUnitReport();
+        final var globalVariables = engine.reset().context().variables();
         for (final var testCase : testCases) {
             final var xUnitSuite = xUnitReport.startNewSuite(testCase.name());
             LOG.info("{}Test Case: {}", logTab.tab(WHITE), testCase.name());
-            engine.reset().eval(testCase.beforeAllScript());
+            engine.init(globalVariables);
             testCaseRunner.evalScript(engine, "beforeAll", testCase.beforeAllScript());
             logTab.inc();
             if (testCaseRunner.executeTestCase(engine, testCase, xUnitSuite)) {
@@ -76,6 +77,7 @@ public class SRunCommand implements Runnable {
         } catch (final IOException e) {
             throw new KTestException("Failed to write test report.", e);
         }
+        engine.end();
         if (finalFailureOrError) {
             throw new TestFailureOrError(xUnitReport);
         }

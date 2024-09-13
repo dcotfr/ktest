@@ -17,11 +17,6 @@ public class Concat extends Func {
 
     @Override
     public Txt apply(final Context pContext, final Stm pParam) {
-        final var params = extractUnboundParams(pContext, pParam, String.class);
-        final var res = new StringBuilder();
-        for (final var s : params) {
-            res.append((String) s);
-        }
-        return new Txt(res.toString());
+        return extractUnboundParamsAsTxt(pContext, pParam);
     }
 }

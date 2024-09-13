@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import ktest.core.KTestException;
 import ktest.domain.TestCase;
 import ktest.domain.xunit.XUnitReport;
+import ktest.script.Engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -37,21 +38,27 @@ public class PRunCommand implements Runnable {
     @CommandLine.Option(names = {"-b", "--back"}, description = "Back offset.", defaultValue = "250")
     private Integer backOffset;
 
+    private final Instance<Engine> engineFactory;
     private final Instance<TestCaseRunner> testCaseRunnerFactory;
 
     @Inject
-    PRunCommand(final Instance<TestCaseRunner> pTestCaseRunnerFactory) {
+    PRunCommand(final Instance<Engine> pEngineFactory, final Instance<TestCaseRunner> pTestCaseRunnerFactory) {
+        engineFactory = pEngineFactory;
         testCaseRunnerFactory = pTestCaseRunnerFactory;
     }
 
     @Override
     public void run() {
         final var testCases = TestCase.load(file);
+        final var globalEngine = engineFactory.get();
+        final var globalVariables = globalEngine.reset().context().variables();
         try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             LOG.info("Start parallel run.");
             final var subTasks = new ArrayList<StructuredTaskScope.Subtask<XUnitReport>>();
             for (final var testCase : testCases) {
-                subTasks.add(scope.fork(testCaseRunnerFactory.get().testCase(testCase).backOffset(backOffset)));
+                final var runner = testCaseRunnerFactory.get().testCase(testCase).backOffset(backOffset);
+                runner.engine().init(globalVariables);
+                subTasks.add(scope.fork(runner));
             }
             scope.join();
             LOG.info("End parallel run.");
@@ -62,6 +69,7 @@ public class PRunCommand implements Runnable {
             } catch (final IOException e) {
                 throw new KTestException("Failed to write test report.", e);
             }
+            globalEngine.end();
             if (finalReport.errors() > 0 || finalReport.failures() > 0) {
                 throw new TestFailureOrError(finalReport);
             }

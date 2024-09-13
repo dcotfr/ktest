@@ -5,8 +5,8 @@ beforeAll: |
 steps:
   - name: Step n°1
     before: TIMESTAMP = BASE_TIMESTAMP + 1000
-    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
-    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputTopic
     keySerde: STRING
     valueSerde: AVRO
     action: SEND
@@ -29,8 +29,8 @@ steps:
           weight: 12030.5
     after: pause(100)
   - name: Step n°2
-    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
-    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputTopic
     valueSerde: STRING
     action: ABSENT
     record:
@@ -40,8 +40,8 @@ steps:
         code: "P1"
         count: 1
   - name: Unnamed
-    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
-    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputTopic
     action: PRESENT
     record:
       key: |
@@ -53,8 +53,8 @@ steps:
           code: P1
           label: Product 1
   - name: Last Step
-    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
-    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputTopic
     action: TODO
     record:
       key: "K1"
@@ -68,8 +68,8 @@ beforeAll: |
 steps:
   - name: Step n°1
     before: TIMESTAMP = BASE_TIMESTAMP + 2000
-    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
-    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputTopic
     keySerde: STRING
     valueSerde: AVRO
     action: SEND
@@ -93,8 +93,8 @@ steps:
     after: pause(500)
   - name: Step n°2
     before: pause(500)
-    broker: ${TNR_KAFKA_LOCAL_CONTEXT}
-    topic: ${TNR_KAFKA_LOCAL_PREFIX}InputTopic
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputTopic
     action: PRESENT
     record:
       headers:

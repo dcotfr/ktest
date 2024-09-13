@@ -13,13 +13,13 @@ brokers:
 environments:
   - name: pi
     onStart: |
-      TNR_KAFKA_LOCAL_CONTEXT="pi_broker"
-      TNR_KAFKA_LOCAL_PREFIX=""
-      TNR_KAFKA_CENTRAL_CONTEXT=TNR_KAFKA_LOCAL_CONTEXT
-      TNR_KAFKA_CENTRAL_PREFIX=TNR_KAFKA_LOCAL_PREFIX
+      KAFKA_PREFIX=""
+      KAFKA_LOCAL_CONTEXT="pi_broker"
+      KAFKA_CENTRAL_CONTEXT=KAFKA_LOCAL_CONTEXT
+      info("On Start script !")
+    onEnd: info("On End script !")
   - name: local
     onStart: |
-      TNR_KAFKA_LOCAL_CONTEXT="local_broker"
-      TNR_KAFKA_LOCAL_PREFIX=""
-      TNR_KAFKA_CENTRAL_CONTEXT="pi_broker"
-      TNR_KAFKA_CENTRAL_PREFIX=TNR_KAFKA_LOCAL_PREFIX
+      KAFKA_PREFIX="local-"
+      KAFKA_LOCAL_CONTEXT="local_broker"
+      KAFKA_CENTRAL_CONTEXT="pi_broker"
