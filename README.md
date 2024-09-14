@@ -1,5 +1,19 @@
 # ktest - Kafka testing utility
 
+Utility for defining and executing Kafka message test cases by 
+- sending sets of messages *(step action: SEND)* to topics or 
+- checking for the presence *(step action: PRESENT)* or absence *(step action: ABSENT)* of messages in topics.
+
+The content of the tested messages can be parameterized by script:
+- generally for an environment *(`onStart` and `onEnd` tags in the configuration)*
+- globally for a test case (`beforeAll` and `afterAll` tags in the test cases)
+- for a particular step (`before` and `after` tags of the step)
+- at the level of a message attribute (by including a marker `${...}`)
+- 
+Test case sets can be executed sequentially or in parallel, and a JUnit-format report is produced at the end of execution.
+
+This utility is compiled by default for Linux and supports messages using Avro.
+
 ### Basic usage and list of available commands
 ```
 Usage: ktest [-hV] [COMMAND]
