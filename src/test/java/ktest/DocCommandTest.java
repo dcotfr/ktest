@@ -15,7 +15,7 @@ class DocCommandTest {
     void runTest(final LaunchResult pResult) {
         final var expected = String.join("\n",
                         DocCommand.SAMPLE_CONFIG, DocCommand.SAMPLE_TEST_CASE, DocCommand.OPERATORS_DOC,
-                        "Script Functions:",
+                        "Scripting Functions:",
                         " FAKER:",
                         "  regexgen(\"E-[A-Z]{2,4}#{2}\")                   \"E-AJD##\"                              Returns a new random string matching provided regex.",
                         "  uuid    ()                                     \"fd48147a-58ba-461b-b71c-f44c89ba67ca\" Returns a new random UUID.",

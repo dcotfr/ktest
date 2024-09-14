@@ -14,6 +14,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusMainTest
 class SRunCommandTest {
+    final static String OPTIONS = String.join(System.lineSeparator(),
+            "I   -b, --back=<backOffset>   Back offset.",
+            "I                               Default: 250",
+            "I   -c, --config=<config>     Path of the config file.",
+            "I                               Default: ktconfig.yml",
+            "I   -e, --env=<env>           Name of the environment to use.",
+            "I   -f, --file=<file>         Path of test case description file to execute.",
+            "I                               Default: ktestcase.yml",
+            "I   -h, --help                Show this help message and exit.",
+            "I   -r, --report=<report>     Path of the test report file (JUnit format).",
+            "I                               Default: ktreport.xml",
+            "I   -V, --version             Print version information and exit.\r");
+
     @Test
     @Launch(value = {"srun", "-h"})
     void helpOptionTest(final LaunchResult pResult) {
@@ -21,17 +34,7 @@ class SRunCommandTest {
                 "I Usage: ktest srun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
                 "I                   [-r=<report>]",
                 "I Sequential run of test case(s).",
-                "I   -b, --back=<backOffset>   Back offset.",
-                "I                               Default: 250",
-                "I   -c, --config=<config>     Path of the config file.",
-                "I                               Default: ktconfig.yml",
-                "I   -e, --env=<env>           Name of the environment to use.",
-                "I   -f, --file=<file>         Path of test case description file to execute.",
-                "I                               Default: ktestcase.yml",
-                "I   -h, --help                Show this help message and exit.",
-                "I   -r, --report=<report>     Path of the test report file.",
-                "I                               Default: ktreport.xml",
-                "I   -V, --version             Print version information and exit.\r");
+                OPTIONS);
         assertEquals(expected, pResult.getOutput());
     }
 

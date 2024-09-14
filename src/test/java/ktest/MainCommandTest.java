@@ -14,13 +14,13 @@ class MainCommandTest {
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
                 "I Usage: ktest [-hV] [COMMAND]",
-                "I Kafka test utility.",
+                "I Kafka testing utility.",
                 "I   -h, --help      Show this help message and exit.",
                 "I   -V, --version   Print version information and exit.",
                 "I Commands:",
                 "I   srun  Sequential run of test case(s).",
                 "I   prun  Parallel run of test case(s).",
-                "I   doc   Display full documentation.\r");
+                "I   doc   Display of the full documentation.\r");
         assertEquals(expected, pResult.getOutput());
     }
 

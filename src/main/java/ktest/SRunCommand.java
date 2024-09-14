@@ -33,7 +33,7 @@ public class SRunCommand implements Runnable {
     @CommandLine.Option(names = {"-c", "--config"}, description = "Path of the config file.", defaultValue = "ktconfig.yml")
     private String config;
 
-    @CommandLine.Option(names = {"-r", "--report"}, description = "Path of the test report file.", defaultValue = "ktreport.xml")
+    @CommandLine.Option(names = {"-r", "--report"}, description = "Path of the test report file (JUnit format).", defaultValue = "ktreport.xml")
     private String report;
 
     @CommandLine.Option(names = {"-b", "--back"}, description = "Back offset.", defaultValue = "250")

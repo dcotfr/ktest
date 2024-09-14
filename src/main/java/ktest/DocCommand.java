@@ -12,7 +12,7 @@ import static ktest.MainCommand.VERSION;
 import static ktest.core.AnsiColor.BRIGHTYELLOW;
 import static ktest.core.AnsiColor.WHITE;
 
-@CommandLine.Command(name = "doc", description = "Display full documentation.",
+@CommandLine.Command(name = "doc", description = "Display of the full documentation.",
         mixinStandardHelpOptions = true, version = VERSION)
 public class DocCommand implements Runnable {
     final static String SAMPLE_CONFIG = STR."""
@@ -45,12 +45,12 @@ public class DocCommand implements Runnable {
 """;
     final static String SAMPLE_TEST_CASE = STR."""
 \{BRIGHTYELLOW}Sample Test Case file:\{WHITE}
-  name: Name of the Test Case
+  name: "Name of the Test Case"
   beforeAll: |
     TIMESTAMP = now()
     ...
   steps:
-    - name: Name of Step 1
+    - name: "Name of Step 1"
       before: RANDOM_UUID = uuid()
       broker: ktconfig_broker_name
       topic: DestinationTopicName
@@ -62,21 +62,24 @@ public class DocCommand implements Runnable {
           headAttribute1: "Sample record header value"
           ...
         key: |
-          code: P1
+          code: ${concat("UUID=", RANDOM_UUID)}
           label: Product 1
         value: |
           attribute1: SingleWord
           attribute2: 2.0
           ...
       after: pause(100)
-    - name: Name of Step 2
+    - name: "Name of Step 2"
       ...
   afterAll: info("All steps are finished.")
+  ---
+  name: NameOfSecondTestCase
+  ...
 """;
     final static String OPERATORS_DOC = STR."""
 \{BRIGHTYELLOW}Operators/Tokens:\{WHITE}
   -      -3       -3     Unary minus operator: negates the number value.
-  +      4+3       7     Addition operator: adds to numbers.
+  +      4+3       7     Addition operator: adds two numbers.
   -      9-5       4     Subtraction operator; subtracts second number from first number.
   *      2*3       6     Multiplication operator: multiplies two numbers.
   /      5/2      2.5    Division operator: divides first number by second number.
@@ -106,7 +109,7 @@ public class DocCommand implements Runnable {
             maxPar = max(maxPar, doc.param().length());
             maxRes = max(maxRes, doc.result().length());
         }
-        System.out.println(STR."\{BRIGHTYELLOW}Script Functions:\{WHITE}");
+        System.out.println(STR."\{BRIGHTYELLOW}Scripting Functions:\{WHITE}");
         FuncType previousType = null;
         for (var f : context.functions().stream().sorted(Comparator.comparing(o -> o.doc().type())).toList()) {
             if (f.doc().type() != previousType) {

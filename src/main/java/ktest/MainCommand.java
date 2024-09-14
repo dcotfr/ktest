@@ -7,7 +7,7 @@ import picocli.CommandLine;
 import static ktest.MainCommand.VERSION;
 
 @TopCommand
-@CommandLine.Command(name = "ktest", description = "Kafka test utility.",
+@CommandLine.Command(name = "ktest", description = "Kafka testing utility.",
         mixinStandardHelpOptions = true, version = VERSION,
         subcommands = {SRunCommand.class, PRunCommand.class, DocCommand.class})
 @RegisterForReflection(classNames = {"org.apache.kafka.common.security.scram.ScramLoginModule",
