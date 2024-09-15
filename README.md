@@ -2,17 +2,18 @@
 
 Utility for defining and executing Kafka message test cases by 
 - sending sets of messages *(step action: SEND)* to topics or 
-- checking for the presence *(step action: PRESENT)* or absence *(step action: ABSENT)* of messages in topics.
+- checking for the presence *(step action: PRESENT)* or absence *(step action: ABSENT)* of messages in topics or
+- disabling in progress messages *(step action: TODO)*.
 
 The content of the tested messages can be parameterized by script:
 - generally for an environment *(`onStart` and `onEnd` tags in the configuration)*
 - globally for a test case (`beforeAll` and `afterAll` tags in the test cases)
 - for a particular step (`before` and `after` tags of the step)
 - at the level of a message attribute (by including a marker `${...}`)
-- 
+
 Test case sets can be executed sequentially or in parallel, and a JUnit-format report is produced at the end of execution.
 
-This utility is compiled by default for Linux and supports messages using Avro.
+This utility is compiled by default for Linux *(or WSL2 under Windows)* and supports messages using Avro.
 
 ### Basic usage and list of available commands
 ```
@@ -190,5 +191,5 @@ Scripting Functions:
 ### License: [Apache License Version 2.0](LICENSE)
 
 ### FAQ
-##### How to change log level ?
+##### How to change log level?
 Add `-Dktest.log.level=<LEVEL>` to command line, using `TRACE`, `DEBUG`, `INFO` *(default)*, `WARN` or `ERROR` as level.
