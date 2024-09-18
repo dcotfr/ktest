@@ -3,11 +3,11 @@ package ktest.domain.config;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import ktest.core.KTestException;
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
+import ktest.core.KTestException;
 import picocli.CommandLine;
 
 import java.nio.file.Files;
@@ -32,7 +32,7 @@ final class KTestConfigProducer {
                 final var envOpt = subCommand != null ? subCommand.matchedOption("e") : null;
                 kConfig.currentEnvironment(envOpt != null ? envOpt.getValue() : "");
             } catch (final JsonProcessingException e) {
-                throw new KTestException(STR."Invalid syntax in config file \{cfgPath}", e);
+                throw new KTestException("Invalid syntax in config file " + cfgPath, e);
             }
         }
         return kConfig;
@@ -44,7 +44,7 @@ final class KTestConfigProducer {
             absolutePath = Path.of(pFile).toAbsolutePath();
             return Files.readString(absolutePath);
         } catch (final Throwable e) {
-            throw new KTestException(STR."Failed to read config file \{absolutePath != null ? absolutePath : pFile}", e);
+            throw new KTestException("Failed to read config file " + (absolutePath != null ? absolutePath : pFile), e);
         }
     }
 }

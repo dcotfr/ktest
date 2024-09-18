@@ -12,7 +12,7 @@ import static ktest.script.func.FuncType.TEXT;
 @ApplicationScoped
 public class LTrim extends Func {
     protected LTrim() {
-        super("ltrim", new FuncDoc(TEXT, "\" Test \"", "\"Test \"", "Returns the with all left spaces removed."));
+        super("ltrim", new FuncDoc(TEXT, "\" Test \"", "\"Test \"", "Returns the string with all left spaces removed."));
     }
 
     @Override

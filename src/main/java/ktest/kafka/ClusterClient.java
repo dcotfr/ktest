@@ -62,7 +62,7 @@ public class ClusterClient {
             producer.flush();
             futur.get(30, TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
-            throw new KTestException(STR."Failed to send record to \{pTopic.id()}", e);
+            throw new KTestException("Failed to send record to " + pTopic.id(), e);
         }
     }
 
@@ -143,7 +143,7 @@ public class ClusterClient {
     }
 
     private synchronized KafkaConsumer consumer(final TopicRef pTopic) {
-        return consumers.computeIfAbsent(STR."\{pTopic.id()}-\{Thread.currentThread().threadId()}", k -> {
+        return consumers.computeIfAbsent(pTopic.id() + "-" + Thread.currentThread().threadId(), k -> {
             final var kafkaConfig = kafkaConfigProvider.of(pTopic);
             LOG.trace("{}      Creating new consumer for {}({}).", BLUE, pTopic.id(), kafkaConfig.get("bootstrap.servers"));
             final var props = new Properties();
@@ -168,7 +168,7 @@ public class ClusterClient {
         final var expectedSerde = pKey ? pTopic.keySerde() : pTopic.valueSerde();
         final var availableSchema = registryService.lastActiveSchema(pTopic, pKey);
         if (expectedSerde == Serde.AVRO && availableSchema == null) {
-            throw new KTestException(STR."Expected Avro schema not found for \{pTopic.id()}\{pKey ? "key" : "value"}", null);
+            throw new KTestException("Expected Avro schema not found for " + pTopic.id() + (pKey ? "key" : "value"), null);
         }
         return (availableSchema == null || expectedSerde == Serde.STRING) ?
                 jsonNode.toString() : jsonAvroConverter.toAvro(jsonNode, availableSchema);

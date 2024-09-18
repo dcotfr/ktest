@@ -61,7 +61,7 @@ final class LineBuffer {
         return res;
     }
 
-    Num<?> readNumber() {
+    Num<?> readNum() {
         final StringBuilder raw = new StringBuilder();
         while (isDigit()) {
             raw.append(pop());
@@ -83,7 +83,7 @@ final class LineBuffer {
         return new Var(raw.toString());
     }
 
-    Txt readString() {
+    Txt readTxt() {
         final StringBuilder res = new StringBuilder();
         while (hasNext() && !isDQuote()) {
             res.append(pop());
@@ -112,7 +112,7 @@ final class LineBuffer {
                     parenthesisDepth++;
                 } else if (subBuf.isDQuote()) {
                     subBuf.pop();
-                    subBuf.readString();
+                    subBuf.readTxt();
                 } else {
                     subBuf.pop();
                 }
@@ -121,5 +121,11 @@ final class LineBuffer {
         }
         pos += subBuf.pos;
         return res.toString();
+    }
+
+    String readEndOfBuffer() {
+        final var res = new String(chars).substring(pos);
+        pos = chars.length;
+        return res;
     }
 }

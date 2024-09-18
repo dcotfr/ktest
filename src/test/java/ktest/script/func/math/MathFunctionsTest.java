@@ -1,11 +1,13 @@
 package ktest.script.func.math;
 
-import ktest.script.Engine;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import ktest.script.Engine;
+import ktest.script.ScriptException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusTest
 class MathFunctionsTest {
@@ -38,10 +40,34 @@ class MathFunctionsTest {
     }
 
     @Test
+    void maxUnboundedTest() {
+        assertEquals(1L, engine.eval("max(1)"));
+        assertEquals(3.3, engine.eval("max(1,-2,3.3,-4.4)"));
+        try {
+            engine.eval("max()");
+            fail();
+        } catch (final ScriptException e) {
+            assertEquals("At least one number argument required.", e.getMessage());
+        }
+    }
+
+    @Test
     void minTest() {
         assertEquals(2.0, engine.eval("min(5.0,2)"));
         assertEquals(1L, engine.eval("min(1,2)"));
         assertEquals(-3.5, engine.eval("min(-3.5,2.6)"));
+    }
+
+    @Test
+    void minUnboundedTest() {
+        assertEquals(1L, engine.eval("min(1)"));
+        assertEquals(-4.4, engine.eval("min(1,-2,3.3,-4.4)"));
+        try {
+            engine.eval("min()");
+            fail();
+        } catch (final ScriptException e) {
+            assertEquals("At least one number argument required.", e.getMessage());
+        }
     }
 
     @Test

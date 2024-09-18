@@ -16,7 +16,7 @@ abstract class AvroTypeConverterWithStrictJavaTypeCheck<T> implements AvroTypeCo
         if (javaType.isInstance(pJsonValue)) {
             return convertValue(pField, pSchema, (T) pJsonValue, pPath);
         }
-        throw new AvroGenException(STR."Field \{pPath} is expected to be type: \{javaType.getTypeName()}");
+        throw new AvroGenException("Field " + pPath + " is expected to be type: " + javaType.getTypeName());
     }
 
     abstract Object convertValue(final Schema.Field pField, final Schema pSchema, final T pValue, final Deque<String> pPath);

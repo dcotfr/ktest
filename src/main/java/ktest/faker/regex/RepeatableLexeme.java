@@ -16,10 +16,10 @@ abstract class RepeatableLexeme<T> {
 
     final T repetitionLimits(final int pMin, final int pMax) throws FakerException {
         if (pMin < 0) {
-            throw new FakerException(STR."Invalid repetition limit '\{pMin}': must be positive.");
+            throw new FakerException("Invalid repetition limit '" + pMin + "': must be positive.");
         }
         if (pMin > pMax) {
-            throw new FakerException(STR."Invalid repetition limits: lower '\{pMin}' is greater than upper '\{pMax}'.");
+            throw new FakerException("Invalid repetition limits: lower '" + pMin + "' is greater than upper '" + pMax + "'.");
         }
         minRepetition = pMin;
         maxRepetition = pMax;

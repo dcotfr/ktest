@@ -1,29 +1,41 @@
 package ktest.script.func.math;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import ktest.script.Context;
+import ktest.script.ScriptException;
 import ktest.script.func.Func;
 import ktest.script.func.FuncDoc;
 import ktest.script.token.Flt;
 import ktest.script.token.Int;
 import ktest.script.token.Num;
 import ktest.script.token.Stm;
-import jakarta.enterprise.context.ApplicationScoped;
 
 import static ktest.script.func.FuncType.MATH;
 
 @ApplicationScoped
 public class Min extends Func {
     protected Min() {
-        super("min", new FuncDoc(MATH, "5, -2", "-2", "Returns the minimal value of 2 numbers."));
+        super("min", new FuncDoc(MATH, "5, -2, 0", "-2", "Returns the minimal value of 1 or more numbers."));
     }
 
     @Override
     public Num apply(final Context pContext, final Stm pParam) {
-        final var params = extractParam(pContext, pParam, Number.class, Number.class);
-        final var n1 = (Number) params[0];
-        final var n2 = (Number) params[1];
-        final var min = Math.min(n1.doubleValue(), n2.doubleValue());
-        if (n1 instanceof Long && n2 instanceof Long) {
+        final var params = extractUnboundParams(pContext, pParam, Number.class);
+        if (params.length == 0) {
+            throw new ScriptException("At least one number argument required.");
+        }
+        boolean isLongOnly = true;
+        var min = Double.POSITIVE_INFINITY;
+        for (final var p : params) {
+            final var n = (Number) p;
+            if (n instanceof Double) {
+                isLongOnly = false;
+            }
+            if (n.doubleValue() < min) {
+                min = n.doubleValue();
+            }
+        }
+        if (isLongOnly) {
             return new Int(Double.valueOf(min).longValue());
         }
         return new Flt(min);

@@ -5,7 +5,7 @@ import ktest.script.ScriptException;
 
 final class Div extends Token<Character> {
     Div() {
-        super(3, '/');
+        super(4, '/');
     }
 
     @Override

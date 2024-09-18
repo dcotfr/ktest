@@ -4,7 +4,7 @@ import ktest.script.Context;
 
 final class Add extends Token<Character> {
     Add() {
-        super(2, '+');
+        super(3, '+');
     }
 
     @Override

@@ -10,7 +10,7 @@ public final class Stm extends Token<List<Token<?>>> {
     private final Stm parent;
 
     Stm(final Stm pParent) {
-        super(5, new ArrayList<>());
+        super(6, new ArrayList<>());
         parent = pParent;
     }
 
@@ -55,7 +55,7 @@ public final class Stm extends Token<List<Token<?>>> {
 
     Token<?> evalAt(final Context pContext, final int pIndex) {
         if (pIndex < 0 || pIndex >= value().size()) {
-            return null;
+            throw new ScriptException(syntaxErrorMessage("a token was expected", pIndex));
         }
         return value().get(pIndex).eval(pContext, this);
     }
@@ -78,6 +78,13 @@ public final class Stm extends Token<List<Token<?>>> {
             }
         }
         throw new ScriptException(syntaxErrorMessage("a number was expected", pIndex));
+    }
+
+    void group() {
+        final var compact = new Stm(parent());
+        compact.value().addAll(value());
+        value().clear();
+        value().add(compact);
     }
 
     void replace1With(final int pIndex, final Token<?> pToken) {

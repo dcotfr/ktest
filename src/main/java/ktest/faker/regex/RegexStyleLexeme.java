@@ -36,7 +36,7 @@ final class RegexStyleLexeme extends RepeatableLexeme<RegexStyleLexeme> {
                 final var endSection = splittedSections[i + 1];
                 final var endChar = endSection.charAt(0);
                 if (endChar < startChar) {
-                    throw new FakerException(STR."Invalid range: '\{startChar}-\{endChar}', start is after end.");
+                    throw new FakerException("Invalid range: '" + startChar + "-" + endChar + "', start is after end.");
                 }
                 expandedChars.append(startSection);
                 for (var c = startChar; c < endChar; c++) {

@@ -1,10 +1,10 @@
 package ktest.script.func;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import ktest.script.Context;
 import ktest.script.ScriptException;
 import ktest.script.token.Stm;
 import ktest.script.token.Txt;
-import jakarta.enterprise.context.ApplicationScoped;
 
 import static ktest.script.func.FuncType.MISC;
 
@@ -21,7 +21,7 @@ public class Pause extends Func {
             Thread.sleep(((Number) params[0]).longValue());
             return new Txt("");
         } catch (final InterruptedException e) {
-            throw new ScriptException(STR."\{command()} interrupted.", e);
+            throw new ScriptException(command() + " interrupted.", e);
         }
     }
 }

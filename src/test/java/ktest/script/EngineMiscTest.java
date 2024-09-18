@@ -23,9 +23,9 @@ class EngineMiscTest {
         engine.reset().eval("x=(3*5.5)");
         assertEquals(16.5, engine.context().variable("x").value());
         assertNull(engine.context().variable("str"));
-        engine.eval("str=\"essai\"");
+        engine.eval("str=\"<essai>?\"");
         assertEquals(16.5, engine.context().variable("x").value());
-        assertEquals("essai", engine.context().variable("str").value());
+        assertEquals("<essai>?", engine.context().variable("str").value());
     }
 
     @Test
@@ -34,7 +34,7 @@ class EngineMiscTest {
             engine.reset().eval("var=");
             fail();
         } catch (final ScriptException e) {
-            assertEquals("Syntax error: missing value to affect in >>>var<<<", e.getMessage());
+            assertEquals("Syntax error: a token was expected in var", e.getMessage());
         }
     }
 

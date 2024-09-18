@@ -36,6 +36,12 @@ class TextFunctionsTest {
     }
 
     @Test
+    void lengthTest() {
+        assertEquals(0L, engine.eval("length(\"\")"));
+        assertEquals(10L, engine.eval("length(\"Short text\")"));
+    }
+
+    @Test
     void lowerTest() {
         assertEquals("tolower", engine.eval("lower(\"ToLower\")"));
     }
@@ -43,6 +49,11 @@ class TextFunctionsTest {
     @Test
     void ltrimTest() {
         assertEquals("Test ", engine.eval("ltrim(\" Test \")"));
+    }
+
+    @Test
+    void replaceTest() {
+        assertEquals("AaAa", engine.eval("replace(\"ABAB\", \"B\", \"a\")"));
     }
 
     @Test

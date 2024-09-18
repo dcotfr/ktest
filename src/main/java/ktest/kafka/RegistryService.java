@@ -36,7 +36,7 @@ public class RegistryService {
     @Retry
     Schema lastActiveSchema(final TopicRef pTopic, final boolean pKey) {
         final var schemaSuffix = pKey ? "-key" : "-value";
-        final var schemaKey = STR."\{pTopic.topic()}\{schemaSuffix}@\{pTopic.broker()}";
+        final var schemaKey = pTopic.topic() + schemaSuffix + "@" + pTopic.broker();
         if (schemas.containsKey(schemaKey)) {
             return schemas.get(schemaKey);
         }
@@ -50,7 +50,7 @@ public class RegistryService {
                 final var rawSchema = (rawSchemas != null && !rawSchemas.isEmpty()) ? rawSchemas.getFirst() : null;
                 res = rawSchema != null ? new Schema.Parser().parse(rawSchema.canonicalString()) : null;
             } catch (final IOException | RestClientException e) {
-                throw new KTestException(STR."Error while getting schema of \{schemaKey}", e);
+                throw new KTestException("Error while getting schema of " + schemaKey, e);
             }
         }
         schemas.put(schemaKey, res);

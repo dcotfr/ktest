@@ -2,11 +2,14 @@ package ktest.script.token;
 
 import ktest.script.ScriptException;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class TokenizerTest {
+    private static final Logger log = LoggerFactory.getLogger(TokenizerTest.class);
     private final Tokenizer tokenizer = new Tokenizer();
 
     @Test
@@ -55,10 +58,10 @@ class TokenizerTest {
         }
 
         try {
-            tokenizer.tokenize("A_B_2==1.2 3");
+            tokenizer.tokenize("A_B_2=!1.2 3");
             fail();
         } catch (final ScriptException e) {
-            assertEquals("Unexpected affectation\nA_B_2==1.2 3\n------^\n", e.getMessage());
+            assertEquals("Unexpected character\nA_B_2=!1.2 3\n------^\n", e.getMessage());
         }
     }
 
@@ -137,5 +140,59 @@ class TokenizerTest {
         } catch (final ScriptException e) {
             assertEquals("Unexpected char\n1.2.3\n---^\n", e.getMessage());
         }
+    }
+
+    @Test
+    void equalTest() {
+        var res = tokenizer.tokenize("5==5").value();
+        assertEquals("[Int:5, Eq:==, Int:5]", res.toString());
+        res = tokenizer.tokenize("VAR==0").value();
+        assertEquals("[Var:VAR, Eq:==, Int:0]", res.toString());
+        res = tokenizer.tokenize("LOOP_COUNT==0 ? goto(\"Step n°1\")").value();
+        assertEquals("[Stm:[Var:LOOP_COUNT, Eq:==, Int:0], If:?, Stm:[Fun:goto(Stm:[Stm:[Txt:Step n°1]])]]", res.toString());
+    }
+
+    @Test
+    void notEqualTest() {
+        final var res = tokenizer.tokenize("2!=1").value();
+        assertEquals("[Int:2, Ne:!=, Int:1]", res.toString());
+    }
+
+    @Test
+    void greaterTest() {
+        final var res = tokenizer.tokenize("A>B").value();
+        assertEquals("[Var:A, Gt:>, Var:B]", res.toString());
+    }
+
+    @Test
+    void greaterOrEqualTest() {
+        final var res = tokenizer.tokenize("874 >= 900").value();
+        assertEquals("[Int:874, Ge:>=, Int:900]", res.toString());
+    }
+
+    @Test
+    void lesserTest() {
+        final var res = tokenizer.tokenize("0<0").value();
+        assertEquals("[Int:0, Lt:<, Int:0]", res.toString());
+    }
+
+    @Test
+    void lesserOrEqualTest() {
+        final var res = tokenizer.tokenize("1.1<=1.0").value();
+        assertEquals("[Flt:1.1, Le:<=, Flt:1.0]", res.toString());
+    }
+
+    @Test
+    void ifTest() {
+        var res = tokenizer.tokenize("1!=0?x=5").value();
+        assertEquals("[Stm:[Int:1, Ne:!=, Int:0], If:?, Stm:[Let:x, Int:5]]", res.toString());
+        res = tokenizer.tokenize("0?pause(5)").value();
+        assertEquals("[Stm:[Int:0], If:?, Stm:[Fun:pause(Stm:[Stm:[Int:5]])]]", res.toString());
+        res = tokenizer.tokenize("1==0?info(\"KO\")").value();
+        assertEquals("[Stm:[Int:1, Eq:==, Int:0], If:?, Stm:[Fun:info(Stm:[Stm:[Txt:KO]])]]", res.toString());
+        res = tokenizer.tokenize("(1>0)?(now())").value();
+        assertEquals("[Stm:[Stm:[Int:1, Gt:>, Int:0]], If:?, Stm:[Stm:[Fun:now(Stm:[])]]]", res.toString());
+        res = tokenizer.tokenize("1?y=6+2").value();
+        assertEquals("[Stm:[Int:1], If:?, Stm:[Let:y, Int:6, Add:+, Int:2]]", res.toString());
     }
 }

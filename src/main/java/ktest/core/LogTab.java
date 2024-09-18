@@ -18,6 +18,6 @@ public final class LogTab {
     }
 
     public String tab(final String pColor) {
-        return (showThread ? STR."\{Thread.currentThread().threadId()} " : "") + " ".repeat(tab) + pColor;
+        return (showThread ? Thread.currentThread().threadId() + " " : "") + " ".repeat(tab) + pColor;
     }
 }

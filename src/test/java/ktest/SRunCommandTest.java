@@ -41,7 +41,7 @@ class SRunCommandTest {
     @Test
     @Launch(value = {"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.0\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.1\r", pResult.getOutput());
     }
 
     @Test
@@ -130,5 +130,14 @@ class SRunCommandTest {
         assertTrue(rec.headers().isEmpty());
         assertEquals("\"K1\"", rec.keyNode().toString());
         assertNull(rec.value());
+    }
+
+    @Test
+    @Launch(value = {"srun", "-e=pi", "-f=src\\test\\resources\\gotoFile.yml"})
+    void gotoFileTest(final LaunchResult pResult) {
+        final int found = (int) pResult.getOutputStream().stream()
+                .filter(log -> log.equals("I   - Step : Step n°1 (SEND)\r"))
+                .count();
+        assertEquals(5, found);
     }
 }

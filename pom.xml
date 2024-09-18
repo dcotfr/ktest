@@ -6,16 +6,16 @@
 
     <groupId>ktest</groupId>
     <artifactId>ktest</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <properties>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.14.4</quarkus.platform.version>
+        <quarkus.platform.version>3.15.1</quarkus.platform.version>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <surefire-plugin.version>3.5.0</surefire-plugin.version>
-        <maven.compiler.source>22</maven.compiler.source>
-        <maven.compiler.target>22</maven.compiler.target>
+        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.target>23</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.parameters>true</maven.compiler.parameters>
     </properties>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
-            <version>7.7.0</version>
+            <version>7.7.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>jakarta.ws.rs</groupId>

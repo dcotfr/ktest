@@ -1,12 +1,12 @@
 package ktest.script.func.hash;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import ktest.script.Context;
 import ktest.script.ScriptException;
 import ktest.script.func.Func;
 import ktest.script.func.FuncDoc;
 import ktest.script.token.Stm;
 import ktest.script.token.Txt;
-import jakarta.enterprise.context.ApplicationScoped;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -28,7 +28,7 @@ public class Sha256 extends Func {
             sha256Digest.update(params[0].toString().getBytes());
             return new Txt(HexFormat.of().formatHex(sha256Digest.digest()));
         } catch (final NoSuchAlgorithmException e) {
-            throw new ScriptException(STR."\{command()} interrupted.", e);
+            throw new ScriptException(command() + " interrupted.", e);
         }
     }
 }

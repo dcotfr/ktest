@@ -7,7 +7,7 @@ final class Fun extends Token<String> {
     private final Stm param;
 
     Fun(final String pValue, final Stm pParam) {
-        super(4, pValue);
+        super(5, pValue);
         param = pParam;
     }
 

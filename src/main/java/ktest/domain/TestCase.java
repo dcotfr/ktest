@@ -3,8 +3,8 @@ package ktest.domain;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import ktest.core.KTestException;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import ktest.core.KTestException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,7 +42,7 @@ public record TestCase(String name, String beforeAll, List<Step> steps, String a
             absolutePath = Path.of(pFile).toAbsolutePath();
             return Files.readString(absolutePath);
         } catch (final Throwable e) {
-            throw new KTestException(STR."Failed to read test case file \{absolutePath != null ? absolutePath : pFile}", e);
+            throw new KTestException("Failed to read test case file " + (absolutePath != null ? absolutePath : pFile), e);
         }
     }
 }

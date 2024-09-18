@@ -21,7 +21,10 @@ public final class Tokenizer {
             } else if ("=+-*/".indexOf(buf.current()) >= 0) {
                 switch (buf.pop()) {
                     case '=' -> {
-                        if (stm.parent() == null && stm.value().size() == 1 && stm.value().getFirst() instanceof Var var) {
+                        if (buf.current() == '=') {
+                            buf.pop();
+                            stm.add(new Eq());
+                        } else if (stm.parent() == null && stm.value().size() == 1 && stm.value().getFirst() instanceof Var var) {
                             stm.replace1With(0, new Let(var.value()));
                         } else {
                             error("Unexpected affectation", pLine, buf.pos());
@@ -32,11 +35,39 @@ public final class Tokenizer {
                     case '*' -> stm.add(new Mul());
                     case '/' -> stm.add(new Div());
                 }
+            } else if (buf.current() == '!') {
+                buf.pop();
+                if (buf.current() != '=') {
+                    error("Unexpected character", pLine, buf.pos());
+                }
+                buf.pop();
+                stm.add(new Ne());
+            } else if (buf.current() == '<') {
+                buf.pop();
+                if (buf.current() != '=') {
+                    stm.add(new Lt());
+                } else {
+                    buf.pop();
+                    stm.add(new Le());
+                }
+            } else if (buf.current() == '>') {
+                buf.pop();
+                if (buf.current() != '=') {
+                    stm.add(new Gt());
+                } else {
+                    buf.pop();
+                    stm.add(new Ge());
+                }
+            } else if (buf.current() == '?') {
+                buf.pop();
+                stm.group();
+                stm.add(new If());
+                stm.add(tokenize(buf.readEndOfBuffer()));
             } else if (buf.isDigit()) {
-                stm.add(buf.readNumber());
+                stm.add(buf.readNum());
             } else if (buf.isDQuote()) {
                 buf.pop();
-                final var str = buf.readString();
+                final var str = buf.readTxt();
                 if (str == null) {
                     error("Double quote not matching", pLine, buf.pos());
                 }

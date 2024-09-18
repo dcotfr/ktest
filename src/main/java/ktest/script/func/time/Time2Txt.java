@@ -1,12 +1,12 @@
 package ktest.script.func.time;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import ktest.script.Context;
 import ktest.script.ScriptException;
 import ktest.script.func.Func;
 import ktest.script.func.FuncDoc;
 import ktest.script.token.Stm;
 import ktest.script.token.Txt;
-import jakarta.enterprise.context.ApplicationScoped;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,7 +26,7 @@ public class Time2Txt extends Func {
             final var format = new SimpleDateFormat((String) params[0]);
             return new Txt(format.format(new Date(((Number) params[1]).longValue())));
         } catch (final NullPointerException | IllegalArgumentException e) {
-            throw new ScriptException(STR."Invalid date/time format in \{command()}: \{params[0]}");
+            throw new ScriptException("Invalid date/time format in " + command() + ": " + params[0]);
         }
     }
 }

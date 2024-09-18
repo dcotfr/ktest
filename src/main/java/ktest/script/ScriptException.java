@@ -2,7 +2,7 @@ package ktest.script;
 
 import ktest.core.KTestException;
 
-public final class ScriptException extends KTestException {
+public class ScriptException extends KTestException {
     public ScriptException(final String pMessage) {
         this(pMessage, null);
     }

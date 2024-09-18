@@ -27,6 +27,6 @@ class MainCommandTest {
     @Test
     @Launch(value = {"-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.0\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.1\r", pResult.getOutput());
     }
 }

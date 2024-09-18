@@ -146,6 +146,16 @@ Operators/Tokens:
   )     -(-4)      4     Right brace: ends increased priority.
 ```
 ```
+Conditions/Tokens:
+  ?    cnd?stm           Execute a statement only if condition is true (=1).
+  ==   "A"=="A"    1     Equal: true if arguments are equals.
+  !=     5!=5      0     Not Equal: true if arguments are differents.
+  <=    2<=1+1     1     Lesser or Equal: true if left argument is smaller or equal to right argument.
+  <      2<2       0     Lesser: true if left argument is strictly smaller than right argument.
+  >=     0>=1      0     Greater or Equal: true if left argument is greater or equal to right argument.
+  >      3>2       1     Greater: true if left argument is strictly greater than right argument.
+```
+```
 Scripting Functions:
  FAKER:
   regexgen("E-[A-Z]{2,4}#{2}")                   "E-AJD##"                              Returns a new random string matching provided regex.
@@ -168,19 +178,22 @@ Scripting Functions:
   abs     (-3.14)                                3.14                                   Returns the absolute value of a number.
   ceil    (3.14)                                 4                                      Returns the least integer value >= to given number.
   floor   (3.14)                                 3                                      Returns the greatest integer value <= to given number.
-  max     (5, -2)                                5                                      Returns the maximal value of 2 numbers.
-  min     (5, -2)                                -2                                     Returns the minimal value of 2 numbers.
+  max     (5, -2)                                5                                      Returns the maximal value of 1 or more numbers.
+  min     (5, -2, 0)                             -2                                     Returns the minimal value of 1 or more numbers.
   round   (2.43)                                 2                                      Returns the nearest integer, rounding half away from zero.
  MISC:
-  env     ("PATH")                               "C:\Windows\..."                       Returns the value of an ENV variable.
+  env     ("SHELL")                              "/bin/bash"                            Returns the value of an ENV variable.
+  goto    ("NameOfStep")                                                                Jump and continue to named Step.
   pause   (3000)                                                                        Pause treatment during provided milliseconds.
  TEXT:
   concat  ("Aaa", "Bbb",...)                     "AaaBbb"                               Returns the concatenation of multiple strings.
   left    ("Sample", 3)                          "Sam"                                  Returns the x first characters of a string.
+  length  ("Short text")                         10                                     Returns the length of a string.
   lower   ("ToLower")                            "tolower"                              Returns the lower cased string.
-  ltrim   (" Test ")                             "Test "                                Returns the with all left spaces removed.
+  ltrim   (" Test ")                             "Test "                                Returns the string with all left spaces removed.
+  replace ("ABAB", "B", "a")                     "AaAa"                                 Returns a new string with old substring replaced by new substring.
   right   ("Sample", 3)                          "ple"                                  Returns the x last characters of a string.
-  rtrim   (" Test ")                             " Test"                                Returns the with all right spaces removed.
+  rtrim   (" Test ")                             " Test"                                Returns the string with all right spaces removed.
   upper   ("ToUpper")                            "TOUPPER"                              Returns the upper cased string.
  TIME:
   now     ()                                     1708808432990                          Returns the current time in millis.
@@ -191,5 +204,42 @@ Scripting Functions:
 ### License: [Apache License Version 2.0](LICENSE)
 
 ### FAQ
+##### The tested process does not have time to produce events before the presence check.
+For example, you can group all the `action: SEND` steps and then use a `before: pause(x)` script in the definition of the first `action: PRESENT` step, to give the process time to execute.
+
+##### How can we ensure there will be no poison pill?
+In the absence of specific instructions, ktest attempts to retrieve a potential schema for the keys/values: if found, the schema is used, otherwise, serialization defaults to String.
+
+In case of registry availability issues, a string message could be mistakenly sent to a topic expecting a schema.
+
+This problem can be resolved by enforcing a type with the options `keySerde: STRING or AVRO` and/or `valueSerde: STRING or AVRO` in the step definitions.
+
+##### What are the scopes of script variables?
+- `onStart` / `onEnd` of environments _(configuration file)_: visible in all test cases & steps.
+- `beforeAll` / `afterAll` of test cases: visible in all steps of the test case.
+- `before` / `after`: limited to the step where they are declared.
+
 ##### How to change log level?
 Add `-Dktest.log.level=<LEVEL>` to command line, using `TRACE`, `DEBUG`, `INFO` *(default)*, `WARN` or `ERROR` as level.
+
+##### How to iterate on sending events or run a load test?
+You can define as many test case-level counter variables and use them in combination with step-level conditioned `goto` orders to iterate.
+For example:
+```yaml
+name: Goto Test Case
+beforeAll: |
+  LOOP_COUNT = 10
+steps:
+  - name: Send 10 events
+    ...
+    action: SEND
+    record:
+      key: "Loop-${LOOP_COUNT}"
+      value: |
+        ...
+    after: |
+      LOOP_COUNT = LOOP_COUNT - 1
+      LOOP_COUNT!=0 ? goto("Send 10 events")
+  - name: Verify result
+    ...
+```

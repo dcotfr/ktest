@@ -8,11 +8,6 @@ import ktest.script.token.Txt;
 
 import java.util.function.BiFunction;
 
-/**
- * https://docs.gomplate.ca/functions/
- * base64.encode(String) -> String
- * base64.decode(String) -> String
- */
 public abstract class Func implements BiFunction<Context, Stm, Token<?>> {
     private final String command;
     private final FuncDoc doc;
@@ -34,26 +29,26 @@ public abstract class Func implements BiFunction<Context, Stm, Token<?>> {
         final var expected = pTypes.length;
         final var found = pParam.value().size();
         if (expected != found) {
-            throw new ScriptException(STR."Invalid number of arguments in \{command()}: \{expected} expected, \{found} found.");
+            throw new ScriptException("Invalid number of arguments in " + command() + ": " + expected + " expected, " + found + " found.");
         }
         final var res = new Object[expected];
         for (int i = 0; i < expected; i++) {
             final var v = ((Stm) pParam.value().get(i)).evalValue(pContext);
             if (!pTypes[i].isAssignableFrom(v.getClass())) {
-                throw new ScriptException(STR."Invalid type of argument in \{command()}: \{pTypes[i]} expected, \{v.getClass()} found.");
+                throw new ScriptException("Invalid type of argument in " + command() + ": " + pTypes[i] + " expected, " + v.getClass() + " found.");
             }
             res[i] = v;
         }
         return res;
     }
 
-    private Object[] extractUnboundParams(final Context pContext, final Stm pParam, final Class<?> pType) {
+    protected Object[] extractUnboundParams(final Context pContext, final Stm pParam, final Class<?> pType) {
         final var expected = pParam.value().size();
         final var res = new Object[expected];
         for (int i = 0; i < expected; i++) {
             final var v = ((Stm) pParam.value().get(i)).evalValue(pContext);
             if (!pType.isAssignableFrom(v.getClass())) {
-                throw new ScriptException(STR."Invalid type of argument in \{command()}: \{pType} expected, \{v.getClass()} found.");
+                throw new ScriptException("Invalid type of argument in " + command() + ": " + pType + " expected, " + v.getClass() + " found.");
             }
             res[i] = v;
         }

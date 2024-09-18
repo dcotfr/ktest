@@ -6,6 +6,7 @@ import io.quarkus.test.junit.main.QuarkusMainTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusMainTest
 class PRunCommandTest {
@@ -23,7 +24,7 @@ class PRunCommandTest {
     @Test
     @Launch(value = {"prun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.0\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.1\r", pResult.getOutput());
     }
 
     @Test
@@ -41,5 +42,14 @@ class PRunCommandTest {
     @Test
     @Launch(value = {"prun", "-e=pi", "-f=src\\test\\resources\\validFile.yml"})
     void validFileTest(final LaunchResult pResult) {
+    }
+
+    @Test
+    @Launch(value = {"srun", "-e=pi", "-f=src\\test\\resources\\gotoFile.yml"})
+    void gotoFileTest(final LaunchResult pResult) {
+        final int found = (int) pResult.getOutputStream().stream()
+                .filter(log -> log.equals("I   - Step : Step n°1 (SEND)\r"))
+                .count();
+        assertEquals(5, found);
     }
 }

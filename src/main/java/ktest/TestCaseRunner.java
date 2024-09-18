@@ -11,6 +11,8 @@ import ktest.domain.xunit.XUnitSuite;
 import ktest.kafka.ClusterClient;
 import ktest.kafka.TopicRef;
 import ktest.script.Engine;
+import ktest.script.ScriptException;
+import ktest.script.func.GotoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +21,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import static ktest.core.AnsiColor.*;
 
@@ -119,45 +122,58 @@ class TestCaseRunner implements Callable<XUnitReport> {
 
     boolean executeTestCase(final Engine pEngine, final TestCase pTestCase, final XUnitSuite pTestSuite) {
         var skipAfterFailureOrError = false;
-        for (final var step : pTestCase.steps()) {
+        final var steps = pTestCase.steps();
+        for (int i = 0; i < steps.size(); i++) {
+            var step = steps.get(i);
             final var action = step.action();
-            final var xUnitCase = pTestSuite.startNewCase(STR."\{step.name()} (\{action})", pTestCase.name(), action == Action.PRESENT || action == Action.ABSENT);
-            LOG.info("{}- Step : {} ({})", logTab.tab(action == Action.TODO || skipAfterFailureOrError ? BRIGHTYELLOW : WHITE), step.name(), action);
-            if (action == Action.TODO) {
-                xUnitCase.skip("Marked as TODO");
-            } else if (skipAfterFailureOrError) {
-                xUnitCase.skip("Skipped because of previous failure or error.");
-            } else {
-                logTab.inc();
-                evalScript(pEngine, "before", step.beforeScript());
-                pEngine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
-                final var topicRef = new TopicRef(evalInLine(pEngine, step.broker()), evalInLine(pEngine, step.topic()), step.keySerde(), step.valueSerde());
-                LOG.debug("{}Target: {}", logTab.tab(LIGHTGRAY), topicRef.id());
-                final var parsedRecord = evalInLine(pEngine, step.record());
-                LOG.debug("{}Record: {}", logTab.tab(LIGHTGRAY), parsedRecord);
-                try {
-                    if (action == Action.SEND) {
-                        kafkaClient.send(topicRef, parsedRecord);
-                    } else {
-                        var found = kafkaClient.find(topicRef, parsedRecord, backOffset);
-                        if (!found && action == Action.PRESENT) {
-                            LOG.trace("{}Retrying find with larger range...", logTab.tab(LIGHTGRAY));
-                            Thread.sleep(250);
-                            found = kafkaClient.find(topicRef, parsedRecord, 2 * backOffset);
+            final var xUnitCase = pTestSuite.startNewCase(step.name() + " (" + action + ")", pTestCase.name(), action == Action.PRESENT || action == Action.ABSENT);
+            try {
+                LOG.info("{}- Step : {} ({})", logTab.tab(action == Action.TODO || skipAfterFailureOrError ? BRIGHTYELLOW : WHITE), step.name(), action);
+                if (action == Action.TODO) {
+                    xUnitCase.skip("Marked as TODO");
+                } else if (skipAfterFailureOrError) {
+                    xUnitCase.skip("Skipped because of previous failure or error.");
+                } else {
+                    logTab.inc();
+                    evalScript(pEngine, "before", step.beforeScript());
+                    pEngine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
+                    final var topicRef = new TopicRef(evalInLine(pEngine, step.broker()), evalInLine(pEngine, step.topic()), step.keySerde(), step.valueSerde());
+                    LOG.debug("{}Target: {}", logTab.tab(LIGHTGRAY), topicRef.id());
+                    final var parsedRecord = evalInLine(pEngine, step.record());
+                    LOG.debug("{}Record: {}", logTab.tab(LIGHTGRAY), parsedRecord);
+                    try {
+                        if (action == Action.SEND) {
+                            kafkaClient.send(topicRef, parsedRecord);
+                        } else {
+                            var found = kafkaClient.find(topicRef, parsedRecord, backOffset);
+                            if (!found && action == Action.PRESENT) {
+                                LOG.trace("{}Retrying find with larger range...", logTab.tab(LIGHTGRAY));
+                                Thread.sleep(250);
+                                found = kafkaClient.find(topicRef, parsedRecord, 2 * backOffset);
+                            }
+                            if ((found && action == Action.ABSENT) || (!found && action == Action.PRESENT)) {
+                                LOG.warn("{}{} assertion failed for record {}.", logTab.tab(RED), action, parsedRecord);
+                                xUnitCase.fail(action + " assertion failed.", parsedRecord.toString());
+                                skipAfterFailureOrError = true;
+                            }
                         }
-                        if ((found && action == Action.ABSENT) || (!found && action == Action.PRESENT)) {
-                            LOG.warn("{}{} assertion failed for record {}.", logTab.tab(RED), action, parsedRecord);
-                            xUnitCase.fail(STR."\{action} assertion failed.", parsedRecord.toString());
-                            skipAfterFailureOrError = true;
-                        }
+                    } catch (final RuntimeException | InterruptedException e) {
+                        LOG.error("{}{} error.", logTab.tab(RED), action, e);
+                        xUnitCase.error("Action error: " + e.getMessage(), e);
+                        skipAfterFailureOrError = true;
                     }
-                } catch (final RuntimeException | InterruptedException e) {
-                    LOG.error("{}{} error.", logTab.tab(RED), action, e);
-                    xUnitCase.error(STR."Action error: \{e.getMessage()}", e);
-                    skipAfterFailureOrError = true;
+                    evalScript(pEngine, "after", step.afterScript());
+                    logTab.dec();
                 }
-                evalScript(pEngine, "after", step.afterScript());
+            } catch (final GotoException e) {
                 logTab.dec();
+                final var target = IntStream.range(0, steps.size())
+                        .filter(idx -> e.stepName().equalsIgnoreCase(steps.get(idx).name()))
+                        .findFirst().orElse(-1);
+                if (target < 0) {
+                    throw new ScriptException("Step '" + e.stepName() + "' not found");
+                }
+                i = target - 1;
             }
             xUnitCase.end();
         }

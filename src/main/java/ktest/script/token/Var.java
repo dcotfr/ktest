@@ -5,7 +5,7 @@ import ktest.script.ScriptException;
 
 final class Var extends Token<String> {
     Var(final String pValue) {
-        super(6, pValue);
+        super(7, pValue);
     }
 
     @Override

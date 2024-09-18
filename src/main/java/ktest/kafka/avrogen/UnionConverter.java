@@ -34,7 +34,7 @@ final class UnionConverter implements AvroTypeConverter {
                 // thrown only for union of more complex types like records
             }
         }
-        throw new AvroGenException(STR."Could not evaluate union, field \{pField.name()} is expected to be one of these: \{String.join(", ", incompatibleTypes)}. If this is a complex type, check if offending field: \{pPath} adheres to schema.");
+        throw new AvroGenException("Could not evaluate union, field " + pField.name() + " is expected to be one of these: " + String.join(", ", incompatibleTypes) + ". If this is a complex type, check if offending field: " + pPath + " adheres to schema.");
     }
 
     @Override

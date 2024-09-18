@@ -4,7 +4,7 @@ import ktest.script.Context;
 
 final class Mul extends Token<Character> {
     Mul() {
-        super(3, '*');
+        super(4, '*');
     }
 
     @Override

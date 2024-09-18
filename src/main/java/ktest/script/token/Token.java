@@ -3,16 +3,15 @@ package ktest.script.token;
 import ktest.script.Context;
 
 /**
- * Add : 2
- * Div : 3
- * Fun : 4
- * Let : 1
- * Mul : 3
- * Num : 0
- * Stm : 5
- * Sub : 2
- * Tex : 0
- * Var : 6
+ * 0: Num (Int, Flt), Txt
+ * 1: Let
+ * 2: Comp (Eq, Ge, Gt, Le, Lt, Ne)
+ * 3: Add, Sub
+ * 4: Div, Mul
+ * 5: Fun
+ * 6: Stm
+ * 7: Var
+ * 8: If
  *
  * @param <T>
  */
@@ -39,6 +38,6 @@ public abstract class Token<T> {
 
     @Override
     public String toString() {
-        return STR."\{getClass().getSimpleName()}:\{value()}";
+        return getClass().getSimpleName() + ":" + value();
     }
 }
