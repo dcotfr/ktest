@@ -19,7 +19,7 @@ public class Min extends Func {
     }
 
     @Override
-    public Num apply(final Context pContext, final Stm pParam) {
+    public Num<? extends Number> apply(final Context pContext, final Stm pParam) {
         final var params = extractUnboundParams(pContext, pParam, Number.class);
         if (params.length == 0) {
             throw new ScriptException("At least one number argument required.");

@@ -33,8 +33,8 @@ import static ktest.core.AnsiColor.BLUE;
 public class ClusterClient {
     private static final Logger LOG = LoggerFactory.getLogger(ClusterClient.class);
 
-    private final Map<String, KafkaProducer> producers = new HashMap<>();
-    private final Map<String, KafkaConsumer> consumers = new HashMap<>();
+    private final Map<String, KafkaProducer<Object, Object>> producers = new HashMap<>();
+    private final Map<String, KafkaConsumer<Object, Object>> consumers = new HashMap<>();
     private final KafkaConfigProvider kafkaConfigProvider;
     private final RegistryService registryService;
     private final JsonAvroConverter jsonAvroConverter;
@@ -77,7 +77,7 @@ public class ClusterClient {
                     break;
                 }
                 for (final var o : recs) {
-                    if (o instanceof ConsumerRecord rec) {
+                    if (o instanceof ConsumerRecord<?, ?> rec) {
                         if (assertRecord(pRecord, rec)) {
                             return true;
                         }
@@ -91,7 +91,7 @@ public class ClusterClient {
         return false;
     }
 
-    private long resetConsumer(final KafkaConsumer pConsumer, final String pTopicName, final int pBackOffset) {
+    private long resetConsumer(final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {
         final var partitions = new ArrayList<TopicPartition>();
         for (final var p : pConsumer.partitionsFor(pTopicName)) {
             partitions.add(new TopicPartition(pTopicName, ((PartitionInfo) p).partition()));
@@ -107,7 +107,7 @@ public class ClusterClient {
         return lastOffset - 1;
     }
 
-    private boolean assertRecord(final TestRecord pExpected, final ConsumerRecord pActual) {
+    private boolean assertRecord(final TestRecord pExpected, final ConsumerRecord<?, ?> pActual) {
         if (pExpected.longTimestamp() != null && pExpected.longTimestamp() != pActual.timestamp()) {
             return false;
         }
@@ -132,7 +132,7 @@ public class ClusterClient {
         return true;
     }
 
-    private synchronized KafkaProducer producer(final TopicRef pTopic) {
+    private synchronized KafkaProducer<Object, Object> producer(final TopicRef pTopic) {
         return producers.computeIfAbsent(pTopic.id(), k -> {
             final var kafkaConfig = kafkaConfigProvider.of(pTopic);
             LOG.trace("{}      Creating new producer for {}({}).", BLUE, pTopic.id(), kafkaConfig.get("bootstrap.servers"));
@@ -142,13 +142,13 @@ public class ClusterClient {
         });
     }
 
-    private synchronized KafkaConsumer consumer(final TopicRef pTopic) {
+    private synchronized KafkaConsumer<?, ?> consumer(final TopicRef pTopic) {
         return consumers.computeIfAbsent(pTopic.id() + "-" + Thread.currentThread().threadId(), k -> {
             final var kafkaConfig = kafkaConfigProvider.of(pTopic);
             LOG.trace("{}      Creating new consumer for {}({}).", BLUE, pTopic.id(), kafkaConfig.get("bootstrap.servers"));
             final var props = new Properties();
             props.putAll(kafkaConfig);
-            return new KafkaConsumer(props);
+            return new KafkaConsumer<>(props);
         });
     }
 
