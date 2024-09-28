@@ -1,9 +1,9 @@
 package ktest;
 
-import ktest.core.AnsiColor;
 import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
 import io.quarkus.test.junit.main.QuarkusMainTest;
+import ktest.core.AnsiColor;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,10 +11,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @QuarkusMainTest
 class DocCommandTest {
     @Test
+    @Launch(value = {"doc", "-h"})
+    void helpOptionTest(final LaunchResult pResult) {
+        final var expected = String.join(System.lineSeparator(),
+                "I Usage: ktest doc [-hV]",
+                "I Display of the full documentation.",
+                "I   -h, --help      Show this help message and exit.",
+                "I   -V, --version   Print version information and exit.\r");
+        assertEquals(expected, pResult.getOutput());
+    }
+
+    @Test
     @Launch(value = {"doc"})
     void runTest(final LaunchResult pResult) {
         final var expected = String.join("\n",
-                        DocCommand.SAMPLE_CONFIG, DocCommand.SAMPLE_TEST_CASE, DocCommand.OPERATORS_DOC, DocCommand.CONDITIONS_DOC,
+                        DocCommand.SAMPLE_CONFIG, DocCommand.SAMPLE_TEST_CASE,
+                        DocCommand.OPERATORS_DOC, DocCommand.CONDITIONS_DOC, DocCommand.SPECIALS_DOC,
                         "Scripting Functions:",
                         " FAKER:",
                         "  regexgen(\"E-[A-Z]{2,4}#{2}\")                   \"E-AJD##\"                              Returns a new random string matching provided regex.",

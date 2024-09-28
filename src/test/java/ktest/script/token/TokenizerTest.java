@@ -14,17 +14,17 @@ class TokenizerTest {
 
     @Test
     void letTest() {
-        var res = tokenizer.tokenize("a=1").value();
-        assertEquals("[Let:a, Int:1]", res.toString());
+        var res = assertOnlyOneStmAndEval("a=1");
+        assertEquals("[Let:a, Int:1]", res);
 
-        res = tokenizer.tokenize("essai = 2.5 - 3.6").value();
-        assertEquals("[Let:essai, Flt:2.5, Sub:-, Flt:3.6]", res.toString());
+        res = assertOnlyOneStmAndEval("essai = 2.5 - 3.6");
+        assertEquals("[Let:essai, Flt:2.5, Sub:-, Flt:3.6]", res);
 
-        res = tokenizer.tokenize("_A=5.6").value();
-        assertEquals("[Let:_A, Flt:5.6]", res.toString());
+        res = assertOnlyOneStmAndEval("_A=5.6");
+        assertEquals("[Let:_A, Flt:5.6]", res);
 
-        res = tokenizer.tokenize("txt=\"Liste d'éléments <=>+-/*\"").value();
-        assertEquals("[Let:txt, Txt:Liste d'éléments <=>+-/*]", res.toString());
+        res = assertOnlyOneStmAndEval("txt=\"Liste d'éléments <=>+-/*\"");
+        assertEquals("[Let:txt, Txt:Liste d'éléments <=>+-/*]", res);
     }
 
     @Test
@@ -67,29 +67,29 @@ class TokenizerTest {
 
     @Test
     void expressionTest() {
-        var res = tokenizer.tokenize("(2*(3.1+4.2))/5").value();
-        assertEquals("[Stm:[Int:2, Mul:*, Stm:[Flt:3.1, Add:+, Flt:4.2]], Div:/, Int:5]", res.toString());
+        var res = assertOnlyOneStmAndEval("(2*(3.1+4.2))/5");
+        assertEquals("[Stm:[Int:2, Mul:*, Stm:[Flt:3.1, Add:+, Flt:4.2]], Div:/, Int:5]", res);
     }
 
     @Test
     void functionTest() {
-        var res = tokenizer.tokenize("func()").value();
-        assertEquals("[Fun:func(Stm:[])]", res.toString());
+        var res = assertOnlyOneStmAndEval("func()");
+        assertEquals("[Fun:func(Stm:[])]", res);
 
-        res = tokenizer.tokenize("func(1+2)").value();
-        assertEquals("[Fun:func(Stm:[Stm:[Int:1, Add:+, Int:2]])]", res.toString());
+        res = assertOnlyOneStmAndEval("func(1+2)");
+        assertEquals("[Fun:func(Stm:[Stm:[Int:1, Add:+, Int:2]])]", res);
 
-        res = tokenizer.tokenize("func(1,var+3)").value();
-        assertEquals("[Fun:func(Stm:[Stm:[Int:1], Stm:[Var:var, Add:+, Int:3]])]", res.toString());
+        res = assertOnlyOneStmAndEval("func(1,var+3)");
+        assertEquals("[Fun:func(Stm:[Stm:[Int:1], Stm:[Var:var, Add:+, Int:3]])]", res);
 
-        res = tokenizer.tokenize("func1(1,func2()+5)").value();
-        assertEquals("[Fun:func1(Stm:[Stm:[Int:1], Stm:[Fun:func2(Stm:[]), Add:+, Int:5]])]", res.toString());
+        res = assertOnlyOneStmAndEval("func1(1,func2()+5)");
+        assertEquals("[Fun:func1(Stm:[Stm:[Int:1], Stm:[Fun:func2(Stm:[]), Add:+, Int:5]])]", res);
 
-        res = tokenizer.tokenize("faker.regex(\"[A-Z]{13}\")").value();
-        assertEquals("[Fun:faker.regex(Stm:[Stm:[Txt:[A-Z]{13}]])]", res.toString());
+        res = assertOnlyOneStmAndEval("faker.regex(\"[A-Z]{13}\")");
+        assertEquals("[Fun:faker.regex(Stm:[Stm:[Txt:[A-Z]{13}]])]", res);
 
-        res = tokenizer.tokenize("1+f1(2/f2(),3.2+f3(f4()))*f5(1,2.1,3)").value();
-        assertEquals("[Int:1, Add:+, Fun:f1(Stm:[Stm:[Int:2, Div:/, Fun:f2(Stm:[])], Stm:[Flt:3.2, Add:+, Fun:f3(Stm:[Stm:[Fun:f4(Stm:[])]])]]), Mul:*, Fun:f5(Stm:[Stm:[Int:1], Stm:[Flt:2.1], Stm:[Int:3]])]", res.toString());
+        res = assertOnlyOneStmAndEval("1+f1(2/f2(),3.2+f3(f4()))*f5(1,2.1,3)");
+        assertEquals("[Int:1, Add:+, Fun:f1(Stm:[Stm:[Int:2, Div:/, Fun:f2(Stm:[])], Stm:[Flt:3.2, Add:+, Fun:f3(Stm:[Stm:[Fun:f4(Stm:[])]])]]), Mul:*, Fun:f5(Stm:[Stm:[Int:1], Stm:[Flt:2.1], Stm:[Int:3]])]", res);
     }
 
     @Test
@@ -135,7 +135,7 @@ class TokenizerTest {
     @Test
     void unexpectedCharTest() {
         try {
-            tokenizer.tokenize("1.2.3").value();
+            tokenizer.tokenize("1.2.3").getFirst().value();
             fail();
         } catch (final ScriptException e) {
             assertEquals("Unexpected char\n1.2.3\n---^\n", e.getMessage());
@@ -144,55 +144,70 @@ class TokenizerTest {
 
     @Test
     void equalTest() {
-        var res = tokenizer.tokenize("5==5").value();
-        assertEquals("[Int:5, Eq:==, Int:5]", res.toString());
-        res = tokenizer.tokenize("VAR==0").value();
-        assertEquals("[Var:VAR, Eq:==, Int:0]", res.toString());
-        res = tokenizer.tokenize("LOOP_COUNT==0 ? goto(\"Step n°1\")").value();
-        assertEquals("[Stm:[Var:LOOP_COUNT, Eq:==, Int:0], If:?, Stm:[Fun:goto(Stm:[Stm:[Txt:Step n°1]])]]", res.toString());
+        var res = assertOnlyOneStmAndEval("5==5");
+        assertEquals("[Int:5, Eq:==, Int:5]", res);
+        res = assertOnlyOneStmAndEval("VAR==0");
+        assertEquals("[Var:VAR, Eq:==, Int:0]", res);
+        res = assertOnlyOneStmAndEval("LOOP_COUNT==0 ? goto(\"Step n°1\")");
+        assertEquals("[Stm:[Var:LOOP_COUNT, Eq:==, Int:0], If:?, Stm:[Fun:goto(Stm:[Stm:[Txt:Step n°1]])]]", res);
     }
 
     @Test
     void notEqualTest() {
-        final var res = tokenizer.tokenize("2!=1").value();
-        assertEquals("[Int:2, Ne:!=, Int:1]", res.toString());
+        final var res = assertOnlyOneStmAndEval("2!=1");
+        assertEquals("[Int:2, Ne:!=, Int:1]", res);
     }
 
     @Test
     void greaterTest() {
-        final var res = tokenizer.tokenize("A>B").value();
-        assertEquals("[Var:A, Gt:>, Var:B]", res.toString());
+        final var res = assertOnlyOneStmAndEval("A>B");
+        assertEquals("[Var:A, Gt:>, Var:B]", res);
     }
 
     @Test
     void greaterOrEqualTest() {
-        final var res = tokenizer.tokenize("874 >= 900").value();
-        assertEquals("[Int:874, Ge:>=, Int:900]", res.toString());
+        final var res = assertOnlyOneStmAndEval("874 >= 900");
+        assertEquals("[Int:874, Ge:>=, Int:900]", res);
     }
 
     @Test
     void lesserTest() {
-        final var res = tokenizer.tokenize("0<0").value();
-        assertEquals("[Int:0, Lt:<, Int:0]", res.toString());
+        final var res = assertOnlyOneStmAndEval("0<0");
+        assertEquals("[Int:0, Lt:<, Int:0]", res);
     }
 
     @Test
     void lesserOrEqualTest() {
-        final var res = tokenizer.tokenize("1.1<=1.0").value();
-        assertEquals("[Flt:1.1, Le:<=, Flt:1.0]", res.toString());
+        final var res = assertOnlyOneStmAndEval("1.1<=1.0");
+        assertEquals("[Flt:1.1, Le:<=, Flt:1.0]", res);
     }
 
     @Test
     void ifTest() {
-        var res = tokenizer.tokenize("1!=0?x=5").value();
-        assertEquals("[Stm:[Int:1, Ne:!=, Int:0], If:?, Stm:[Let:x, Int:5]]", res.toString());
-        res = tokenizer.tokenize("0?pause(5)").value();
-        assertEquals("[Stm:[Int:0], If:?, Stm:[Fun:pause(Stm:[Stm:[Int:5]])]]", res.toString());
-        res = tokenizer.tokenize("1==0?info(\"KO\")").value();
-        assertEquals("[Stm:[Int:1, Eq:==, Int:0], If:?, Stm:[Fun:info(Stm:[Stm:[Txt:KO]])]]", res.toString());
-        res = tokenizer.tokenize("(1>0)?(now())").value();
-        assertEquals("[Stm:[Stm:[Int:1, Gt:>, Int:0]], If:?, Stm:[Stm:[Fun:now(Stm:[])]]]", res.toString());
-        res = tokenizer.tokenize("1?y=6+2").value();
-        assertEquals("[Stm:[Int:1], If:?, Stm:[Let:y, Int:6, Add:+, Int:2]]", res.toString());
+        var res = assertOnlyOneStmAndEval("1!=0?x=5");
+        assertEquals("[Stm:[Int:1, Ne:!=, Int:0], If:?, Stm:[Let:x, Int:5]]", res);
+        res = assertOnlyOneStmAndEval("0?pause(5)");
+        assertEquals("[Stm:[Int:0], If:?, Stm:[Fun:pause(Stm:[Stm:[Int:5]])]]", res);
+        res = assertOnlyOneStmAndEval("1==0?info(\"KO\")");
+        assertEquals("[Stm:[Int:1, Eq:==, Int:0], If:?, Stm:[Fun:info(Stm:[Stm:[Txt:KO]])]]", res);
+        res = assertOnlyOneStmAndEval("(1>0)?(now())");
+        assertEquals("[Stm:[Stm:[Int:1, Gt:>, Int:0]], If:?, Stm:[Stm:[Fun:now(Stm:[])]]]", res);
+        res = assertOnlyOneStmAndEval("1?y=6+2");
+        assertEquals("[Stm:[Int:1], If:?, Stm:[Let:y, Int:6, Add:+, Int:2]]", res);
+    }
+
+    @Test
+    void endOfStatementTest() {
+        final var stms = tokenizer.tokenize("A=2;B=3;A*B");
+        assertEquals(3, stms.size());
+        assertEquals("[Let:A, Int:2]", stms.getFirst().value().toString());
+        assertEquals("[Let:B, Int:3]", stms.get(1).value().toString());
+        assertEquals("[Var:A, Mul:*, Var:B]", stms.getLast().value().toString());
+    }
+
+    private String assertOnlyOneStmAndEval(final String pCommand) {
+        var stms = tokenizer.tokenize(pCommand);
+        assertEquals(1, stms.size());
+        return stms.getFirst().value().toString();
     }
 }

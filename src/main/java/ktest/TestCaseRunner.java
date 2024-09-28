@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
-import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 import static ktest.core.AnsiColor.*;
@@ -137,7 +136,7 @@ class TestCaseRunner implements Callable<XUnitReport> {
                     logTab.inc();
                     evalScript(pEngine, "before", step.beforeScript());
                     pEngine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
-                    final var topicRef = new TopicRef(evalInLine(pEngine, step.broker()), evalInLine(pEngine, step.topic()), step.keySerde(), step.valueSerde());
+                    final var topicRef = new TopicRef(pEngine.evalInLine(step.broker()), pEngine.evalInLine(step.topic()), step.keySerde(), step.valueSerde());
                     LOG.debug("{}Target: {}", logTab.tab(LIGHTGRAY), topicRef.id());
                     final var parsedRecord = evalInLine(pEngine, step.record());
                     LOG.debug("{}Record: {}", logTab.tab(LIGHTGRAY), parsedRecord);
@@ -180,27 +179,11 @@ class TestCaseRunner implements Callable<XUnitReport> {
         return skipAfterFailureOrError;
     }
 
-    private String evalInLine(final Engine pEngine, final String pAttribute) {
-        if (pAttribute == null) {
-            return null;
-        }
-
-        final var pattern = Pattern.compile("(\\$\\{.*?})");
-        final var matcher = pattern.matcher(pAttribute);
-        var res = pAttribute;
-        while (matcher.find()) {
-            final var group = matcher.group();
-            final var repl = pEngine.eval(group.substring(2, group.length() - 1)).toString();
-            res = res.replace(group, repl);
-        }
-        return res;
-    }
-
     private TestRecord evalInLine(final Engine pEngine, final TestRecord pRecord) {
         final var headers = new TreeMap<String, String>();
         for (final var e : pRecord.headers().entrySet()) {
-            headers.put(e.getKey(), evalInLine(pEngine, e.getValue()));
+            headers.put(e.getKey(), pEngine.evalInLine(e.getValue()));
         }
-        return new TestRecord(evalInLine(pEngine, pRecord.timestamp()), headers, evalInLine(pEngine, pRecord.key()), evalInLine(pEngine, pRecord.value()));
+        return new TestRecord(pEngine.evalInLine(pRecord.timestamp()), headers, pEngine.evalInLine(pRecord.key()), pEngine.evalInLine(pRecord.value()));
     }
 }

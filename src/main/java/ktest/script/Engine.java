@@ -9,6 +9,7 @@ import ktest.script.token.Tokenizer;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Dependent
 public final class Engine {
@@ -41,14 +42,33 @@ public final class Engine {
     }
 
     public Object eval(final String pLine) {
-        final var stm = new Tokenizer().tokenize(pLine);
-        return stm.evalValue(context);
+        Object res = null;
+        for (final var stm : new Tokenizer().tokenize(pLine)) {
+            res = stm.evalValue(context);
+        }
+        return res;
     }
 
     public void eval(final List<String> pScript) {
         if (pScript != null) {
             pScript.forEach(this::eval);
         }
+    }
+
+    public String evalInLine(final String pAttribute) {
+        if (pAttribute == null) {
+            return null;
+        }
+
+        final var pattern = Pattern.compile("(\\$\\{.*?})");
+        final var matcher = pattern.matcher(pAttribute);
+        var res = pAttribute;
+        while (matcher.find()) {
+            final var group = matcher.group();
+            final var repl = eval(group.substring(2, group.length() - 1)).toString();
+            res = res.replace(group, repl);
+        }
+        return res;
     }
 
     public Context context() {

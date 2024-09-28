@@ -25,6 +25,7 @@ Commands:
   srun  Sequential run of test case(s).
   prun  Parallel run of test case(s).
   doc   Display full documentation.
+  eval  Evaluates a script and displays its final result.
 ```
 
 ### Sequential run command arguments: `srun`
@@ -65,6 +66,16 @@ Commands:
 -V, --version   Print version information and exit.
 ```
 
+### Evaluation of a script command arguments: `eval`
+**Usage:** `Usage: ktest eval [-hV] -l=<line>`
+
+**Options:**
+```
+I   -h, --help          Show this help message and exit.
+I   -l, --line=<line>   In-line statements to evaluate.
+I   -V, --version       Print version information and exit.
+```
+
 ### Configuration file
 Yaml configuration file called by default `ktconfig.yml` in the same directory as the executable.
 
@@ -81,7 +92,7 @@ brokers:
   - name: pi_broker
     bootstrap.servers: 192.168.0.105:9092
     registry: pi_registry
-    sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="USER" password="PASSWORD";
+    sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="USER" password="${env(\"PASSWORD\")}";
     sasl.mechanism: PLAIN
     security.protocol: SASL_SSL
     group.id: pi.ktest-group
@@ -156,6 +167,10 @@ Conditions/Tokens:
   >      3>2       1     Greater: true if left argument is strictly greater than right argument.
 ```
 ```
+Specials/Tokens:
+  ;                      Ends the current in-line statement an starts a new one.
+```
+```
 Scripting Functions:
  FAKER:
   regexgen("E-[A-Z]{2,4}#{2}")                   "E-AJD##"                              Returns a new random string matching provided regex.
@@ -221,6 +236,26 @@ This problem can be resolved by enforcing a type with the options `keySerde: STR
 - `onStart` / `onEnd` of environments _(configuration file)_: visible in all test cases & steps.
 - `beforeAll` / `afterAll` of test cases: visible in all steps of the test case.
 - `before` / `after`: limited to the step where they are declared.
+
+##### How to avoid putting passwords in plain text in the config?
+You can use the `eval` command to run a script to obtain an AES key and encrypt your password or your jaas.config string.
+
+For example: 
+```bash
+ktest eval -l="key = aeskey(); info(\"Key: \", key); encrypted = aesenc(\"Clear Password\", key); info(\"Encrypted: \", encrypted)"
+```
+
+And then add the key in your secure environment and use the AES 256 decoding feature in the broker configs of the `ktconfig.yml` file.
+
+For example:
+```yaml
+    ...
+brokers:
+  - name: pi_broker
+    bootstrap.servers: 192.168.0.105:9092
+    sasl.jaas.config: ${aesdec("/UzY8ua+9iuKhhAWNslS...zTWpVktEhBHBIo3oKw==", env("LOCAL_ENV_KEY"))}
+    ...
+```
 
 ##### How to change log level?
 Add `-Dktest.log.level=<LEVEL>` to command line, using `TRACE`, `DEBUG`, `INFO` *(default)*, `WARN` or `ERROR` as level.

@@ -2,9 +2,14 @@ package ktest.script.token;
 
 import ktest.script.ScriptException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class Tokenizer {
-    public Stm tokenize(final String pLine) {
+    public List<Stm> tokenize(final String pLine) {
+        final var stms = new ArrayList<Stm>();
         var stm = new Stm(null);
+        stms.add(stm);
         final var buf = new LineBuffer(pLine);
         while (buf.hasNext()) {
             if (buf.isLParent()) {
@@ -62,7 +67,11 @@ public final class Tokenizer {
                 buf.pop();
                 stm.group();
                 stm.add(new If());
-                stm.add(tokenize(buf.readEndOfBuffer()));
+                stm.add(tokenize(buf.readEndOfBuffer()).getFirst());
+            } else if (buf.current() == ';') {
+                buf.pop();
+                stm = new Stm(null);
+                stms.add(stm);
             } else if (buf.isDigit()) {
                 stm.add(buf.readNum());
             } else if (buf.isDQuote()) {
@@ -74,7 +83,7 @@ public final class Tokenizer {
                 stm.add(str);
             } else if (buf.isLetter() || buf.isUnderscore()) {
                 final var ident = buf.readIdentifier();
-                stm.add(buf.isLParent() ? new Fun(ident.value(), tokenize(buf.readParam())) : ident);
+                stm.add(buf.isLParent() ? new Fun(ident.value(), tokenize(buf.readParam()).getFirst()) : ident);
             } else if (buf.current() == ',') {
                 buf.pop();
                 final var parent = stm.parent();
@@ -94,7 +103,7 @@ public final class Tokenizer {
         if (stm.parent() != null) {
             error("Parenthesis not matching", pLine, buf.pos());
         }
-        return stm;
+        return stms;
     }
 
     private void error(final String pMessage, final String pLine, final int pPos) {

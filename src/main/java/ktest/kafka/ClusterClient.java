@@ -11,7 +11,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
@@ -94,12 +93,12 @@ public class ClusterClient {
     private long resetConsumer(final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {
         final var partitions = new ArrayList<TopicPartition>();
         for (final var p : pConsumer.partitionsFor(pTopicName)) {
-            partitions.add(new TopicPartition(pTopicName, ((PartitionInfo) p).partition()));
+            partitions.add(new TopicPartition(pTopicName, p.partition()));
         }
         var lastOffset = 0L;
         if (!partitions.isEmpty()) {
             pConsumer.assign(partitions);
-            for (final var e : ((Map<TopicPartition, Long>) pConsumer.endOffsets(partitions)).entrySet()) {
+            for (final var e : pConsumer.endOffsets(partitions).entrySet()) {
                 lastOffset = Math.max(lastOffset, e.getValue());
                 pConsumer.seek(e.getKey(), Math.max(e.getValue() - pBackOffset, 0));
             }

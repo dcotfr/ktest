@@ -180,4 +180,9 @@ class EngineOperatorsTest {
         assertEquals(9L, engine.eval("(1 + 2) * 3"));
         assertEquals(7.4, engine.eval("1.4 + (2 * 3)"));
     }
+
+    @Test
+    void endOfStatementTest() {
+        assertEquals(6L, engine.eval("A=2;B=3;A*B"));
+    }
 }

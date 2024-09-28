@@ -89,6 +89,9 @@ public class DocCommand implements Runnable {
             + "  <      2<2       0     Lesser: true if left argument is strictly smaller than right argument.\n"
             + "  >=     0>=1      0     Greater or Equal: true if left argument is greater or equal to right argument.\n"
             + "  >      3>2       1     Greater: true if left argument is strictly greater than right argument.\n";
+    final static String SPECIALS_DOC = BRIGHTYELLOW + "Specials/Tokens:" + WHITE + "\n"
+            + "  ;                      Ends the current in-line statement an starts a new one.\n";
+
     @Inject
     private Context context;
 
@@ -98,6 +101,7 @@ public class DocCommand implements Runnable {
         System.out.println(SAMPLE_TEST_CASE);
         System.out.println(OPERATORS_DOC);
         System.out.println(CONDITIONS_DOC);
+        System.out.println(SPECIALS_DOC);
         displayScriptFunctions();
     }
 

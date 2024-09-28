@@ -6,12 +6,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * https://www.ibm.com/docs/en/developer-for-zos/16.0?topic=formats-junit-xml-format
- * https://github.com/windyroad/JUnit-Schema/blob/master/JUnit.xsd
- * https://github.com/testmoapp/junitxml
- * https://lotterfriends.github.io/online-junit-parser/#case.0.0
- */
 public final class XUnitReport implements XmlUtils {
     public int tests() {
         return testsuite.stream().mapToInt(XUnitSuite::tests).sum();
