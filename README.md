@@ -92,7 +92,7 @@ brokers:
   - name: pi_broker
     bootstrap.servers: 192.168.0.105:9092
     registry: pi_registry
-    sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="USER" password="${env(\"PASSWORD\")}";
+    sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username='USER' password='${env(\"PASSWORD\")}';
     sasl.mechanism: PLAIN
     security.protocol: SASL_SSL
     group.id: pi.ktest-group
@@ -198,7 +198,10 @@ Scripting Functions:
   floor   (3.14)                                 3                                      Returns the greatest integer value <= to given number.
   max     (5, -2)                                5                                      Returns the maximal value of 1 or more numbers.
   min     (5, -2, 0)                             -2                                     Returns the minimal value of 1 or more numbers.
+  pow     (2, 8)                                 256                                    Returns the value of the 1st number raised to the power of the 2nd.
   round   (2.43)                                 2                                      Returns the nearest integer, rounding half away from zero.
+  sgn     (-9.63)                                -1                                     Returns the sign of the number (-1, 0 or 1).
+  sqr     (2)                                    1.4142135623730951                     Returns the square root of the number.
  MISC:
   env     ("SHELL")                              "/bin/bash"                            Returns the value of an ENV variable.
   goto    ("NameOfStep")                                                                Jump and continue to named Step.

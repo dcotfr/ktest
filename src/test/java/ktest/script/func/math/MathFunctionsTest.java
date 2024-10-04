@@ -71,8 +71,37 @@ class MathFunctionsTest {
     }
 
     @Test
+    void powTest() {
+        assertEquals(256.0, engine.eval("pow(2,8)"));
+    }
+
+    @Test
     void roundTest() {
         assertEquals(3L, engine.eval("round(3.14)"));
         assertEquals(4L, engine.eval("round(3.54)"));
+    }
+
+    @Test
+    void sgnTest() {
+        assertEquals(-1L, engine.eval("sgn(-9.63)"));
+        assertEquals(0L, engine.eval("sgn(0.0)"));
+        assertEquals(1L, engine.eval("sgn(963)"));
+    }
+
+    @Test
+    void sqrTest() {
+        assertEquals(1.4142135623730951, engine.eval("sqr(2)"));
+        try {
+            engine.eval("sqr()");
+            fail();
+        } catch (final ScriptException e) {
+            assertEquals("Invalid number of arguments in sqr: 1 expected, 0 found.", e.getMessage());
+        }
+        try {
+            engine.eval("sqr(-5)");
+            fail();
+        } catch (final ScriptException e) {
+            assertEquals("A positive number is expected in sqr: -5.0 found.", e.getMessage());
+        }
     }
 }

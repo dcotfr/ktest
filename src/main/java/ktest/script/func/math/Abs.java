@@ -9,6 +9,7 @@ import ktest.script.token.Int;
 import ktest.script.token.Num;
 import ktest.script.token.Stm;
 
+import static java.lang.Math.abs;
 import static ktest.script.func.FuncType.MATH;
 
 @ApplicationScoped
@@ -22,8 +23,8 @@ public class Abs extends Func {
         final var params = extractParam(pContext, pParam, Number.class);
         final var number = (Number) params[0];
         if (number instanceof Long) {
-            return new Int(Math.abs(number.longValue()));
+            return new Int(abs(number.longValue()));
         }
-        return new Flt(Math.abs(number.doubleValue()));
+        return new Flt(abs(number.doubleValue()));
     }
 }
