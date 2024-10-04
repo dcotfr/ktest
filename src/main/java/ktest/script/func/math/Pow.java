@@ -5,7 +5,6 @@ import ktest.script.Context;
 import ktest.script.func.Func;
 import ktest.script.func.FuncDoc;
 import ktest.script.token.Flt;
-import ktest.script.token.Num;
 import ktest.script.token.Stm;
 
 import static java.lang.Math.pow;

@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 @QuarkusTest
 class MathFunctionsTest {
     @Inject
-    private Engine engine;
+    Engine engine;
 
     @Test
     void absTest() {

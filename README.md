@@ -172,13 +172,14 @@ Specials/Tokens:
 ```
 ```
 Scripting Functions:
+ CRYPT:
+  aesdec  ("B64CryptedIn", "B64Key")             "ClearText"                            Returns the decrypted value of base64-AES256 encrypted value.
+  aesenc  ("ClearText", "B64Key")                "B64CryptedOut"                        Returns the base64 form of the value encrypted with AES256.
+  aeskey  ()                                     "ygrS4...ijP8="                        Returns a new random base-64-encoded AES256 key.
  FAKER:
   regexgen("E-[A-Z]{2,4}#{2}")                   "E-AJD##"                              Returns a new random string matching provided regex.
   uuid    ()                                     "fd48147a-58ba-461b-b71c-f44c89ba67ca" Returns a new random UUID.
  HASH:
-  aesdec  ("B64CryptedIn", "B64Key")             "ClearText"                            Returns the decrypted value of base64-AES256 encrypted value.
-  aesenc  ("ClearText", "B64Key")                "B64CryptedOut"                        Returns the base64 form of the value encrypted with AES256.
-  aeskey  ()                                     "ygrS4...ijP8="                        Returns a new random base-64-encoded AES256 key.
   crc32   ("SampleString")                       "3ca8bf4"                              Returns the CRC-32 hash of the string parameter.
   decode64("VGV4dA==")                           "Text"                                 Returns the decoded text of a base64 encoding string.
   encode64("SampleString")                       "U2FtcGxlU3RyaW5n"                     Returns the base64 encoding of a string.
@@ -186,6 +187,9 @@ Scripting Functions:
   sha1    ("SampleString")                       "ac7fc7261c573830...f20bf0d74d1443cd"  Returns the SHA-1 hash of the string parameter.
   sha256  ("SampleString")                       "77b12c9c6213a05f...8b2c34769ec4fc20"  Returns the SHA-256 hash of the string parameter.
   sha512  ("SampleString")                       "aee8e20df4b3ce73...e7e03c6fcda75961"  Returns the SHA-512 hash of the string parameter.
+ HEX:
+  hex2int ("7fff")                               32767                                  Returns the integer value of an hexadecimal string.
+  int2hex (32767)                                "7fff"                                 Returns the hexadecimal representation of number.
  LOG:
   debug   (2+3)                                  5                                      Logs the concatenation of evaluated expression(s) as DEBUG output.
   error   ("Failed")                             Failed                                 Logs the concatenation of evaluated expression(s) as ERROR output.

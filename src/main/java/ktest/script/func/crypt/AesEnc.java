@@ -1,4 +1,4 @@
-package ktest.script.func.hash;
+package ktest.script.func.crypt;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import ktest.script.Context;
@@ -13,33 +13,35 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
 import java.util.Base64;
 
-import static ktest.script.func.FuncType.HASH;
+import static ktest.script.func.FuncType.CRYPT;
 
 @ApplicationScoped
-public class AesDec extends Func {
-    protected AesDec() {
-        super("aesdec", new FuncDoc(HASH, "\"B64CryptedIn\", \"B64Key\"", "\"ClearText\"", "Returns the decrypted value of base64-AES256 encrypted value."));
+public class AesEnc extends Func {
+    protected AesEnc() {
+        super("aesenc", new FuncDoc(CRYPT, "\"ClearText\", \"B64Key\"", "\"B64CryptedOut\"", "Returns the base64 form of the value encrypted with AES256."));
     }
 
     @Override
     public Txt apply(final Context pContext, final Stm pParam) {
         final var params = extractParam(pContext, pParam, String.class, String.class);
         try {
-            final var encrypted = Base64.getDecoder().decode((String) params[0]);
-            final var iv = new byte[16];
-            System.arraycopy(encrypted, 0, iv, 0, iv.length);
-            final var ivParam = new IvParameterSpec(iv);
-
             final var key = Base64.getDecoder().decode((String) params[1]);
 
-            final var cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"), ivParam);
-            final var cipherText = new byte[encrypted.length - 16];
-            System.arraycopy(encrypted, 16, cipherText, 0, cipherText.length);
+            final var rnd = new SecureRandom();
+            final var iv = new byte[16];
+            rnd.nextBytes(iv);
+            final var ivParam = new IvParameterSpec(iv);
 
-            return new Txt(new String(cipher.doFinal(cipherText), StandardCharsets.UTF_8));
+            final var cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key, "AES"), ivParam);
+            final var cipherText = cipher.doFinal(((String) params[0]).getBytes(StandardCharsets.UTF_8));
+            final var encryptedData = new byte[iv.length + cipherText.length];
+            System.arraycopy(iv, 0, encryptedData, 0, iv.length);
+            System.arraycopy(cipherText, 0, encryptedData, iv.length, cipherText.length);
+            return new Txt(Base64.getEncoder().encodeToString(encryptedData));
         } catch (final GeneralSecurityException e) {
             throw new ScriptException(command() + " interrupted.", e);
         }

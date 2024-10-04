@@ -1,4 +1,4 @@
-package ktest.script.func.hash;
+package ktest.script.func.crypt;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import ktest.script.Context;
@@ -12,12 +12,12 @@ import javax.crypto.KeyGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-import static ktest.script.func.FuncType.HASH;
+import static ktest.script.func.FuncType.CRYPT;
 
 @ApplicationScoped
 public class AesKey extends Func {
     protected AesKey() {
-        super("aeskey", new FuncDoc(HASH, "", "\"ygrS4...ijP8=\"", "Returns a new random base-64-encoded AES256 key."));
+        super("aeskey", new FuncDoc(CRYPT, "", "\"ygrS4...ijP8=\"", "Returns a new random base-64-encoded AES256 key."));
     }
 
     @Override
