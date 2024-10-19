@@ -25,6 +25,7 @@ class SRunCommandTest {
             "I   -h, --help                Show this help message and exit.",
             "I   -r, --report=<report>     Path of the test report file (JUnit format).",
             "I                               Default: ktreport.xml",
+            "I   -t, --tags=<tags>         Tags to filter test cases to run.",
             "I   -V, --version             Print version information and exit.\r");
 
     @Test
@@ -32,7 +33,7 @@ class SRunCommandTest {
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
                 "I Usage: ktest srun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
-                "I                   [-r=<report>]",
+                "I                   [-r=<report>] [-t=<tags>]",
                 "I Sequential run of test case(s).",
                 OPTIONS);
         assertEquals(expected, pResult.getOutput());
@@ -41,7 +42,7 @@ class SRunCommandTest {
     @Test
     @Launch(value = {"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.3\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.4\r", pResult.getOutput());
     }
 
     @Test
@@ -57,7 +58,7 @@ class SRunCommandTest {
     }
 
     @Test
-    @Launch(value = {"srun", "-e=pi", "-f=src\\test\\resources\\validFile.yml"})
+    @Launch(value = {"srun", "-e=pi", "-f=src\\test\\resources\\validFile.yml", "-t=tag2"})
     void validFileTest(final LaunchResult pResult) {
         final var testCases = TestCase.load("src\\test\\resources\\validFile.yml");
         assertEquals(2, testCases.size());

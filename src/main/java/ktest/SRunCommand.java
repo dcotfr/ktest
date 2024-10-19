@@ -1,5 +1,6 @@
 package ktest;
 
+import com.google.common.base.Strings;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import ktest.core.KTestException;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static ktest.MainCommand.VERSION;
+import static ktest.TestCaseRunner.filteredByTags;
 import static ktest.core.AnsiColor.WHITE;
 
 @CommandLine.Command(name = "srun", description = "Sequential run of test case(s).",
@@ -39,6 +41,9 @@ public class SRunCommand implements Runnable {
     @CommandLine.Option(names = {"-b", "--back"}, description = "Back offset.", defaultValue = "250")
     private Integer backOffset;
 
+    @CommandLine.Option(names = {"-t", "--tags"}, description = "Tags to filter test cases to run.")
+    private String tags;
+
     private final Instance<Engine> engineFactory;
     private final Instance<ClusterClient> kafkaClientFactory;
     private final LogTab logTab = new LogTab(false);
@@ -55,9 +60,12 @@ public class SRunCommand implements Runnable {
         final var testCaseRunner = new TestCaseRunner(engine, kafkaClientFactory.get()).backOffset(backOffset).logTab(logTab);
         var finalFailureOrError = false;
         final var testCases = TestCase.load(file);
+        if (!Strings.isNullOrEmpty(tags)) {
+            LOG.info("{}Filtering Test Cases by: {}", WHITE, tags);
+        }
         final var xUnitReport = new XUnitReport();
         final var globalVariables = engine.reset().context().variables();
-        for (final var testCase : testCases) {
+        for (final var testCase : filteredByTags(testCases, tags)) {
             final var xUnitSuite = xUnitReport.startNewSuite(testCase.name());
             LOG.info("{}Test Case: {}", logTab.tab(WHITE), testCase.name());
             engine.init(globalVariables);

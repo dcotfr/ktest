@@ -29,7 +29,7 @@ Commands:
 ```
 
 ### Sequential run command arguments: `srun`
-**Usage:** `ktest srun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>] [-r=<report>]`
+**Usage:** `ktest srun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>] [-r=<report>] [-t=<tags>]`
 
 **Options:**
 ```
@@ -42,7 +42,8 @@ Commands:
                             Default: ktestcase.yml
 -h, --help                Show this help message and exit.
 -r, --report=<report>     Path of the test report file (JUnit format).
-                            Default: ktreport.xml
+                            Default: ktreport.
+-t, --tags=<tags>         Tags to filter test cases to run.
 -V, --version             Print version information and exit.
 ```
 
@@ -51,7 +52,7 @@ Commands:
 - 1      if at least one test failed or there was an exception.
 
 ### Parallel run command arguments: `prun`
-**Usage:** `ktest prun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>] [-r=<report>]`
+**Usage:** `ktest prun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>] [-r=<report>] [-t=<tags>]`
 
 **Options:** accepts the same options as the `srun` command.
 
@@ -112,6 +113,9 @@ environments:
 The test cases are described using yaml files, following the format:
 ```yaml
 name: "Name of the Test Case"
+tags:
+  - DEV
+  - ...
 beforeAll: |
   TIMESTAMP = now()
   ...
@@ -288,3 +292,11 @@ steps:
   - name: Verify result
     ...
 ```
+
+##### How to run only a subset of the test cases?
+You can tag the different test case definitions and then use the `-t` or `--tags` option to filter the test cases.
+
+For example:
+* `ktest prun ... -t t1` to run only test cases having the "t1" tag,
+* `ktest srun ... --tags "t1+t2"` to run only test cases having the "t1" AND the "t2" tags,
+* `ktest srun ... -t "t1,t2+t3"` to run only test cases having the "t1" OR ("t2" AND "t3") tags.

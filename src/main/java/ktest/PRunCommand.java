@@ -1,5 +1,6 @@
 package ktest;
 
+import com.google.common.base.Strings;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import ktest.core.KTestException;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 import java.util.concurrent.StructuredTaskScope;
 
 import static ktest.MainCommand.VERSION;
+import static ktest.TestCaseRunner.filteredByTags;
+import static ktest.core.AnsiColor.WHITE;
 
 @CommandLine.Command(name = "prun", description = "Parallel run of test case(s).",
         mixinStandardHelpOptions = true, showDefaultValues = true, version = VERSION)
@@ -38,6 +41,9 @@ public class PRunCommand implements Runnable {
     @CommandLine.Option(names = {"-b", "--back"}, description = "Back offset.", defaultValue = "250")
     private Integer backOffset;
 
+    @CommandLine.Option(names = {"-t", "--tags"}, description = "Tags to filter test cases to run.")
+    private String tags;
+
     private final Instance<Engine> engineFactory;
     private final Instance<TestCaseRunner> testCaseRunnerFactory;
 
@@ -50,12 +56,15 @@ public class PRunCommand implements Runnable {
     @Override
     public void run() {
         final var testCases = TestCase.load(file);
+        if (!Strings.isNullOrEmpty(tags)) {
+            LOG.info("{}Filtering Test Cases by: {}", WHITE, tags);
+        }
         final var globalEngine = engineFactory.get();
         final var globalVariables = globalEngine.reset().context().variables();
         try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             LOG.info("Start parallel run.");
             final var subTasks = new ArrayList<StructuredTaskScope.Subtask<XUnitReport>>();
-            for (final var testCase : testCases) {
+            for (final var testCase : filteredByTags(testCases, tags)) {
                 final var runner = testCaseRunnerFactory.get().testCase(testCase).backOffset(backOffset);
                 runner.engine().init(globalVariables);
                 subTasks.add(scope.fork(runner));

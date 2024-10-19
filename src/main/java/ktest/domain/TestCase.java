@@ -14,7 +14,8 @@ import java.util.Collections;
 import java.util.List;
 
 @RegisterForReflection
-public record TestCase(String name, String beforeAll, List<Step> steps, String afterAll) implements Named {
+public record TestCase(String name, List<String> tags, String beforeAll, List<Step> steps,
+                       String afterAll) implements Named {
     public List<String> beforeAllScript() {
         return beforeAll != null ? Arrays.stream(beforeAll.split("\n")).toList() : Collections.emptyList();
     }

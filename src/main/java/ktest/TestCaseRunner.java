@@ -1,5 +1,6 @@
 package ktest;
 
+import com.google.common.base.Strings;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import ktest.core.LogTab;
@@ -16,10 +17,9 @@ import ktest.script.func.GotoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static ktest.core.AnsiColor.*;
@@ -177,6 +177,26 @@ class TestCaseRunner implements Callable<XUnitReport> {
             xUnitCase.end();
         }
         return skipAfterFailureOrError;
+    }
+
+    static List<TestCase> filteredByTags(final List<TestCase> pTestCases, final String pTagsOption) {
+        if (Strings.isNullOrEmpty(pTagsOption)) {
+            return pTestCases;
+        }
+
+        final var filters = Arrays.stream(pTagsOption.split(","))
+                .map(filter -> Arrays.stream(filter.trim().split("\\+"))
+                        .map(String::trim)
+                        .collect(Collectors.toList()))
+                .collect(Collectors.toCollection(ArrayList::new));
+        final var res = new ArrayList<TestCase>();
+        pTestCases.forEach(testCase -> {
+            final var testCaseTags = testCase.tags();
+            if (testCaseTags != null && filters.stream().anyMatch(testCaseTags::containsAll)) {
+                res.add(testCase);
+            }
+        });
+        return res;
     }
 
     private TestRecord evalInLine(final Engine pEngine, final TestRecord pRecord) {

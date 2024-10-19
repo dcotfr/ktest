@@ -1,4 +1,7 @@
 name: Test Case 1
+tags:
+  - tag1
+  - tag2
 beforeAll: |
   BASE_TIMESTAMP = now()
   STEP1_1_CID = uuid()
@@ -62,6 +65,8 @@ steps:
 afterAll:
 ---
 name: Test Case 2
+tags:
+  - tag2
 beforeAll: |
   BASE_TIMESTAMP = now()
   STEP2_1_CID = uuid()
