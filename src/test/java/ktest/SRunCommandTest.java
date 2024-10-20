@@ -23,6 +23,8 @@ class SRunCommandTest {
             "I   -f, --file=<file>         Path of test case description file to execute.",
             "I                               Default: ktestcase.yml",
             "I   -h, --help                Show this help message and exit.",
+            "I   -m, --matrix=<matrix>     Path of the matrix summary file (xlsx format).",
+            "I                               Default: ktmatrix.xlsx",
             "I   -r, --report=<report>     Path of the test report file (JUnit format).",
             "I                               Default: ktreport.xml",
             "I   -t, --tags=<tags>         Tags to filter test cases to run.",
@@ -33,7 +35,7 @@ class SRunCommandTest {
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
                 "I Usage: ktest srun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
-                "I                   [-r=<report>] [-t=<tags>]",
+                "I                   [-m=<matrix>] [-r=<report>] [-t=<tags>]",
                 "I Sequential run of test case(s).",
                 OPTIONS);
         assertEquals(expected, pResult.getOutput());
@@ -42,7 +44,7 @@ class SRunCommandTest {
     @Test
     @Launch(value = {"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.4\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.5\r", pResult.getOutput());
     }
 
     @Test
@@ -122,7 +124,7 @@ class SRunCommandTest {
         assertEquals("Last Step", step.name());
         assertEquals(Collections.emptyList(), step.beforeScript());
         assertEquals("${KAFKA_LOCAL_CONTEXT}", step.broker());
-        assertEquals("${KAFKA_PREFIX}InputTopic", step.topic());
+        assertEquals("${KAFKA_PREFIX}InputTopic2", step.topic());
         assertEquals(Action.TODO, step.action());
         assertEquals(Collections.emptyList(), step.afterScript());
 

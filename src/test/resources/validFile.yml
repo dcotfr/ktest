@@ -57,7 +57,7 @@ steps:
           label: Product 1
   - name: Last Step
     broker: ${KAFKA_LOCAL_CONTEXT}
-    topic: ${KAFKA_PREFIX}InputTopic
+    topic: ${KAFKA_PREFIX}InputTopic2
     action: TODO
     record:
       key: "K1"

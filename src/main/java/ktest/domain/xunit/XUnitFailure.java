@@ -1,5 +1,7 @@
 package ktest.domain.xunit;
 
+import ktest.core.XmlUtils;
+
 public record XUnitFailure(String message, String content) implements XmlUtils {
     @Override
     public String toXml() {

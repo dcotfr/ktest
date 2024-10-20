@@ -1,6 +1,8 @@
-package ktest.domain.xunit;
+package ktest.core;
 
-interface XmlUtils {
+public interface XmlUtils {
+    String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+
     String toXml();
 
     default String minimalClean(final String pString) {

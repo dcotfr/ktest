@@ -29,7 +29,7 @@ Commands:
 ```
 
 ### Sequential run command arguments: `srun`
-**Usage:** `ktest srun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>] [-r=<report>] [-t=<tags>]`
+**Usage:** `ktest srun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>] [-m=<matrix>] [-r=<report>] [-t=<tags>]`
 
 **Options:**
 ```
@@ -41,6 +41,8 @@ Commands:
 -f, --file=<file>         Path of test case description file to execute.
                             Default: ktestcase.yml
 -h, --help                Show this help message and exit.
+-m, --matrix=<matrix>     Path of the matrix summary file (xlsx format).
+                            Default: ktmatrix.xlsx
 -r, --report=<report>     Path of the test report file (JUnit format).
                             Default: ktreport.
 -t, --tags=<tags>         Tags to filter test cases to run.
@@ -52,7 +54,7 @@ Commands:
 - 1      if at least one test failed or there was an exception.
 
 ### Parallel run command arguments: `prun`
-**Usage:** `ktest prun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>] [-r=<report>] [-t=<tags>]`
+**Usage:** `ktest prun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>] [-m=<matrix>] [-r=<report>] [-t=<tags>]`
 
 **Options:** accepts the same options as the `srun` command.
 

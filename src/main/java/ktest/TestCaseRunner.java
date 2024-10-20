@@ -7,6 +7,7 @@ import ktest.core.LogTab;
 import ktest.domain.Action;
 import ktest.domain.TestCase;
 import ktest.domain.TestRecord;
+import ktest.domain.xlsx.Matrix;
 import ktest.domain.xunit.XUnitReport;
 import ktest.domain.xunit.XUnitSuite;
 import ktest.kafka.ClusterClient;
@@ -128,15 +129,18 @@ class TestCaseRunner implements Callable<XUnitReport> {
             final var xUnitCase = pTestSuite.startNewCase(step.name() + " (" + action + ")", pTestCase.name(), action == Action.PRESENT || action == Action.ABSENT);
             try {
                 LOG.info("{}- Step : {} ({})", logTab.tab(action == Action.TODO || skipAfterFailureOrError ? BRIGHTYELLOW : WHITE), step.name(), action);
+                if (skipAfterFailureOrError) {
+                    xUnitCase.skip("Skipped because of previous failure or error.");
+                    continue;
+                }
+                evalScript(pEngine, "before", step.beforeScript());
+                pEngine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
+                final var topicRef = new TopicRef(pEngine.evalInLine(step.broker()), pEngine.evalInLine(step.topic()), step.keySerde(), step.valueSerde());
+                Matrix.add(pTestCase.name(), topicRef, action, pTestCase.tags());
                 if (action == Action.TODO) {
                     xUnitCase.skip("Marked as TODO");
-                } else if (skipAfterFailureOrError) {
-                    xUnitCase.skip("Skipped because of previous failure or error.");
                 } else {
                     logTab.inc();
-                    evalScript(pEngine, "before", step.beforeScript());
-                    pEngine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
-                    final var topicRef = new TopicRef(pEngine.evalInLine(step.broker()), pEngine.evalInLine(step.topic()), step.keySerde(), step.valueSerde());
                     LOG.debug("{}Target: {}", logTab.tab(LIGHTGRAY), topicRef.id());
                     final var parsedRecord = evalInLine(pEngine, step.record());
                     LOG.debug("{}Record: {}", logTab.tab(LIGHTGRAY), parsedRecord);

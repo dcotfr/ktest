@@ -5,6 +5,7 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import ktest.core.KTestException;
 import ktest.domain.TestCase;
+import ktest.domain.xlsx.Matrix;
 import ktest.domain.xunit.XUnitReport;
 import ktest.script.Engine;
 import org.slf4j.Logger;
@@ -44,6 +45,9 @@ public class PRunCommand implements Runnable {
     @CommandLine.Option(names = {"-t", "--tags"}, description = "Tags to filter test cases to run.")
     private String tags;
 
+    @CommandLine.Option(names = {"-m", "--matrix"}, description = "Path of the matrix summary file (xlsx format).", defaultValue = "ktmatrix.xlsx")
+    private String matrix;
+
     private final Instance<Engine> engineFactory;
     private final Instance<TestCaseRunner> testCaseRunnerFactory;
 
@@ -75,6 +79,7 @@ public class PRunCommand implements Runnable {
             TestCaseRunner.logSynthesis(finalReport);
             try {
                 Files.writeString(Path.of(report), finalReport.toXml());
+                Matrix.save(matrix);
             } catch (final IOException e) {
                 throw new KTestException("Failed to write test report.", e);
             }

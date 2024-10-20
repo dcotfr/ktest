@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import ktest.core.KTestException;
 import ktest.core.LogTab;
 import ktest.domain.TestCase;
+import ktest.domain.xlsx.Matrix;
 import ktest.domain.xunit.XUnitReport;
 import ktest.kafka.ClusterClient;
 import ktest.script.Engine;
@@ -43,6 +44,9 @@ public class SRunCommand implements Runnable {
 
     @CommandLine.Option(names = {"-t", "--tags"}, description = "Tags to filter test cases to run.")
     private String tags;
+
+    @CommandLine.Option(names = {"-m", "--matrix"}, description = "Path of the matrix summary file (xlsx format).", defaultValue = "ktmatrix.xlsx")
+    private String matrix;
 
     private final Instance<Engine> engineFactory;
     private final Instance<ClusterClient> kafkaClientFactory;
@@ -82,6 +86,7 @@ public class SRunCommand implements Runnable {
         TestCaseRunner.logSynthesis(xUnitReport);
         try {
             Files.writeString(Path.of(report), xUnitReport.toXml());
+            Matrix.save(matrix);
         } catch (final IOException e) {
             throw new KTestException("Failed to write test report.", e);
         }

@@ -1,6 +1,7 @@
 package ktest.domain.xunit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import ktest.core.XmlUtils;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;

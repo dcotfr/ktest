@@ -1,5 +1,7 @@
 package ktest.domain.xunit;
 
+import ktest.core.XmlUtils;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;

@@ -19,7 +19,7 @@ class PRunCommandTest {
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
                 "I Usage: ktest prun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
-                "I                   [-r=<report>] [-t=<tags>]",
+                "I                   [-m=<matrix>] [-r=<report>] [-t=<tags>]",
                 "I Parallel run of test case(s).",
                 SRunCommandTest.OPTIONS);
         assertEquals(expected, pResult.getOutput());
@@ -28,7 +28,7 @@ class PRunCommandTest {
     @Test
     @Launch(value = {"prun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.4\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.5\r", pResult.getOutput());
     }
 
     @Test
@@ -108,7 +108,7 @@ class PRunCommandTest {
         assertEquals("Last Step", step.name());
         assertEquals(Collections.emptyList(), step.beforeScript());
         assertEquals("${KAFKA_LOCAL_CONTEXT}", step.broker());
-        assertEquals("${KAFKA_PREFIX}InputTopic", step.topic());
+        assertEquals("${KAFKA_PREFIX}InputTopic2", step.topic());
         assertEquals(Action.TODO, step.action());
         assertEquals(Collections.emptyList(), step.afterScript());
 
