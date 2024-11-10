@@ -13,9 +13,12 @@ public final class JsonAssert {
     }
 
     public static List<Failure> contains(final String pExpected, final String pActual) {
+        final var res = new ArrayList<Failure>();
+        if (pExpected == null || pExpected.isEmpty()) {
+            return res;
+        }
         try {
-            final var res = new ArrayList<Failure>();
-            final var comp = JSONCompare.compareJSON(pExpected, pActual, JSONCompareMode.LENIENT);
+            final var comp = JSONCompare.compareJSON(forceJson(pExpected), forceJson(pActual), JSONCompareMode.LENIENT);
             if (comp.failed()) {
                 final var cols = comp.getMessage().split("\\[\\]: ");
                 if (cols.length == 2) {
@@ -32,5 +35,17 @@ public final class JsonAssert {
         } catch (final JSONException e) {
             throw new KTestException("Invalid JSON.", e);
         }
+    }
+
+    private static String forceJson(final String pValue) {
+        if (pValue.length() < 2) {
+            return "\"" + pValue + "\"";
+        }
+        final var startChar = pValue.charAt(0);
+        final var endChar = pValue.charAt(pValue.length() - 1);
+        if ((startChar == '{' && endChar == '}') || (startChar == '[' && endChar == ']') || (startChar == '\"' && endChar == '\"')) {
+            return pValue;
+        }
+        return "\"" + pValue + "\"";
     }
 }

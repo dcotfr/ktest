@@ -14,7 +14,7 @@ record Font(String name, String color, int size, boolean bold) implements XmlUti
                 .append("<color rgb=\"").append(color).append("\"/>")
                 .append("<sz val=\"").append(size).append("\"/>");
         if (bold) {
-            res.append("<b/>");
+            res.append("<b val=\"true\"/>");
         }
         return res.append("</font>").toString();
     }

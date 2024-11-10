@@ -87,11 +87,14 @@ public final class Matrix {
                         .cell(3, r, Formula.sum(new Range(4, r, lastColumn, r)), BOLD, new Border(DOTTED, THIN, top, bottom), null);
                 c = 4;
                 for (final var tc : tcs) {
-                    ws
-                            .cell(c, r, count(tc, b, t, SEND), null, new Border(THIN, NONE, top, bottom), null)
-                            .cell(c + 1, r, count(tc, b, t, PRESENT), null, new Border(NONE, NONE, top, bottom), null)
-                            .cell(c + 2, r, count(tc, b, t, ABSENT), null, new Border(NONE, NONE, top, bottom), null)
-                            .cell(c + 3, r, count(tc, b, t, TODO), null, new Border(NONE, THIN, top, bottom), null);
+                    int count = count(tc, b, t, SEND);
+                    ws.cell(c, r, count != 0 ? count : null, null, new Border(THIN, NONE, top, bottom), null);
+                    count = count(tc, b, t, PRESENT);
+                    ws.cell(c + 1, r, count != 0 ? count : null, null, new Border(NONE, NONE, top, bottom), null);
+                    count = count(tc, b, t, ABSENT);
+                    ws.cell(c + 2, r, count != 0 ? count : null, null, new Border(NONE, NONE, top, bottom), null);
+                    count = count(tc, b, t, TODO);
+                    ws.cell(c + 3, r, count != 0 ? count : null, null, new Border(NONE, THIN, top, bottom), null);
                     c += 4;
                 }
                 r++;
@@ -110,13 +113,13 @@ public final class Matrix {
         XlsxFileUtils.save(new File(pFileName), wb);
     }
 
-    private static List<String> brokers() {
+    private synchronized static List<String> brokers() {
         return STEPS
                 .stream().map(Step::broker).collect(Collectors.toCollection(TreeSet::new))
                 .stream().toList();
     }
 
-    private static int count(final String pTestCase, final String pBroker, final String pTopic, final Action pAction) {
+    private synchronized static int count(final String pTestCase, final String pBroker, final String pTopic, final Action pAction) {
         return (int) STEPS
                 .stream()
                 .filter(s -> s.testCase().equals(pTestCase) && s.broker().equals(pBroker)
@@ -124,7 +127,7 @@ public final class Matrix {
                 .count();
     }
 
-    private static List<String> tags(final String pTestCase) {
+    private synchronized static List<String> tags(final String pTestCase) {
         for (final var s : STEPS) {
             if (s.testCase().equals(pTestCase)) {
                 return s.tags() != null ? s.tags().stream().sorted().toList() : Collections.emptyList();
@@ -133,7 +136,7 @@ public final class Matrix {
         return Collections.emptyList();
     }
 
-    private static int maxTags() {
+    private synchronized static int maxTags() {
         var res = 0;
         for (var s : STEPS) {
             if (s.tags() != null && s.tags().size() > res) {
@@ -143,13 +146,13 @@ public final class Matrix {
         return res;
     }
 
-    private static List<String> testCases() {
+    private synchronized static List<String> testCases() {
         return STEPS
                 .stream().map(Step::testCase).collect(Collectors.toCollection(TreeSet::new))
                 .stream().toList();
     }
 
-    private static List<String> topics(final String pBroker) {
+    private synchronized static List<String> topics(final String pBroker) {
         return STEPS
                 .stream().filter(s -> pBroker.equals(s.broker())).map(Step::topic).collect(Collectors.toCollection(TreeSet::new))
                 .stream().toList();

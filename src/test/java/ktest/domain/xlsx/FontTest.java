@@ -10,7 +10,7 @@ class FontTest {
         var expected = "<font><name val=\"Arial\"/><color rgb=\"FF000000\"/><sz val=\"10\"/></font>";
         assertEquals(expected, new Font("Arial", "FF000000", 10, false).toXml());
 
-        expected = "<font><name val=\"Times\"/><color rgb=\"FFFF0000\"/><sz val=\"12\"/><b/></font>";
+        expected = "<font><name val=\"Times\"/><color rgb=\"FFFF0000\"/><sz val=\"12\"/><b val=\"true\"/></font>";
         assertEquals(expected, new Font("Times", "FFFF0000", 12, true).toXml());
     }
 }

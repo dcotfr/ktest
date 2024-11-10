@@ -44,7 +44,7 @@ class SRunCommandTest {
     @Test
     @Launch(value = {"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.5\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.6\r", pResult.getOutput());
     }
 
     @Test
@@ -63,7 +63,7 @@ class SRunCommandTest {
     @Launch(value = {"srun", "-e=pi", "-f=src\\test\\resources\\validFile.yml", "-t=tag2"})
     void validFileTest(final LaunchResult pResult) {
         final var testCases = TestCase.load("src\\test\\resources\\validFile.yml");
-        assertEquals(2, testCases.size());
+        assertEquals(3, testCases.size());
         final var testCase = testCases.getFirst();
         assertEquals("Test Case 1", testCase.name());
         assertEquals(List.of("BASE_TIMESTAMP = now()", "STEP1_1_CID = uuid()"),
@@ -74,7 +74,7 @@ class SRunCommandTest {
         assertEquals(4, steps.size());
 
         var step = steps.getFirst();
-        assertEquals("Step n°1", step.name());
+        assertEquals("Step n°1.1", step.name());
         assertEquals(List.of("TIMESTAMP = BASE_TIMESTAMP + 1000"), step.beforeScript());
         assertEquals("${KAFKA_LOCAL_CONTEXT}", step.broker());
         assertEquals("${KAFKA_PREFIX}InputTopic", step.topic());
@@ -93,7 +93,7 @@ class SRunCommandTest {
                 + "\"sentAt\":\"${BASE_TIMESTAMP + 100}\",\"weight\":12030.5}}", rec.valueNode().toString());
 
         step = steps.get(1);
-        assertEquals("Step n°2", step.name());
+        assertEquals("Step n°1.2", step.name());
         assertEquals(Collections.emptyList(), step.beforeScript());
         assertEquals("${KAFKA_LOCAL_CONTEXT}", step.broker());
         assertEquals("${KAFKA_PREFIX}InputTopic", step.topic());

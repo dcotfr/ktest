@@ -84,7 +84,7 @@ final class Worksheet implements XmlUtils {
         res.append("</sheetData>");
 
         if (!mergeCells.isEmpty()) {
-            res.append("<mergeCells>");
+            res.append("<mergeCells count=\"").append(mergeCells.size()).append("\">");
             mergeCells.forEach(r -> res.append("<mergeCell ref=\"").append(r.toString()).append("\"/>"));
             res.append("</mergeCells>");
         }

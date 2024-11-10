@@ -5,6 +5,7 @@ import ktest.core.XmlUtils;
 record Xf(int fontId, int borderId, Alignment alignment) implements XmlUtils {
     @Override
     public String toXml() {
-        return "<xf fontId=\"" + fontId + "\" borderId=\"" + borderId + "\">" + alignment.toXml() + "</xf>";
+        return "<xf fontId=\"" + fontId + "\" borderId=\"" + borderId + "\" applyFont=\"true\" applyBorder=\"true\" applyAlignment=\"true\">"
+                + alignment.toXml() + "</xf>";
     }
 }

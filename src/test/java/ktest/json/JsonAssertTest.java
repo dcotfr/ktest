@@ -1,9 +1,9 @@
 package ktest.json;
 
-import ktest.core.KTestException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JsonAssertTest {
     private static final String ACTUAL = """
@@ -57,11 +57,13 @@ class JsonAssertTest {
 
     @Test
     void invalidJsonTest() {
-        try {
-            JsonAssert.contains("", ACTUAL);
-            fail();
-        } catch (final KTestException e) {
-            assertEquals("Invalid JSON.", e.getMessage());
-        }
+        var res = JsonAssert.contains("", ACTUAL);
+        assertTrue(res.isEmpty());
+
+        res = JsonAssert.contains("z", ACTUAL);
+        assertEquals(1, res.size());
+
+        res = JsonAssert.contains("notfound", ACTUAL);
+        assertEquals(1, res.size());
     }
 }

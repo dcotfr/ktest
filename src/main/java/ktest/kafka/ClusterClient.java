@@ -1,5 +1,6 @@
 package ktest.kafka;
 
+import com.fasterxml.jackson.databind.node.TextNode;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -132,7 +133,7 @@ public class ClusterClient {
     }
 
     private synchronized KafkaProducer<Object, Object> producer(final TopicRef pTopic) {
-        return producers.computeIfAbsent(pTopic.id(), k -> {
+        return producers.computeIfAbsent(pTopic.id(), _ -> {
             final var kafkaConfig = kafkaConfigProvider.of(pTopic);
             LOG.trace("{}      Creating new producer for {}({}).", BLUE, pTopic.id(), kafkaConfig.get("bootstrap.servers"));
             final var props = new Properties();
@@ -142,7 +143,7 @@ public class ClusterClient {
     }
 
     private synchronized KafkaConsumer<?, ?> consumer(final TopicRef pTopic) {
-        return consumers.computeIfAbsent(pTopic.id() + "-" + Thread.currentThread().threadId(), k -> {
+        return consumers.computeIfAbsent(pTopic.id() + "-" + Thread.currentThread().threadId(), _ -> {
             final var kafkaConfig = kafkaConfigProvider.of(pTopic);
             LOG.trace("{}      Creating new consumer for {}({}).", BLUE, pTopic.id(), kafkaConfig.get("bootstrap.servers"));
             final var props = new Properties();
@@ -169,7 +170,9 @@ public class ClusterClient {
         if (expectedSerde == Serde.AVRO && availableSchema == null) {
             throw new KTestException("Expected Avro schema not found for " + pTopic.id() + (pKey ? "key" : "value"), null);
         }
-        return (availableSchema == null || expectedSerde == Serde.STRING) ?
-                jsonNode.toString() : jsonAvroConverter.toAvro(jsonNode, availableSchema);
+        if (availableSchema == null || expectedSerde == Serde.STRING) {
+            return jsonNode instanceof TextNode textNode ? textNode.asText() : jsonNode.toString();
+        }
+        return jsonAvroConverter.toAvro(jsonNode, availableSchema);
     }
 }
