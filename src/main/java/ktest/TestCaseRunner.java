@@ -65,7 +65,8 @@ class TestCaseRunner implements Callable<XUnitReport> {
 
     @Override
     public XUnitReport call() {
-        LOG.info("{}Start Test Case: {}", logTab.tab(WHITE), testCase.name());
+        final var tags = testCase.tags();
+        LOG.info("{}Start Test Case: {}{}", logTab.tab(WHITE), testCase.name(), tags == null || tags.isEmpty() ? "" : " " + tags);
         final var xUnitReport = new XUnitReport();
         final var xUnitSuite = xUnitReport.startNewSuite(testCase.name());
         engine.eval(testCase.beforeAllScript());

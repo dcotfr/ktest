@@ -71,7 +71,8 @@ public class SRunCommand implements Runnable {
         final var globalVariables = engine.reset().context().variables();
         for (final var testCase : filteredByTags(testCases, tags)) {
             final var xUnitSuite = xUnitReport.startNewSuite(testCase.name());
-            LOG.info("{}Test Case: {}", logTab.tab(WHITE), testCase.name());
+            final var tags = testCase.tags();
+            LOG.info("{}Test Case: {}{}", logTab.tab(WHITE), testCase.name(), tags == null || tags.isEmpty() ? "" : " " + tags);
             engine.init(globalVariables);
             testCaseRunner.evalScript(engine, "beforeAll", testCase.beforeAllScript());
             logTab.inc();
