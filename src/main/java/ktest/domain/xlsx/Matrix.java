@@ -32,6 +32,7 @@ public final class Matrix {
         final var tcs = testCases();
         final var wb = new Workbook();
         final var ws = wb.createWorksheet("Content");
+        ws.cell(0, 0, " ");
         int c = 4;
         final var lastColumn = 3 + 4 * tcs.size();
         final var nbMaxTags = maxTags();

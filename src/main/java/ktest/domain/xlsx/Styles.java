@@ -33,9 +33,14 @@ final class Styles implements XmlUtils {
     @Override
     public String toXml() {
         final var res = new StringBuilder(XML_HEADER)
-                .append("<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">");
+                .append("<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"")
+                .append(" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"")
+                .append(" xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\"")
+                .append(" xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\"")
+                .append(" xmlns:xr=\"http://schemas.microsoft.com/office/spreadsheetml/2014/revision\"")
+                .append(" mc:Ignorable=\"x14ac x16r2 xr\">");
 
-        res.append("<fonts count=\"").append(fonts.size()).append("\">");
+        res.append("<fonts count=\"").append(fonts.size()).append("\" x14ac:knownFonts=\"1\">");
         fonts.entrySet().stream()
                 .sorted(Comparator.comparingInt(Map.Entry::getValue))
                 .map(Map.Entry::getKey)
@@ -49,12 +54,18 @@ final class Styles implements XmlUtils {
                 .forEach(b -> res.append(b.toXml()));
         res.append("</borders>");
 
+        res.append("<cellStyleXfs count=\"1\"><xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/></cellStyleXfs>");
+
         res.append("<cellXfs count=\"").append(cellXfs.size()).append("\">");
         cellXfs.entrySet().stream()
                 .sorted(Comparator.comparingInt(Map.Entry::getValue))
                 .map(Map.Entry::getKey)
                 .forEach(xf -> res.append(xf.toXml()));
         res.append("</cellXfs>");
+
+        res.append("<cellStyles count=\"1\"><cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/></cellStyles>");
+
+        res.append("<dxfs count=\"0\"/>");
 
         return res.append("</styleSheet>").toString();
     }
