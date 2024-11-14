@@ -137,9 +137,10 @@ class TestCaseRunner implements Callable<XUnitReport> {
                 evalScript(pEngine, "before", step.beforeScript());
                 pEngine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
                 final var topicRef = new TopicRef(pEngine.evalInLine(step.broker()), pEngine.evalInLine(step.topic()), step.keySerde(), step.valueSerde());
-                Matrix.add(pTestCase.name(), topicRef, action, pTestCase.tags());
+                final var stepState = Matrix.add(pTestCase.name(), topicRef, action, pTestCase.tags(), Thread.currentThread().threadId());
                 if (action == Action.TODO) {
                     xUnitCase.skip("Marked as TODO");
+                    stepState.success();
                 } else {
                     logTab.inc();
                     LOG.debug("{}Target: {}", logTab.tab(LIGHTGRAY), topicRef.id());
@@ -148,6 +149,7 @@ class TestCaseRunner implements Callable<XUnitReport> {
                     try {
                         if (action == Action.SEND) {
                             kafkaClient.send(topicRef, parsedRecord);
+                            stepState.success();
                         } else {
                             var found = kafkaClient.find(topicRef, parsedRecord, backOffset);
                             if (!found && action == Action.PRESENT) {
@@ -159,6 +161,8 @@ class TestCaseRunner implements Callable<XUnitReport> {
                                 LOG.warn("{}{} assertion failed for record {}.", logTab.tab(RED), action, parsedRecord);
                                 xUnitCase.fail(action + " assertion failed.", parsedRecord.toString());
                                 skipAfterFailureOrError = true;
+                            } else {
+                                stepState.success();
                             }
                         }
                     } catch (final RuntimeException | InterruptedException e) {

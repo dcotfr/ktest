@@ -18,22 +18,30 @@ final class Cell implements XmlUtils {
         return column;
     }
 
-    String ref() {
-        return ref(column, row);
-    }
-
-    static String ref(int pColumn, final int pRow) {
+    static String columnRef(int pColumn) {
         final var res = new StringBuilder();
         while (pColumn >= 0) {
             res.append((char) ('A' + (pColumn % 26)));
             pColumn = (pColumn / 26) - 1;
         }
-        res.reverse().append(pRow + 1);
+        res.reverse();
         return res.toString();
+    }
+
+    String ref() {
+        return ref(column, row);
+    }
+
+    static String ref(int pColumn, final int pRow) {
+        return columnRef(pColumn) + rowRef(pRow);
     }
 
     int row() {
         return row;
+    }
+
+    static int rowRef(final int pRow) {
+        return pRow + 1;
     }
 
     @Override

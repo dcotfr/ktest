@@ -15,6 +15,9 @@ class CellTest {
         assertEquals("BZ6", new Cell(77, 5, 0).ref());
         assertEquals("CA7", new Cell(78, 6, 0).ref());
         assertEquals("DV8", new Cell(125, 7, 0).ref());
+        assertEquals("ABW101", new Cell(750, 100, 0).ref());
+        assertEquals("ALL129", new Cell(999, 128, 0).ref());
+        assertEquals("ALU1", new Cell(1008, 0, 0).ref());
     }
 
     @Test

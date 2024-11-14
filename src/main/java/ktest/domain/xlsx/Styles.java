@@ -65,7 +65,7 @@ final class Styles implements XmlUtils {
 
         res.append("<cellStyles count=\"1\"><cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/></cellStyles>");
 
-        res.append("<dxfs count=\"0\"/>");
+        res.append("<dxfs count=\"1\"><dxf><fill><patternFill><bgColor rgb=\"FFFFAA95\"/></patternFill></fill></dxf></dxfs>");
 
         return res.append("</styleSheet>").toString();
     }

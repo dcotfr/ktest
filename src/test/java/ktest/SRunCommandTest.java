@@ -44,7 +44,7 @@ class SRunCommandTest {
     @Test
     @Launch(value = {"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.7\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.8\r", pResult.getOutput());
     }
 
     @Test
@@ -60,10 +60,10 @@ class SRunCommandTest {
     }
 
     @Test
-    @Launch(value = {"srun", "-e=pi", "-f=src\\test\\resources\\validFile.yml", "-t=tag2"})
+    @Launch(value = {"srun", "-e=pi", "-f=src\\test\\resources\\validFile.yml"}, exitCode = 1)
     void validFileTest(final LaunchResult pResult) {
         final var testCases = TestCase.load("src\\test\\resources\\validFile.yml");
-        assertEquals(3, testCases.size());
+        assertEquals(4, testCases.size());
         final var testCase = testCases.getFirst();
         assertEquals("Test Case 1", testCase.name());
         assertEquals(List.of("BASE_TIMESTAMP = now()", "STEP1_1_CID = uuid()"),

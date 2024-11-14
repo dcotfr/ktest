@@ -6,6 +6,7 @@ record Font(String name, String color, int size, boolean bold) implements XmlUti
     final static Font PLAIN = new Font("Arial", "FF000000", 10, false);
     final static Font BOLD = new Font("Arial", "FF000000", 10, true);
     final static Font SMALL = new Font("Arial", "FF000000", 8, false);
+    final static Font BIG = new Font("Arial", "FF000000", 12, true);
 
     @Override
     public String toXml() {
@@ -14,7 +15,7 @@ record Font(String name, String color, int size, boolean bold) implements XmlUti
                 .append("<color rgb=\"").append(color).append("\"/>")
                 .append("<sz val=\"").append(size).append("\"/>");
         if (bold) {
-            res.append("<b val=\"true\"/>");
+            res.append("<b val=\"1\"/>");
         }
         return res.append("</font>").toString();
     }

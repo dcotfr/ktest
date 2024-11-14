@@ -16,6 +16,8 @@ final class XlsxFileUtils {
              final var zos = new ZipOutputStream(fos)) {
             addEntry(zos, "[Content_Types].xml", new ContentTypes(pWorkbook).toXml());
             addEntry(zos, "_rels/.rels", new Rels(null).toXml());
+            addEntry(zos, "docProps/app.xml", new App().toXml());
+            addEntry(zos, "docProps/core.xml", new Core().toXml());
             addEntry(zos, "xl/sharedStrings.xml", pWorkbook.sharedStrings().toXml());
             addEntry(zos, "xl/styles.xml", pWorkbook.styles().toXml());
             addEntry(zos, "xl/workbook.xml", pWorkbook.toXml());

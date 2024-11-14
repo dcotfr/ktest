@@ -9,12 +9,15 @@ import java.util.stream.Collectors;
 
 import static ktest.domain.xlsx.Alignment.CENTER;
 import static ktest.domain.xlsx.Border.NONE;
+import static ktest.domain.xlsx.Cell.columnRef;
+import static ktest.domain.xlsx.Cell.rowRef;
 
 final class Worksheet implements XmlUtils {
     private final String name;
     private final Workbook workbook;
     private final List<Cell> cells = new ArrayList<>();
     private final List<Range> mergeCells = new ArrayList<>();
+    private final List<String> conditionals = new ArrayList<>();
 
     Worksheet(final String pName, final Workbook pWorkbook) {
         name = pName;
@@ -26,12 +29,23 @@ final class Worksheet implements XmlUtils {
     }
 
     Worksheet cell(final int pColumn, final int pRow, final Object pValue, final Font pFont, final Border pBorder, final Alignment pAlignment) {
+        return cell(pColumn, pRow, pValue, pFont, pBorder, pAlignment, null);
+    }
+
+    Worksheet cell(final int pColumn, final int pRow, final Object pValue, final Font pFont, final Border pBorder, final Alignment pAlignment, final String pConditional) {
         final var value = pValue instanceof String s ? workbook.sharedStrings().cache(s) : pValue;
         cells.add(new Cell(pColumn, pRow, workbook.styles().xfId(pFont, pBorder, pAlignment)).value(value));
+        if (pConditional != null) {
+            conditionals.add(pConditional + "!$" + columnRef(pColumn) + '$' + rowRef(pRow));
+        }
         return this;
     }
 
-    private static int firstColumn(final List<Cell> pRow) {
+    private int firstColumn() {
+        return cells.stream().mapToInt(Cell::column).min().orElse(0);
+    }
+
+    private static int firstColumnOfRow(final List<Cell> pRow) {
         return pRow.stream().mapToInt(Cell::column).min().orElse(0);
     }
 
@@ -39,7 +53,11 @@ final class Worksheet implements XmlUtils {
         return cells.stream().mapToInt(Cell::row).min().orElse(0);
     }
 
-    private static int lastColumn(final List<Cell> pRow) {
+    private int lastColumn() {
+        return cells.stream().mapToInt(Cell::column).max().orElse(0);
+    }
+
+    private static int lastColumnOfRow(final List<Cell> pRow) {
         return pRow.stream().mapToInt(Cell::column).max().orElse(0);
     }
 
@@ -69,19 +87,32 @@ final class Worksheet implements XmlUtils {
         final var res = new StringBuilder(XML_HEADER)
                 .append("<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">");
 
-        res.append("<sheetData>");
+        final var firstRow = firstRow();
         final var lastRow = lastRow();
-        for (var i = firstRow(); i <= lastRow; i++) {
+        res.append("<dimension ref=\"" + new Range(firstColumn(), firstRow, lastColumn(), lastRow) + "\"/>");
+
+        res.append("<sheetData>");
+        for (var i = firstRow; i <= lastRow; i++) {
             final List<Cell> row = cellsOfRow(i);
-            final var firstColumn = firstColumn(row) + 1;
-            final var lastColumn = lastColumn(row) + 1;
-            res.append("<row r=\"").append(i + 1).append("\" spans=\"").append(firstColumn).append(':').append(lastColumn).append("\">");
+            final var firstColumnOfRow = firstColumnOfRow(row) + 1;
+            final var lastColumnOfRow = lastColumnOfRow(row) + 1;
+            res.append("<row r=\"").append(i + 1).append("\" spans=\"").append(firstColumnOfRow).append(':').append(lastColumnOfRow).append("\">");
             row.stream()
                     .sorted(Comparator.comparingInt(Cell::column))
                     .forEach(c -> res.append(c.toXml()));
             res.append("</row>");
         }
         res.append("</sheetData>");
+
+        conditionals.forEach(c -> {
+            final var colRef = c.substring(c.indexOf("!") + 1).replace("$", "");
+            res
+                    .append("<conditionalFormatting sqref=\"").append(colRef).append("\">")
+                    .append("<cfRule type=\"cellIs\" priority=\"2\" operator=\"notEqual\" dxfId=\"0\">")
+                    .append("<formula>").append(c).append("</formula>")
+                    .append("</cfRule>")
+                    .append("</conditionalFormatting>");
+        });
 
         if (!mergeCells.isEmpty()) {
             res.append("<mergeCells count=\"").append(mergeCells.size()).append("\">");

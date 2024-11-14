@@ -139,3 +139,24 @@ steps:
     record:
       key: ${STEP3_1_CID}
       value: "${STEP3_1_CID}"
+---
+name: Test Case 4
+beforeAll: |
+  STEP4_1_CID = uuid()
+steps:
+  - name: Step n°4.1
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputTopicStr
+    keySerde: STRING
+    valueSerde: STRING
+    action: SEND
+    record:
+      key: ${STEP4_1_CID}
+      value: "${STEP4_1_CID}"
+  - name: Step n°4.2
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputTopicStr
+    action: ABSENT
+    record:
+      key: ${STEP4_1_CID}
+      value: "${STEP4_1_CID}"

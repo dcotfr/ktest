@@ -6,18 +6,21 @@
 
     <groupId>ktest</groupId>
     <artifactId>ktest</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
 
     <properties>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.16.2</quarkus.platform.version>
+        <quarkus.platform.version>3.16.3</quarkus.platform.version>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
         <maven.compiler.source>23</maven.compiler.source>
         <maven.compiler.target>23</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.parameters>true</maven.compiler.parameters>
+        <avro-plugin.version>1.12.0</avro-plugin.version>
+        <avro-serializer.version>7.7.1</avro-serializer.version>
+        <jsonassert.version>1.5.3</jsonassert.version>
     </properties>
 
     <dependencyManagement>
@@ -52,7 +55,7 @@
         <dependency>
             <groupId>org.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
-            <version>1.5.3</version>
+            <version>${jsonassert.version}</version>
         </dependency>
         <!-- Pour Kafka. -->
         <dependency>
@@ -70,7 +73,7 @@
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
-            <version>7.7.1</version>
+            <version>${avro-serializer.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>jakarta.ws.rs</groupId>
@@ -129,7 +132,7 @@
             <plugin>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro-maven-plugin</artifactId>
-                <version>1.12.0</version>
+                <version>${avro-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>

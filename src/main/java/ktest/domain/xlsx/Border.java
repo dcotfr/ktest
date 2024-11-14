@@ -20,10 +20,10 @@ record Border(Style left, Style right, Style top, Style bottom) implements XmlUt
     @Override
     public String toXml() {
         if (left == Style.NONE && right == Style.NONE && top == Style.NONE && bottom == Style.NONE) {
-            return "<border diagonalUp=\"false\" diagonalDown=\"false\"/>";
+            return "<border diagonalUp=\"0\" diagonalDown=\"0\"/>";
         }
 
-        return "<border diagonalUp=\"false\" diagonalDown=\"false\">" +
+        return "<border diagonalUp=\"0\" diagonalDown=\"0\">" +
                 borderDirection("left", left) +
                 borderDirection("right", right) +
                 borderDirection("top", top) +
