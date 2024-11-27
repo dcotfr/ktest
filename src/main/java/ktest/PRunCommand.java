@@ -20,6 +20,7 @@ import java.util.concurrent.StructuredTaskScope;
 
 import static ktest.MainCommand.VERSION;
 import static ktest.TestCaseRunner.filteredByTags;
+import static ktest.TestCaseRunner.logOptions;
 import static ktest.core.AnsiColor.WHITE;
 
 @CommandLine.Command(name = "prun", description = "Parallel run of test case(s).",
@@ -75,11 +76,12 @@ public class PRunCommand implements Runnable {
             }
             scope.join();
             LOG.info("End parallel run.");
+            logOptions(testCases, env, tags);
             final var finalReport = new XUnitReport(subTasks.stream().map(StructuredTaskScope.Subtask::get).toList());
             TestCaseRunner.logSynthesis(finalReport);
             try {
                 Files.writeString(Path.of(report), finalReport.toXml());
-                Matrix.save(matrix, env);
+                Matrix.save(matrix, env, tags, finalReport);
             } catch (final IOException e) {
                 throw new KTestException("Failed to write test report.", e);
             }

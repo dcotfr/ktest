@@ -9,13 +9,17 @@ import ktest.script.token.Flt;
 import ktest.script.token.Int;
 import ktest.script.token.Token;
 import ktest.script.token.Txt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 @Dependent
 public final class Context {
+    private static final Logger log = LoggerFactory.getLogger(Context.class);
     private final Map<String, Func> functions = new TreeMap<>();
     private final Map<String, Token<?>> variables = new TreeMap<>();
+    private boolean pauseDisabled;
 
     @Inject
     @All
@@ -39,6 +43,11 @@ public final class Context {
         return this;
     }
 
+    public Context disablePause(final boolean pFlag) {
+        pauseDisabled = pFlag;
+        return this;
+    }
+
     public Collection<Func> functions() {
         return new ArrayList<>(functions.values());
     }
@@ -49,6 +58,10 @@ public final class Context {
 
     public Func function(final String pName) {
         return functions.get(pName);
+    }
+
+    public boolean pauseDisabled() {
+        return pauseDisabled;
     }
 
     public Token<?> variable(final String pName) {

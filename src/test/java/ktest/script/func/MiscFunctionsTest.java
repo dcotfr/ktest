@@ -1,9 +1,9 @@
 package ktest.script.func;
 
-import ktest.script.Engine;
-import ktest.script.ScriptException;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import ktest.script.Engine;
+import ktest.script.ScriptException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,10 +45,14 @@ class MiscFunctionsTest {
 
     @Test
     void pauseTest() {
-        final var before = System.currentTimeMillis();
+        var before = System.currentTimeMillis();
         engine.eval("pause(2000)");
-        final var after = System.currentTimeMillis();
-        assertTrue(after - before >= 2000);
+        assertTrue(System.currentTimeMillis() - before >= 2000);
+
+        before = System.currentTimeMillis();
+        engine.context().disablePause(true);
+        engine.eval("pause(5000)");
+        assertTrue(System.currentTimeMillis() - before <= 1000);
     }
 
     @Test

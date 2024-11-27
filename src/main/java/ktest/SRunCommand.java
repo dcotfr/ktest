@@ -20,6 +20,7 @@ import java.nio.file.Path;
 
 import static ktest.MainCommand.VERSION;
 import static ktest.TestCaseRunner.filteredByTags;
+import static ktest.TestCaseRunner.logOptions;
 import static ktest.core.AnsiColor.WHITE;
 
 @CommandLine.Command(name = "srun", description = "Sequential run of test case(s).",
@@ -71,8 +72,8 @@ public class SRunCommand implements Runnable {
         final var globalVariables = engine.reset().context().variables();
         for (final var testCase : filteredByTags(testCases, tags)) {
             final var xUnitSuite = xUnitReport.startNewSuite(testCase.name());
-            final var tags = testCase.tags();
-            LOG.info("{}Test Case: {}{}", logTab.tab(WHITE), testCase.name(), tags == null || tags.isEmpty() ? "" : " " + tags);
+            final var stepTags = testCase.tags();
+            LOG.info("{}Test Case: {}{}", logTab.tab(WHITE), testCase.name(), stepTags == null || stepTags.isEmpty() ? "" : " " + stepTags);
             engine.init(globalVariables);
             testCaseRunner.evalScript(engine, "beforeAll", testCase.beforeAllScript());
             logTab.inc();
@@ -84,10 +85,11 @@ public class SRunCommand implements Runnable {
             xUnitSuite.end();
         }
         xUnitReport.end();
+        logOptions(testCases, env, tags);
         TestCaseRunner.logSynthesis(xUnitReport);
         try {
             Files.writeString(Path.of(report), xUnitReport.toXml());
-            Matrix.save(matrix, env);
+            Matrix.save(matrix, env, tags, xUnitReport);
         } catch (final IOException e) {
             throw new KTestException("Failed to write test report.", e);
         }

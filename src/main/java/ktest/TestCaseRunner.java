@@ -80,6 +80,17 @@ class TestCaseRunner implements Callable<XUnitReport> {
         return xUnitReport;
     }
 
+    public static void logOptions(final List<TestCase> pTestCases, final String pEnv, final String pTagsOption) {
+        LOG.debug("");
+        LOG.debug("Run options: -e {}{}", pEnv, pTagsOption == null || pTagsOption.isEmpty() ? "" : " -t " + pTagsOption);
+        final var availableTags = pTestCases.stream()
+                .filter(t -> t.tags() != null)
+                .flatMap(t -> t.tags().stream())
+                .collect(Collectors.toCollection(TreeSet::new))
+                .stream().toList();
+        LOG.debug("Known tags: {}", String.join(",", availableTags));
+    }
+
     public static void logSynthesis(final XUnitReport pReport) {
         LOG.info("");
         LOG.info("{}SUMMARY:", WHITE);
@@ -89,7 +100,10 @@ class TestCaseRunner implements Callable<XUnitReport> {
             if (ts.failures() == 0 && ts.errors() == 0) {
                 successes.add(ts.name);
             } else {
-                failures.add(ts.name);
+                final var failedStep = ts.testcase.stream()
+                        .filter(s -> s.failure != null || s.error != null)
+                        .findFirst().map(s -> s.name).orElse("");
+                failures.add(ts.name + " @ " + failedStep);
             }
         });
         final var successCount = successes.size();
@@ -130,14 +144,15 @@ class TestCaseRunner implements Callable<XUnitReport> {
             final var xUnitCase = pTestSuite.startNewCase(step.name() + " (" + action + ")", pTestCase.name(), action == Action.PRESENT || action == Action.ABSENT);
             try {
                 LOG.info("{}- Step : {} ({})", logTab.tab(action == Action.TODO || skipAfterFailureOrError ? BRIGHTYELLOW : WHITE), step.name(), action);
-                if (skipAfterFailureOrError) {
-                    xUnitCase.skip("Skipped because of previous failure or error.");
-                    continue;
-                }
+                pEngine.context().disablePause(skipAfterFailureOrError);
                 evalScript(pEngine, "before", step.beforeScript());
                 pEngine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
                 final var topicRef = new TopicRef(pEngine.evalInLine(step.broker()), pEngine.evalInLine(step.topic()), step.keySerde(), step.valueSerde());
                 final var stepState = Matrix.add(pTestCase.name(), topicRef, action, pTestCase.tags(), Thread.currentThread().threadId());
+                if (skipAfterFailureOrError) {
+                    xUnitCase.skip("Skipped because of previous failure or error.");
+                    continue;
+                }
                 if (action == Action.TODO) {
                     xUnitCase.skip("Marked as TODO");
                     stepState.success();

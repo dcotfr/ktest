@@ -16,6 +16,9 @@ public class Pause extends Func {
 
     @Override
     public Txt apply(final Context pContext, final Stm pParam) {
+        if (pContext.pauseDisabled()) {
+            return new Txt("");
+        }
         final var params = extractParam(pContext, pParam, Number.class);
         try {
             Thread.sleep(((Number) params[0]).longValue());
