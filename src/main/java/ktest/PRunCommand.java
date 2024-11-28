@@ -81,7 +81,7 @@ public class PRunCommand implements Runnable {
             TestCaseRunner.logSynthesis(finalReport);
             try {
                 Files.writeString(Path.of(report), finalReport.toXml());
-                Matrix.save(matrix, env, tags, finalReport);
+                Matrix.save(Path.of(matrix), env, tags, finalReport);
             } catch (final IOException e) {
                 throw new KTestException("Failed to write test report.", e);
             }

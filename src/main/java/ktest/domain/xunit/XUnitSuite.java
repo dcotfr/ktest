@@ -47,7 +47,7 @@ public class XUnitSuite implements XmlUtils {
     }
 
     public XUnitCase startNewCase(final String pName, final String pClassName, final boolean pAssertion) {
-        final var res = new XUnitCase(pName, pClassName,pAssertion);
+        final var res = new XUnitCase(pName, pClassName, pAssertion);
         testcase.add(res);
         return res;
     }

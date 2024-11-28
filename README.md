@@ -305,4 +305,5 @@ For example:
 The execution generates a report called 'ktmatrix.xlsx', which contains a matrix representing the actions of the test cases in relation to all the topics, highlighting any potential failures.
 
 For example:
-![ktmatrix sample](doc/ktmatrix.png)
+
+![ktmatrix details sample](doc/details.png) ![ktmatrix sample](doc/ktmatrix.png)

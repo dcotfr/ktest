@@ -61,7 +61,6 @@ steps:
     action: TODO
     record:
       key: "K1"
-
 afterAll:
 ---
 name: Test Case 2

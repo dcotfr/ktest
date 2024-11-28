@@ -74,6 +74,8 @@ class TestCaseRunner implements Callable<XUnitReport> {
         logTab.inc();
         executeTestCase(engine, testCase, xUnitSuite);
         logTab.dec();
+        evalScript(engine, "afterAll", testCase.afterAllScript());
+        xUnitSuite.end();
         xUnitReport.end();
 
         LOG.info("{}End Test Case: {}", logTab.tab(WHITE), testCase.name());

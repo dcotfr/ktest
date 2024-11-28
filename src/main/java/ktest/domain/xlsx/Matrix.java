@@ -10,6 +10,7 @@ import org.dhatim.fastexcel.Worksheet;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,8 +35,8 @@ public final class Matrix {
         return res;
     }
 
-    public static void save(final String pFileName, final String pEnv, final String pTags, final XUnitReport pReport) throws IOException {
-        try (final var os = new FileOutputStream(pFileName);
+    public static void save(final Path pFilePath, final String pEnv, final String pTags, final XUnitReport pReport) throws IOException {
+        try (final var os = new FileOutputStream(pFilePath.toFile());
              final var wb = new Workbook(os, VERSION, null)) {
             wb.properties().setTitle("Test Case Matrix");
             wb.setGlobalDefaultFont("Arial", 10.0);

@@ -89,7 +89,7 @@ public class SRunCommand implements Runnable {
         TestCaseRunner.logSynthesis(xUnitReport);
         try {
             Files.writeString(Path.of(report), xUnitReport.toXml());
-            Matrix.save(matrix, env, tags, xUnitReport);
+            Matrix.save(Path.of(matrix), env, tags, xUnitReport);
         } catch (final IOException e) {
             throw new KTestException("Failed to write test report.", e);
         }
