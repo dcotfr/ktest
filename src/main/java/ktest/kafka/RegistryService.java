@@ -47,8 +47,8 @@ public class RegistryService {
             LOG.trace("{}      Trying to get last active schema of {}.", BLUE, schemaKey);
             try {
                 final var rawSchemas = registryClient.getSchemas(pTopic.topic() + schemaSuffix, false, true);
-                final var rawSchema = (rawSchemas != null && !rawSchemas.isEmpty()) ? rawSchemas.getFirst() : null;
-                res = rawSchema != null ? new Schema.Parser().parse(rawSchema.canonicalString()) : null;
+                final var rawSchema = (rawSchemas == null || rawSchemas.isEmpty()) ? null : rawSchemas.getFirst();
+                res = rawSchema == null ? null : new Schema.Parser().parse(rawSchema.canonicalString());
             } catch (final IOException | RestClientException e) {
                 throw new KTestException("Error while getting schema of " + schemaKey, e);
             }

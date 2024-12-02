@@ -43,5 +43,11 @@ class TestCaseRunnerTest {
 
         res = filteredByTags(testCases, "t1, t2+t4");
         assertEquals(5, res.size());
+
+        res = filteredByTags(testCases, "!t2");
+        assertEquals(3, res.size());
+
+        res = filteredByTags(testCases, "t1,!t3");
+        assertEquals(2, res.size());
     }
 }

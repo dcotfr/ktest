@@ -210,16 +210,26 @@ class TestCaseRunner implements Callable<XUnitReport> {
             return pTestCases;
         }
 
-        final var filters = Arrays.stream(pTagsOption.split(","))
-                .map(filter -> Arrays.stream(filter.trim().split("\\+"))
-                        .map(String::trim)
-                        .collect(Collectors.toList()))
-                .collect(Collectors.toCollection(ArrayList::new));
+        final var inclTags = new ArrayList<List<String>>();
+        final var exclTags = new ArrayList<String>();
+        Arrays.stream(pTagsOption.split(",")).forEach(f -> {
+            final var split = f.trim().split("\\+");
+            if (split.length > 0) {
+                if (split[0].startsWith("!")) {
+                    exclTags.add(split[0].substring(1));
+                } else {
+                    inclTags.add(Arrays.stream(f.trim().split("\\+"))
+                            .map(String::trim).collect(Collectors.toList()));
+                }
+            }
+        });
         final var res = new ArrayList<TestCase>();
-        pTestCases.forEach(testCase -> {
-            final var testCaseTags = testCase.tags();
-            if (testCaseTags != null && filters.stream().anyMatch(testCaseTags::containsAll)) {
-                res.add(testCase);
+        pTestCases.forEach(pTestCase -> {
+            final var testCaseTags = pTestCase.tags();
+            final var matchIncluded = inclTags.isEmpty() || (testCaseTags != null && inclTags.stream().anyMatch(testCaseTags::containsAll));
+            final var matchExcluded = testCaseTags != null && exclTags.stream().anyMatch(testCaseTags::contains);
+            if (matchIncluded && !matchExcluded) {
+                res.add(pTestCase);
             }
         });
         return res;

@@ -6,12 +6,12 @@
 
     <groupId>ktest</groupId>
     <artifactId>ktest</artifactId>
-    <version>1.0.10</version>
+    <version>1.0.11</version>
 
     <properties>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.17.0</quarkus.platform.version>
+        <quarkus.platform.version>3.17.2</quarkus.platform.version>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
         <maven.compiler.source>23</maven.compiler.source>
@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <avro-plugin.version>1.12.0</avro-plugin.version>
-        <avro-serializer.version>7.7.1</avro-serializer.version>
+        <avro-serializer.version>7.7.2</avro-serializer.version>
         <jsonassert.version>1.5.3</jsonassert.version>
         <fastexcel.version>0.18.4</fastexcel.version>
     </properties>

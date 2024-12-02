@@ -300,10 +300,11 @@ For example:
 * `ktest prun ... -t t1` to run only test cases having the "t1" tag,
 * `ktest srun ... --tags "t1+t2"` to run only test cases having the "t1" AND the "t2" tags,
 * `ktest srun ... -t "t1,t2+t3"` to run only test cases having the "t1" OR ("t2" AND "t3") tags.
+* `ktest prun ... -t "t1,t2+t3,!t4"` to run only test cases having ("t1" OR ("t2" AND "t3") tags) but no "t4" tag.
 
 ##### How to get an overview of a set of executed test cases?
 The execution generates a report called 'ktmatrix.xlsx', which contains a matrix representing the actions of the test cases in relation to all the topics, highlighting any potential failures.
 
 For example:
 
-![ktmatrix details sample](doc/details.png) ![ktmatrix sample](doc/ktmatrix.png)
+![ktmatrix sample](doc/ktmatrix.png) ![ktmatrix details sample](doc/details.png)
