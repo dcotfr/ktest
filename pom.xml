@@ -6,7 +6,7 @@
 
     <groupId>ktest</groupId>
     <artifactId>ktest</artifactId>
-    <version>1.0.11</version>
+    <version>1.0.12</version>
 
     <properties>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -81,10 +81,6 @@
                     <artifactId>jakarta.ws.rs-api</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-csv</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

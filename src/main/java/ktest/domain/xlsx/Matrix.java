@@ -11,10 +11,7 @@ import org.dhatim.fastexcel.Worksheet;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ktest.MainCommand.VERSION;
@@ -25,6 +22,7 @@ import static org.dhatim.fastexcel.BorderStyle.*;
 public final class Matrix {
     private static final List<StepState> STEP_STATES = new ArrayList<>();
     private static final String CENTER = "center";
+    private static final String RED = "FFFCE4D6";
 
     private Matrix() {
     }
@@ -40,8 +38,11 @@ public final class Matrix {
              final var wb = new Workbook(os, VERSION, null)) {
             wb.properties().setTitle("Test Case Matrix");
             wb.setGlobalDefaultFont("Arial", 10.0);
-            fillWorksheet(wb.newWorksheet("Content"), pEnv, pTags, true);
-            fillWorksheet(wb.newWorksheet("Results"), pEnv, pTags, false);
+            final var contentWS = wb.newWorksheet("Content");
+            fillWorksheet(contentWS, pEnv, pTags, true);
+            final var resultsWS = wb.newWorksheet("Results");
+            fillWorksheet(resultsWS, pEnv, pTags, false);
+            highlightFailures(contentWS, resultsWS);
             fillDetails(wb.newWorksheet("Details"), pReport);
         }
     }
@@ -127,26 +128,22 @@ public final class Matrix {
                     int count = count(tc, b, t, SEND, pAll);
                     pWorksheet.style(r, c).borderStyle(LEFT, THIN)
                             .borderStyle(TOP, top).borderStyle(BOTTOM, bottom).set();
-                    conditionalFormating(pWorksheet, r, c);
                     if (count != 0) {
                         pWorksheet.value(r, c, count);
                     }
                     count = count(tc, b, t, PRESENT, pAll);
                     pWorksheet.style(r, c + 1).borderStyle(TOP, top).borderStyle(BOTTOM, bottom).set();
-                    conditionalFormating(pWorksheet, r, c + 1);
                     if (count != 0) {
                         pWorksheet.value(r, c + 1, count);
                     }
                     count = count(tc, b, t, ABSENT, pAll);
                     pWorksheet.style(r, c + 2).borderStyle(TOP, top).borderStyle(BOTTOM, bottom).set();
-                    conditionalFormating(pWorksheet, r, c + 2);
                     if (count != 0) {
                         pWorksheet.value(r, c + 2, count);
                     }
                     count = count(tc, b, t, TODO, pAll);
                     pWorksheet.style(r, c + 3).borderStyle(RIGHT, THIN)
                             .borderStyle(TOP, top).borderStyle(BOTTOM, bottom).set();
-                    conditionalFormating(pWorksheet, r, c + 3);
                     if (count != 0) {
                         pWorksheet.value(r, c + 3, count);
                     }
@@ -176,8 +173,24 @@ public final class Matrix {
 
     private static void conditionalFormating(final Worksheet pWorksheet, final int pRow, final int pColumn) {
         final var cellRef = "!$" + columnRef(pColumn) + '$' + rowRef(pRow);
-        pWorksheet.style(pRow, pColumn).fillColor("FFFCE4D6")
+        pWorksheet.style(pRow, pColumn).fillColor(RED)
                 .set(new ConditionalFormattingExpressionRule("Content" + cellRef + "&lt;&gt;Results" + cellRef, true));
+    }
+
+    private static void highlightFailures(final Worksheet pContentWS, final Worksheet pResultsWS) {
+        int r = 4 + maxTags();
+        for (final var b : brokers()) {
+            final var topics = topics(b);
+            for (final var _ : topics) {
+                for (int delta = 0; delta < 4 * testCases().size(); delta++) {
+                    if (!Objects.equals(pContentWS.value(r, 4 + delta), pResultsWS.value(r, 4 + delta))) {
+                        pContentWS.style(r, 4 + delta).fillColor(RED).set();
+                        pResultsWS.style(r, 4 + delta).fillColor(RED).set();
+                    }
+                }
+                r++;
+            }
+        }
     }
 
     private static void fillDetails(final Worksheet pWorksheet, final XUnitReport pReport) {
@@ -217,7 +230,7 @@ public final class Matrix {
             c++;
         }
         if (pShowAlarm) {
-            pWorksheet.range(pRow, 0, pRow, 8).style().fillColor("FFFCE4D6").set();
+            pWorksheet.range(pRow, 0, pRow, 8).style().fillColor(RED).set();
         }
     }
 
@@ -237,12 +250,9 @@ public final class Matrix {
     }
 
     private synchronized static List<String> tags(final String pTestCase) {
-        for (final var s : STEP_STATES) {
-            if (s.testCase().equals(pTestCase)) {
-                return s.tags() != null ? s.tags().stream().sorted().toList() : Collections.emptyList();
-            }
-        }
-        return Collections.emptyList();
+        return STEP_STATES.stream().filter(s -> s.testCase().equals(pTestCase))
+                .findFirst().filter(s -> s.tags() != null).map(s -> s.tags().stream().sorted().toList())
+                .orElse(Collections.emptyList());
     }
 
     private synchronized static int maxTags() {

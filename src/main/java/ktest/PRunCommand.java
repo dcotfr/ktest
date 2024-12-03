@@ -69,11 +69,13 @@ public class PRunCommand implements Runnable {
         try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             LOG.info("Start parallel run.");
             final var subTasks = new ArrayList<StructuredTaskScope.Subtask<XUnitReport>>();
-            for (final var testCase : filteredByTags(testCases, tags)) {
-                final var runner = testCaseRunnerFactory.get().testCase(testCase).backOffset(backOffset);
-                runner.engine().init(globalVariables);
-                subTasks.add(scope.fork(runner));
-            }
+            filteredByTags(testCases, tags)
+                    .stream()
+                    .map(testCase -> testCaseRunnerFactory.get().testCase(testCase).backOffset(backOffset))
+                    .forEach(runner -> {
+                        runner.engine().init(globalVariables);
+                        subTasks.add(scope.fork(runner));
+                    });
             scope.join();
             LOG.info("End parallel run.");
             logOptions(testCases, env, tags);

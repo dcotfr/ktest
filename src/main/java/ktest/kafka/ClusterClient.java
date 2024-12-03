@@ -92,10 +92,9 @@ public class ClusterClient {
     }
 
     private long resetConsumer(final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {
-        final var partitions = new ArrayList<TopicPartition>();
-        for (final var p : pConsumer.partitionsFor(pTopicName)) {
-            partitions.add(new TopicPartition(pTopicName, p.partition()));
-        }
+        final var partitions = pConsumer.partitionsFor(pTopicName).stream()
+                .map(p -> new TopicPartition(pTopicName, p.partition()))
+                .collect(Collectors.toCollection(ArrayList::new));
         var lastOffset = 0L;
         if (!partitions.isEmpty()) {
             pConsumer.assign(partitions);
