@@ -7,6 +7,7 @@ import ktest.core.KTestException;
 import ktest.domain.TestCase;
 import ktest.domain.xlsx.Matrix;
 import ktest.domain.xunit.XUnitReport;
+import ktest.domain.xunit.XUnitSuite;
 import ktest.script.Engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.concurrent.StructuredTaskScope;
 
+import static java.lang.Math.round;
 import static ktest.MainCommand.VERSION;
 import static ktest.TestCaseRunner.filteredByTags;
 import static ktest.TestCaseRunner.logOptions;
+import static ktest.core.AnsiColor.LIGHTGRAY;
 import static ktest.core.AnsiColor.WHITE;
+import static ktest.core.LogTab.secondsToHuman;
 
 @CommandLine.Command(name = "prun", description = "Parallel run of test case(s).",
         mixinStandardHelpOptions = true, showDefaultValues = true, version = VERSION)
@@ -80,6 +84,7 @@ public class PRunCommand implements Runnable {
             LOG.info("End parallel run.");
             logOptions(testCases, env, tags);
             final var finalReport = new XUnitReport(subTasks.stream().map(StructuredTaskScope.Subtask::get).toList());
+            logTips(finalReport);
             TestCaseRunner.logSynthesis(finalReport);
             try {
                 Files.writeString(Path.of(report), finalReport.toXml());
@@ -93,6 +98,16 @@ public class PRunCommand implements Runnable {
             }
         } catch (final InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void logTips(final XUnitReport pReport) {
+        final var parallelTime = pReport.time();
+        final var sequentialTime = pReport.testsuite.stream().mapToDouble(XUnitSuite::time).sum();
+        final var estimatedGain = round(1_000 - 1_000 * parallelTime / (sequentialTime != 0.0 ? sequentialTime : 1.0)) / 10.0;
+        LOG.debug("{}Executed in {} (vs estimated sequential run time {} = gain {}%)", LIGHTGRAY, secondsToHuman(parallelTime), secondsToHuman(sequentialTime), estimatedGain);
+        if (estimatedGain < 33.3) {
+            LOG.debug("{}Tips: although slightly slower, the sequential mode offers a more readable log.", LIGHTGRAY);
         }
     }
 }

@@ -8,6 +8,7 @@ import ktest.core.LogTab;
 import ktest.domain.TestCase;
 import ktest.domain.xlsx.Matrix;
 import ktest.domain.xunit.XUnitReport;
+import ktest.domain.xunit.XUnitSuite;
 import ktest.kafka.ClusterClient;
 import ktest.script.Engine;
 import org.slf4j.Logger;
@@ -18,10 +19,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static java.lang.Math.round;
 import static ktest.MainCommand.VERSION;
 import static ktest.TestCaseRunner.filteredByTags;
 import static ktest.TestCaseRunner.logOptions;
+import static ktest.core.AnsiColor.LIGHTGRAY;
 import static ktest.core.AnsiColor.WHITE;
+import static ktest.core.LogTab.secondsToHuman;
 
 @CommandLine.Command(name = "srun", description = "Sequential run of test case(s).",
         mixinStandardHelpOptions = true, showDefaultValues = true, version = VERSION)
@@ -86,6 +90,7 @@ public class SRunCommand implements Runnable {
         }
         xUnitReport.end();
         logOptions(testCases, env, tags);
+        logTips(xUnitReport);
         TestCaseRunner.logSynthesis(xUnitReport);
         try {
             Files.writeString(Path.of(report), xUnitReport.toXml());
@@ -96,6 +101,15 @@ public class SRunCommand implements Runnable {
         engine.end();
         if (finalFailureOrError) {
             throw new TestFailureOrError(xUnitReport);
+        }
+    }
+
+    private void logTips(final XUnitReport pReport) {
+        final var fullTime = pReport.time();
+        final var maxSuiteTime = pReport.testsuite.stream().mapToDouble(XUnitSuite::time).filter(s -> s >= 0.0).max().orElse(0.0);
+        final var potentialGain = round(1_000 - 1_000 * maxSuiteTime / (fullTime != 0.0 ? fullTime : 1.0)) / 10.0;
+        if (potentialGain > 33.3) {
+            LOG.debug("{}Tips: potential speed gain with parallel mode = {}% (executed in {} with the slowest sequence requiring {}).", logTab.tab(LIGHTGRAY), potentialGain, secondsToHuman(fullTime), secondsToHuman(maxSuiteTime));
         }
     }
 }
