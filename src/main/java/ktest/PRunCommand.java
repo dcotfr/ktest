@@ -23,7 +23,6 @@ import static java.lang.Math.round;
 import static ktest.MainCommand.VERSION;
 import static ktest.TestCaseRunner.filteredByTags;
 import static ktest.TestCaseRunner.logOptions;
-import static ktest.core.AnsiColor.LIGHTGRAY;
 import static ktest.core.AnsiColor.WHITE;
 import static ktest.core.LogTab.secondsToHuman;
 
@@ -105,9 +104,9 @@ public class PRunCommand implements Runnable {
         final var parallelTime = pReport.time();
         final var sequentialTime = pReport.testsuite.stream().mapToDouble(XUnitSuite::time).sum();
         final var estimatedGain = round(1_000 - 1_000 * parallelTime / (sequentialTime != 0.0 ? sequentialTime : 1.0)) / 10.0;
-        LOG.debug("{}Executed in {} (vs estimated sequential run time {} = gain {}%)", LIGHTGRAY, secondsToHuman(parallelTime), secondsToHuman(sequentialTime), estimatedGain);
+        LOG.info("Executed in {} (vs estimated sequential run time {} = gain {}%)", secondsToHuman(parallelTime), secondsToHuman(sequentialTime), estimatedGain);
         if (estimatedGain < 33.3) {
-            LOG.debug("{}Tips: although slightly slower, the sequential mode offers a more readable log.", LIGHTGRAY);
+            LOG.info("Tips: although slightly slower, the sequential mode offers a more readable log.");
         }
     }
 }

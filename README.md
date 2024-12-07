@@ -213,7 +213,9 @@ Scripting Functions:
  MISC:
   env     ("SHELL")                              "/bin/bash"                            Returns the value of an ENV variable.
   goto    ("NameOfStep")                                                                Jump and continue to named Step.
+  jq      ("{\"a\":{\"b\":3.4}}", "/a/b")        3.4                                    Returns the value of an attribute from a json string.
   pause   (3000)                                                                        Pause treatment during provided milliseconds.
+  record  ()                                     {"topic": "...}                        Returns a json description of the last record found.
  TEXT:
   concat  ("Aaa", "Bbb",...)                     "AaaBbb"                               Returns the concatenation of multiple strings.
   left    ("Sample", 3)                          "Sam"                                  Returns the x first characters of a string.

@@ -83,14 +83,14 @@ class TestCaseRunner implements Callable<XUnitReport> {
     }
 
     public static void logOptions(final List<TestCase> pTestCases, final String pEnv, final String pTagsOption) {
-        LOG.debug("");
-        LOG.debug("Run options: -e {}{}", pEnv, pTagsOption == null || pTagsOption.isEmpty() ? "" : " -t " + pTagsOption);
+        LOG.info("");
+        LOG.info("Run options: -e {}{}", pEnv, pTagsOption == null || pTagsOption.isEmpty() ? "" : " -t " + pTagsOption);
         final var availableTags = pTestCases.stream()
                 .filter(t -> t.tags() != null)
                 .flatMap(t -> t.tags().stream())
                 .collect(Collectors.toCollection(TreeSet::new))
                 .stream().toList();
-        LOG.debug("Known tags: {}", String.join(",", availableTags));
+        LOG.info("Known tags: {}", String.join(",", availableTags));
     }
 
     public static void logSynthesis(final XUnitReport pReport) {
@@ -146,7 +146,7 @@ class TestCaseRunner implements Callable<XUnitReport> {
             final var xUnitCase = pTestSuite.startNewCase(step.name() + " (" + action + ")", pTestCase.name(), action == Action.PRESENT || action == Action.ABSENT);
             try {
                 LOG.info("{}- Step : {} ({})", logTab.tab(action == Action.TODO || skipAfterFailureOrError ? BRIGHTYELLOW : WHITE), step.name(), action);
-                pEngine.context().disablePause(skipAfterFailureOrError);
+                pEngine.context().disablePause(skipAfterFailureOrError).lastRecord(null);
                 evalScript(pEngine, "before", step.beforeScript());
                 pEngine.context().variables().forEach(e -> xUnitCase.addProperty(e.getKey(), e.getValue().value().toString()));
                 final var topicRef = new TopicRef(pEngine.evalInLine(step.broker()), pEngine.evalInLine(step.topic()), step.keySerde(), step.valueSerde());
@@ -169,12 +169,14 @@ class TestCaseRunner implements Callable<XUnitReport> {
                             stepState.success();
                         } else {
                             var found = kafkaClient.find(topicRef, parsedRecord, backOffset);
-                            if (!found && action == Action.PRESENT) {
+                            pEngine.context().lastRecord(found);
+                            evalScript(pEngine, "patch", List.of("info(record())"));
+                            if (found == null && action == Action.PRESENT) {
                                 LOG.trace("{}Retrying find with larger range...", logTab.tab(LIGHTGRAY));
                                 Thread.sleep(250);
                                 found = kafkaClient.find(topicRef, parsedRecord, 2 * backOffset);
                             }
-                            if ((found && action == Action.ABSENT) || (!found && action == Action.PRESENT)) {
+                            if ((found != null && action == Action.ABSENT) || (found == null && action == Action.PRESENT)) {
                                 LOG.warn("{}{} assertion failed for record {}.", logTab.tab(RED), action, parsedRecord);
                                 xUnitCase.fail(action + " assertion failed.", parsedRecord.toString());
                                 skipAfterFailureOrError = true;

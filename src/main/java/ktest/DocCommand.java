@@ -15,7 +15,7 @@ import static ktest.core.AnsiColor.WHITE;
 @CommandLine.Command(name = "doc", description = "Display of the full documentation.",
         mixinStandardHelpOptions = true, version = VERSION)
 public class DocCommand implements Runnable {
-    final static String SAMPLE_CONFIG = BRIGHTYELLOW + "Sample ktconfig.yml:" + WHITE + "\n"
+    static final String SAMPLE_CONFIG = BRIGHTYELLOW + "Sample ktconfig.yml:" + WHITE + "\n"
             + "  registries:\n"
             + "    - name: pi_registry\n"
             + "      url: http://192.168.0.105:8081\n"
@@ -41,7 +41,7 @@ public class DocCommand implements Runnable {
             + "      onEnd: info(\"Test finished\")\n"
             + "    - name: dev\n"
             + "      ...\n";
-    final static String SAMPLE_TEST_CASE = BRIGHTYELLOW + "Sample Test Case file:" + WHITE + "\n"
+    static final String SAMPLE_TEST_CASE = BRIGHTYELLOW + "Sample Test Case file:" + WHITE + "\n"
             + "  name: \"Name of the Test Case\"\n"
             + "  beforeAll: |\n"
             + "    TIMESTAMP = now()\n"
@@ -72,7 +72,7 @@ public class DocCommand implements Runnable {
             + "  ---\n"
             + "  name: NameOfSecondTestCase\n"
             + "  ...\n";
-    final static String OPERATORS_DOC = BRIGHTYELLOW + "Operators/Tokens:" + WHITE + "\n"
+    static final String OPERATORS_DOC = BRIGHTYELLOW + "Operators/Tokens:" + WHITE + "\n"
             + "  -      -3       -3     Unary minus operator: negates the number value.\n"
             + "  +      4+3       7     Addition operator: adds two numbers.\n"
             + "  -      9-5       4     Subtraction operator; subtracts second number from first number.\n"
@@ -81,7 +81,7 @@ public class DocCommand implements Runnable {
             + "  =     A=3.14           Assignment operator.\n"
             + "  (    3*(1+2)     9     Left brace: start increased priority.\n"
             + "  )     -(-4)      4     Right brace: ends increased priority.\n";
-    final static String CONDITIONS_DOC = BRIGHTYELLOW + "Conditions/Tokens:" + WHITE + "\n"
+    static final String CONDITIONS_DOC = BRIGHTYELLOW + "Conditions/Tokens:" + WHITE + "\n"
             + "  ?    cnd?stm           Executes a statement only if condition is true (=1).\n"
             + "  ==   \"A\"==\"A\"    1     Equal: true if arguments are equals.\n"
             + "  !=     5!=5      0     Not Equal: true if arguments are differents.\n"
@@ -89,7 +89,7 @@ public class DocCommand implements Runnable {
             + "  <      2<2       0     Lesser: true if left argument is strictly smaller than right argument.\n"
             + "  >=     0>=1      0     Greater or Equal: true if left argument is greater or equal to right argument.\n"
             + "  >      3>2       1     Greater: true if left argument is strictly greater than right argument.\n";
-    final static String SPECIALS_DOC = BRIGHTYELLOW + "Specials/Tokens:" + WHITE + "\n"
+    static final String SPECIALS_DOC = BRIGHTYELLOW + "Specials/Tokens:" + WHITE + "\n"
             + "  ;                      Ends the current in-line statement an starts a new one.\n";
 
     @Inject

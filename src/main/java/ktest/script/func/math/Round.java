@@ -19,6 +19,6 @@ public class Round extends Func {
     @Override
     public Int apply(final Context pContext, final Stm pParam) {
         final var params = extractParam(pContext, pParam, Number.class);
-        return new Int(Double.valueOf(round(((Number) params[0]).doubleValue())).longValue());
+        return new Int(round(((Number) params[0]).doubleValue()));
     }
 }

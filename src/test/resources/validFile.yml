@@ -112,6 +112,7 @@ steps:
         body:
           code: P2
           label: Product 2
+    after: warn("cid=",jq(record(),"/headers/correlation.id"),", weight=",jq(record(),"/value/body/weight"))
 ---
 name: Test Case 3
 tags:

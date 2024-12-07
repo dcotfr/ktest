@@ -66,7 +66,7 @@ public class ClusterClient {
         }
     }
 
-    public boolean find(final TopicRef pTopic, final TestRecord pRecord, final int pBackOffset) {
+    public FoundRecord find(final TopicRef pTopic, final TestRecord pRecord, final int pBackOffset) {
         final var consumer = consumer(pTopic);
         var lastOffsetReached = false;
         final var lastOffset = resetConsumer(consumer, pTopic.topic(), pBackOffset);
@@ -79,7 +79,7 @@ public class ClusterClient {
                 for (final var o : recs) {
                     if (o instanceof ConsumerRecord<?, ?> rec) {
                         if (assertRecord(pRecord, rec)) {
-                            return true;
+                            return new FoundRecord(rec);
                         }
                         if (rec.offset() >= lastOffset) {
                             lastOffsetReached = true;
@@ -88,7 +88,7 @@ public class ClusterClient {
                 }
             }
         }
-        return false;
+        return null;
     }
 
     private long resetConsumer(final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {

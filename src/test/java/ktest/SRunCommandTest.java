@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusMainTest
 class SRunCommandTest {
-    final static String OPTIONS = String.join(System.lineSeparator(),
+    static final String OPTIONS = String.join(System.lineSeparator(),
             "I   -b, --back=<backOffset>   Back offset.",
             "I                               Default: 250",
             "I   -c, --config=<config>     Path of the config file.",
@@ -44,7 +44,7 @@ class SRunCommandTest {
     @Test
     @Launch(value = {"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.13\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.14\r", pResult.getOutput());
     }
 
     @Test

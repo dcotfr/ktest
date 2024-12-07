@@ -7,15 +7,15 @@ public interface XmlUtils {
 
     default String minimalClean(final String pString) {
         return pString == null ? "" :
-                pString.replaceAll("<", "&lt;")
-                        .replaceAll("&", "&amp;");
+                pString.replace("<", "&lt;")
+                        .replace("&", "&amp;");
     }
 
     default String fullClean(final String pString) {
         return pString == null ? "" :
                 minimalClean(pString)
-                        .replaceAll("\"", "&quot;")
-                        .replaceAll("'", "&apos;")
-                        .replaceAll(">", "&gt;");
+                        .replace("\"", "&quot;")
+                        .replace("'", "&apos;")
+                        .replace(">", "&gt;");
     }
 }

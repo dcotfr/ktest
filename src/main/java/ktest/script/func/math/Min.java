@@ -36,7 +36,7 @@ public class Min extends Func {
             }
         }
         if (isLongOnly) {
-            return new Int(Double.valueOf(min).longValue());
+            return new Int((long) min);
         }
         return new Flt(min);
     }

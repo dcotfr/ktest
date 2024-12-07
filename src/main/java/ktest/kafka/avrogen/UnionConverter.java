@@ -25,8 +25,8 @@ final class UnionConverter implements AvroTypeConverter {
         for (final Schema type : types) {
             try {
                 final var nestedValue = jsonToAvroReader.read(pField, type, pJsonValue, pPath);
-                if (nestedValue instanceof Incompatible incomp) {
-                    incompatibleTypes.add(incomp.expected());
+                if (nestedValue instanceof Incompatible(final String expected)) {
+                    incompatibleTypes.add(expected);
                 } else {
                     return nestedValue;
                 }

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
 final class IntTimeMillisConverter extends IntDateTimeConverter {
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_TIME;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_TIME;
 
     @Override
     Object convertDateTimeString(final String pDateTimeString) {
@@ -19,7 +19,7 @@ final class IntTimeMillisConverter extends IntDateTimeConverter {
     }
 
     LocalTime parseLocalTime(final String pDateTimeString) {
-        return LocalTime.from(dateTimeFormatter.parse(pDateTimeString));
+        return LocalTime.from(DATE_TIME_FORMATTER.parse(pDateTimeString));
     }
 
     @Override

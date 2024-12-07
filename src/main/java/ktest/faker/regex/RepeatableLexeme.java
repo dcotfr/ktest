@@ -2,10 +2,11 @@ package ktest.faker.regex;
 
 import ktest.faker.FakerException;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 abstract class RepeatableLexeme<T> {
-    protected final Random rnd = new Random();
+    protected final Random rnd = new SecureRandom();
 
     private int minRepetition = 1;
     private int maxRepetition = 1;

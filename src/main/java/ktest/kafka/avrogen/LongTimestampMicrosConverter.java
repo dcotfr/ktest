@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 @ApplicationScoped
 final class LongTimestampMicrosConverter extends LongDateTimeConverter {
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
 
     @Override
     Object convertDateTimeString(final String pDateTimeString) {
@@ -27,7 +27,7 @@ final class LongTimestampMicrosConverter extends LongDateTimeConverter {
     }
 
     Instant parseInstant(final String pDateTimeString) {
-        return Instant.from(dateTimeFormatter.parse(pDateTimeString));
+        return Instant.from(DATE_TIME_FORMATTER.parse(pDateTimeString));
     }
 
     @Override

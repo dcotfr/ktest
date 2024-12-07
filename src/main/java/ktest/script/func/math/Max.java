@@ -36,7 +36,7 @@ public class Max extends Func {
             }
         }
         if (isLongOnly) {
-            return new Int(Double.valueOf(max).longValue());
+            return new Int((long) max);
         }
         return new Flt(max);
     }

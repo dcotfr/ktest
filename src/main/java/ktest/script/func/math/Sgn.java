@@ -19,6 +19,6 @@ public class Sgn extends Func {
     @Override
     public Int apply(final Context pContext, final Stm pParam) {
         final var params = extractParam(pContext, pParam, Number.class);
-        return new Int(Double.valueOf(signum(((Number) params[0]).doubleValue())).longValue());
+        return new Int((long) signum(((Number) params[0]).doubleValue()));
     }
 }

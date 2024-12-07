@@ -43,7 +43,7 @@ final class KTestConfigProducer {
         try {
             absolutePath = Path.of(pFile).toAbsolutePath();
             return Files.readString(absolutePath);
-        } catch (final Throwable e) {
+        } catch (final Exception e) {
             throw new KTestException("Failed to read config file " + (absolutePath != null ? absolutePath : pFile), e);
         }
     }

@@ -29,8 +29,8 @@ public final class Tokenizer {
                         if (buf.current() == '=') {
                             buf.pop();
                             stm.add(new Eq());
-                        } else if (stm.parent() == null && stm.value().size() == 1 && stm.value().getFirst() instanceof Var var) {
-                            stm.replace1With(0, new Let(var.value()));
+                        } else if (stm.parent() == null && stm.value().size() == 1 && stm.value().getFirst() instanceof Var v) {
+                            stm.replace1With(0, new Let(v.value()));
                         } else {
                             error("Unexpected affectation", pLine, buf.pos());
                         }

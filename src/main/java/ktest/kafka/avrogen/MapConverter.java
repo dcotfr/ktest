@@ -20,7 +20,7 @@ final class MapConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map> {
     @SuppressWarnings("unchecked")
     @Override
     public Object convertValue(final Schema.Field pField, final Schema pSchema, final Map pJsonValue, final Deque<String> pPath) {
-        final var result = new HashMap<>(pJsonValue.size());
+        final var result = HashMap.<String, Object>newHashMap(pJsonValue.size());
         ((Map<String, Object>) pJsonValue).forEach((k, v) ->
                 result.put(k, recordRecord.read(pField, pSchema.getValueType(), v, pPath))
         );

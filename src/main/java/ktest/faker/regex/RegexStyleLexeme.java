@@ -24,10 +24,10 @@ final class RegexStyleLexeme extends RepeatableLexeme<RegexStyleLexeme> {
         }
 
         final var expandedChars = new StringBuilder();
-        final var splittedSections = pRegexStyleCharList.replaceAll("\\\\-", NULL_CHAR_SEQUENCE).split("-");
+        final var splittedSections = pRegexStyleCharList.replace("\\-", NULL_CHAR_SEQUENCE).split("-");
         final var nbSplit = splittedSections.length - 1;
         for (int i = 0; i <= nbSplit; i++) {
-            splittedSections[i] = splittedSections[i].replaceAll(NULL_CHAR_SEQUENCE, "-");
+            splittedSections[i] = splittedSections[i].replace(NULL_CHAR_SEQUENCE, "-");
         }
         for (int i = 0; i <= nbSplit; i++) {
             if (i != nbSplit) {

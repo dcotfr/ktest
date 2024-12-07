@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 @ApplicationScoped
 final class IntDateConverter extends IntDateTimeConverter {
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_DATE;
 
     @Override
     Object convertDateTimeString(final String pDateTimeString) {
@@ -17,7 +17,7 @@ final class IntDateConverter extends IntDateTimeConverter {
     }
 
     LocalDate parseLocalDate(final String pDateTimeString) {
-        return LocalDate.from(dateTimeFormatter.parse(pDateTimeString));
+        return LocalDate.from(DATE_TIME_FORMATTER.parse(pDateTimeString));
     }
 
     @Override

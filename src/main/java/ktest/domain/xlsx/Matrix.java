@@ -47,7 +47,7 @@ public final class Matrix {
         }
     }
 
-    private synchronized static void fillWorksheet(final Worksheet pWorksheet, final String pEnv, final String pTags, final boolean pAll) {
+    private static synchronized void fillWorksheet(final Worksheet pWorksheet, final String pEnv, final String pTags, final boolean pAll) {
         pWorksheet.value(0, 0, "Env: " + pEnv);
         pWorksheet.style(0, 0).bold().fontSize(12).verticalAlignment(CENTER).set();
         pWorksheet.range(0, 0, 0, 3).merge();
@@ -234,13 +234,13 @@ public final class Matrix {
         }
     }
 
-    private synchronized static List<String> brokers() {
+    private static synchronized List<String> brokers() {
         return STEP_STATES
                 .stream().map(StepState::broker).collect(Collectors.toCollection(TreeSet::new))
                 .stream().toList();
     }
 
-    private synchronized static int count(final String pTestCase, final String pBroker, final String pTopic, final Action pAction, final boolean pAll) {
+    private static synchronized int count(final String pTestCase, final String pBroker, final String pTopic, final Action pAction, final boolean pAll) {
         return (int) STEP_STATES
                 .stream()
                 .filter(s -> s.testCase().equals(pTestCase) && s.broker().equals(pBroker)
@@ -249,13 +249,13 @@ public final class Matrix {
                 .count();
     }
 
-    private synchronized static List<String> tags(final String pTestCase) {
+    private static synchronized List<String> tags(final String pTestCase) {
         return STEP_STATES.stream().filter(s -> s.testCase().equals(pTestCase))
                 .findFirst().filter(s -> s.tags() != null).map(s -> s.tags().stream().sorted().toList())
                 .orElse(Collections.emptyList());
     }
 
-    private synchronized static int maxTags() {
+    private static synchronized int maxTags() {
         var res = 0;
         for (var s : STEP_STATES) {
             if (s.tags() != null && s.tags().size() > res) {
@@ -265,13 +265,13 @@ public final class Matrix {
         return res;
     }
 
-    private synchronized static List<String> testCases() {
+    private static synchronized List<String> testCases() {
         return STEP_STATES
                 .stream().map(StepState::testCase).collect(Collectors.toCollection(TreeSet::new))
                 .stream().toList();
     }
 
-    private synchronized static List<String> topics(final String pBroker) {
+    private static synchronized List<String> topics(final String pBroker) {
         return STEP_STATES
                 .stream().filter(s -> pBroker.equals(s.broker())).map(StepState::topic).collect(Collectors.toCollection(TreeSet::new))
                 .stream().toList();

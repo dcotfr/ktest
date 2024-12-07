@@ -4,6 +4,7 @@ import io.quarkus.arc.All;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
+import ktest.kafka.FoundRecord;
 import ktest.script.func.Func;
 import ktest.script.token.Flt;
 import ktest.script.token.Int;
@@ -19,6 +20,7 @@ public final class Context {
     private static final Logger log = LoggerFactory.getLogger(Context.class);
     private final Map<String, Func> functions = new TreeMap<>();
     private final Map<String, Token<?>> variables = new TreeMap<>();
+    private FoundRecord lastRecord;
     private boolean pauseDisabled;
 
     @Inject
@@ -31,6 +33,7 @@ public final class Context {
     }
 
     Context reset() {
+        lastRecord = null;
         variables.clear();
         return this;
     }
@@ -46,6 +49,15 @@ public final class Context {
     public Context disablePause(final boolean pFlag) {
         pauseDisabled = pFlag;
         return this;
+    }
+
+    public Context lastRecord(final FoundRecord pRecord) {
+        lastRecord = pRecord;
+        return this;
+    }
+
+    public FoundRecord lastRecord() {
+        return lastRecord;
     }
 
     public Collection<Func> functions() {

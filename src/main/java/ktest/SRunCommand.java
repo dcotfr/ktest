@@ -23,7 +23,6 @@ import static java.lang.Math.round;
 import static ktest.MainCommand.VERSION;
 import static ktest.TestCaseRunner.filteredByTags;
 import static ktest.TestCaseRunner.logOptions;
-import static ktest.core.AnsiColor.LIGHTGRAY;
 import static ktest.core.AnsiColor.WHITE;
 import static ktest.core.LogTab.secondsToHuman;
 
@@ -104,12 +103,12 @@ public class SRunCommand implements Runnable {
         }
     }
 
-    private void logTips(final XUnitReport pReport) {
+    private static void logTips(final XUnitReport pReport) {
         final var fullTime = pReport.time();
         final var maxSuiteTime = pReport.testsuite.stream().mapToDouble(XUnitSuite::time).filter(s -> s >= 0.0).max().orElse(0.0);
         final var potentialGain = round(1_000 - 1_000 * maxSuiteTime / (fullTime != 0.0 ? fullTime : 1.0)) / 10.0;
         if (potentialGain > 33.3) {
-            LOG.debug("{}Tips: potential speed gain with parallel mode = {}% (executed in {} with the slowest sequence requiring {}).", logTab.tab(LIGHTGRAY), potentialGain, secondsToHuman(fullTime), secondsToHuman(maxSuiteTime));
+            LOG.info("Tips: potential speed gain with parallel mode = {}% (executed in {} with the slowest sequence requiring {}).", potentialGain, secondsToHuman(fullTime), secondsToHuman(maxSuiteTime));
         }
     }
 }

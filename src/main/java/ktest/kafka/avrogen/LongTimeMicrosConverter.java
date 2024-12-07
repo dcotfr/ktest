@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
 final class LongTimeMicrosConverter extends LongDateTimeConverter {
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_TIME;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_TIME;
 
     @Override
     protected Object convertDateTimeString(final String pDateTimeString) {
@@ -19,7 +19,7 @@ final class LongTimeMicrosConverter extends LongDateTimeConverter {
     }
 
     LocalTime parseLocalTime(final String pDateTimeString) {
-        return LocalTime.from(dateTimeFormatter.parse(pDateTimeString));
+        return LocalTime.from(DATE_TIME_FORMATTER.parse(pDateTimeString));
     }
 
     @Override
