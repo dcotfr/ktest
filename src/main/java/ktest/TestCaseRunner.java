@@ -170,7 +170,6 @@ class TestCaseRunner implements Callable<XUnitReport> {
                         } else {
                             var found = kafkaClient.find(topicRef, parsedRecord, backOffset);
                             pEngine.context().lastRecord(found);
-                            evalScript(pEngine, "patch", List.of("info(record())"));
                             if (found == null && action == Action.PRESENT) {
                                 LOG.trace("{}Retrying find with larger range...", logTab.tab(LIGHTGRAY));
                                 Thread.sleep(250);
@@ -184,10 +183,13 @@ class TestCaseRunner implements Callable<XUnitReport> {
                                 stepState.success();
                             }
                         }
-                    } catch (final RuntimeException | InterruptedException e) {
+                    } catch (final RuntimeException e) {
                         LOG.error("{}{} error.", logTab.tab(RED), action, e);
                         xUnitCase.error("Action error: " + e.getMessage(), e);
                         skipAfterFailureOrError = true;
+                    } catch (final InterruptedException e) {
+                        LOG.error("Interrupted!", e);
+                        Thread.currentThread().interrupt();
                     }
                     evalScript(pEngine, "after", step.afterScript());
                     logTab.dec();
@@ -220,8 +222,7 @@ class TestCaseRunner implements Callable<XUnitReport> {
                 if (split[0].startsWith("!")) {
                     exclTags.add(split[0].substring(1));
                 } else {
-                    inclTags.add(Arrays.stream(f.trim().split("\\+"))
-                            .map(String::trim).collect(Collectors.toList()));
+                    inclTags.add(Arrays.stream(f.trim().split("\\+")).map(String::trim).toList());
                 }
             }
         });

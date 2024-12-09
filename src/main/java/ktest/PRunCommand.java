@@ -96,7 +96,8 @@ public class PRunCommand implements Runnable {
                 throw new TestFailureOrError(finalReport);
             }
         } catch (final InterruptedException e) {
-            throw new RuntimeException(e);
+            LOG.warn("Interrupted!", e);
+            Thread.currentThread().interrupt();
         }
     }
 

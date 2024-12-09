@@ -60,7 +60,7 @@ public final class Engine {
             return null;
         }
 
-        final var pattern = Pattern.compile("(\\$\\{.*?})");
+        final var pattern = Pattern.compile("(\\$\\{[^}]*+})");
         final var matcher = pattern.matcher(pAttribute);
         var res = pAttribute;
         while (matcher.find()) {

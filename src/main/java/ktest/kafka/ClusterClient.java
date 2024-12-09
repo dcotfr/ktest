@@ -61,8 +61,11 @@ public class ClusterClient {
             final var futur = producer.send(rec);
             producer.flush();
             futur.get(30, TimeUnit.SECONDS);
-        } catch (final InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (final ExecutionException | TimeoutException e) {
             throw new KTestException("Failed to send record to " + pTopic.id(), e);
+        } catch (final InterruptedException e) {
+            LOG.error("Interrupted!", e);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -93,8 +96,7 @@ public class ClusterClient {
 
     private long resetConsumer(final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {
         final var partitions = pConsumer.partitionsFor(pTopicName).stream()
-                .map(p -> new TopicPartition(pTopicName, p.partition()))
-                .collect(Collectors.toCollection(ArrayList::new));
+                .map(p -> new TopicPartition(pTopicName, p.partition())).toList();
         var lastOffset = 0L;
         if (!partitions.isEmpty()) {
             pConsumer.assign(partitions);
@@ -112,7 +114,7 @@ public class ClusterClient {
         }
         for (final var h : pExpected.headers().entrySet()) {
             final var actuelHeader = pActual.headers().lastHeader(h.getKey());
-            if (actuelHeader == null || !Objects.equals(h.getValue(), new String(actuelHeader.value()))) {
+            if (actuelHeader == null || !Objects.equals(h.getValue(), new String(actuelHeader.value(), StandardCharsets.UTF_8))) {
                 return false;
             }
         }

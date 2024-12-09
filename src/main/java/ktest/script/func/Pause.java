@@ -24,6 +24,7 @@ public class Pause extends Func {
             Thread.sleep(((Number) params[0]).longValue());
             return new Txt("");
         } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new ScriptException(command() + " interrupted.", e);
         }
     }

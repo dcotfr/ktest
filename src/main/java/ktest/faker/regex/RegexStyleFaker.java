@@ -78,11 +78,9 @@ public final class RegexStyleFaker {
                     root = root.parent();
                     continue;
                 }
-            } else if (c == '|') {
-                if ((previousChar != '\\') && (lexemeType == CONSTANT)) {
-                    root.appendNewOrLexemes();
-                    continue;
-                }
+            } else if ((c == '|') && (previousChar != '\\') && (lexemeType == CONSTANT)) {
+                root.appendNewOrLexemes();
+                continue;
             }
             if (c != '\\') {
                 if ((previousChar == '\\') && (lexemeType == REGEX)) {

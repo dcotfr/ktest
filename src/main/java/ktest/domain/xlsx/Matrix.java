@@ -27,7 +27,7 @@ public final class Matrix {
     private Matrix() {
     }
 
-    public synchronized static StepState add(final String pTestCase, final TopicRef pTopicRef, final Action pAction, final List<String> pTags, final long pThread) {
+    public static synchronized StepState add(final String pTestCase, final TopicRef pTopicRef, final Action pAction, final List<String> pTags, final long pThread) {
         final var res = new StepState(pTestCase + '#' + pThread, pTopicRef.broker(), pTopicRef.topic(), pAction, pTags);
         STEP_STATES.add(res);
         return res;

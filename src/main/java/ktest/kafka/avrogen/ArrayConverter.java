@@ -7,8 +7,6 @@ import org.apache.avro.Schema;
 import java.util.Collection;
 import java.util.Deque;
 
-import static java.util.stream.Collectors.toList;
-
 @ApplicationScoped
 final class ArrayConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Collection> {
     @Inject
@@ -22,8 +20,7 @@ final class ArrayConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Coll
     @Override
     public Object convertValue(final Schema.Field pField, final Schema pSchema, final Collection pValue, final Deque<String> pPath) {
         return ((Collection<Object>) pValue).stream()
-                .map(item -> jsonToAvroReader.read(pField, pSchema.getElementType(), item, pPath))
-                .collect(toList());
+                .map(item -> jsonToAvroReader.read(pField, pSchema.getElementType(), item, pPath)).toList();
     }
 
     @Override

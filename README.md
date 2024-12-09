@@ -1,4 +1,4 @@
-# ktest - Kafka testing utility
+# ktest - Kafka testing utility [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dcotfr_ktest&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dcotfr_ktest)
 
 Utility for defining and executing Kafka message test cases by 
 - sending sets of messages *(step action: SEND)* to topics or 

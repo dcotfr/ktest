@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ktest.core.KTestException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -40,7 +41,7 @@ public final class FoundRecord {
         valueSize = pRecord.serializedValueSize();
         headers = new TreeMap<>();
         for (final var h : pRecord.headers()) {
-            headers.put(h.key(), new String(h.value()));
+            headers.put(h.key(), new String(h.value(), StandardCharsets.UTF_8));
         }
         key = toInternalJson(pRecord.key());
         value = toInternalJson(pRecord.value());
