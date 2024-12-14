@@ -61,7 +61,7 @@ final class LineBuffer {
         return res;
     }
 
-    Num<?> readNum() {
+    Num<? extends Number> readNum() {
         final StringBuilder raw = new StringBuilder();
         while (isDigit()) {
             raw.append(pop());

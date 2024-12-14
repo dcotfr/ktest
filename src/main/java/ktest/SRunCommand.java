@@ -91,12 +91,7 @@ public class SRunCommand implements Runnable {
         logOptions(testCases, env, tags);
         logTips(xUnitReport);
         TestCaseRunner.logSynthesis(xUnitReport);
-        try {
-            Files.writeString(Path.of(report), xUnitReport.toXml());
-            Matrix.save(Path.of(matrix), env, tags, xUnitReport);
-        } catch (final IOException e) {
-            throw new KTestException("Failed to write test report.", e);
-        }
+        saveReports(xUnitReport);
         engine.end();
         if (finalFailureOrError) {
             throw new TestFailureOrError(xUnitReport);
@@ -109,6 +104,15 @@ public class SRunCommand implements Runnable {
         final var potentialGain = round(1_000 - 1_000 * maxSuiteTime / (fullTime != 0.0 ? fullTime : 1.0)) / 10.0;
         if (potentialGain > 33.3) {
             LOG.info("Tips: potential speed gain with parallel mode = {}% (executed in {} with the slowest sequence requiring {}).", potentialGain, secondsToHuman(fullTime), secondsToHuman(maxSuiteTime));
+        }
+    }
+
+    private void saveReports(final XUnitReport pXmlReport) {
+        try {
+            Files.writeString(Path.of(report), pXmlReport.toXml());
+            Matrix.save(Path.of(matrix), env, tags, pXmlReport);
+        } catch (final IOException e) {
+            throw new KTestException("Failed to write test reports.", e);
         }
     }
 }

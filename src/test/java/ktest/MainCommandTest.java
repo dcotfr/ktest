@@ -21,13 +21,14 @@ class MainCommandTest {
                 "I   srun  Sequential run of test case(s).",
                 "I   prun  Parallel run of test case(s).",
                 "I   doc   Display of the full documentation.",
-                "I   eval  Evaluates a script and displays its final result.\r");
+                "I   eval  Evaluates a script and displays its final result.",
+                "I   scan  Scan topic(s) to extract a sample test case.\r");
         assertEquals(expected, pResult.getOutput());
     }
 
     @Test
     @Launch(value = {"-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.15\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.16\r", pResult.getOutput());
     }
 }

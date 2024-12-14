@@ -80,7 +80,7 @@ public final class TestRecord {
         if (timestamp != null) {
             res.append("\"timestamp\":").append(timestamp);
         }
-        if (!headers.isEmpty()) {
+        if (headers != null && !headers.isEmpty()) {
             res.append(res.length() > 1 ? "," : "").append("\"headers\":[");
             var comma = false;
             for (final var e : headers.entrySet()) {

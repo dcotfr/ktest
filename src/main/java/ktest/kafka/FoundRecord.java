@@ -14,23 +14,23 @@ public final class FoundRecord {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @JsonProperty
-    final String topic;
+    private final String topic;
     @JsonProperty
-    final int partition;
+    private final int partition;
     @JsonProperty
-    final long offset;
+    private final long offset;
     @JsonProperty
-    final long timestamp;
+    private final long timestamp;
     @JsonProperty
-    final int keySize;
+    private final int keySize;
     @JsonProperty
-    final int valueSize;
+    private final int valueSize;
     @JsonProperty
-    final Map<String, String> headers;
+    private final Map<String, String> headers;
     @JsonProperty
-    final Object key;
+    private final Object key;
     @JsonProperty
-    final Object value;
+    private final Object value;
 
     public FoundRecord(final ConsumerRecord<?, ?> pRecord) {
         topic = pRecord.topic();
@@ -45,6 +45,18 @@ public final class FoundRecord {
         }
         key = toInternalJson(pRecord.key());
         value = toInternalJson(pRecord.value());
+    }
+
+    public Map<String, String> headers() {
+        return headers;
+    }
+
+    public Object key() {
+        return key;
+    }
+
+    public Object value() {
+        return value;
     }
 
     private static Object toInternalJson(final Object pObject) {

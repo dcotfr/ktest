@@ -32,7 +32,7 @@ public abstract class Token<T> {
         return value;
     }
 
-    Token<?> eval(final Context pContext, final Stm pStatement) {
+    Token eval(final Context pContext, final Stm pStatement) {
         return this;
     }
 

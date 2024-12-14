@@ -9,11 +9,14 @@ import static ktest.MainCommand.VERSION;
 @TopCommand
 @CommandLine.Command(name = "ktest", description = "Kafka testing utility.",
         mixinStandardHelpOptions = true, version = VERSION,
-        subcommands = {SRunCommand.class, PRunCommand.class, DocCommand.class, EvalCommand.class})
+        subcommands = {SRunCommand.class, PRunCommand.class, DocCommand.class, EvalCommand.class, ScanCommand.class})
 @RegisterForReflection(classNames = {"org.apache.kafka.common.security.scram.ScramLoginModule",
         "org.apache.kafka.common.security.scram.internals.ScramSaslClient",
         "org.apache.kafka.common.security.scram.internals.ScramSaslClient$ScramSaslClientFactory",
         "sun.security.provider.ConfigFile"})
 public class MainCommand {
-    public static final String VERSION = "ktest v1.0.15";
+    public static final String VERSION = "ktest v1.0.16";
+
+    private MainCommand() {
+    }
 }

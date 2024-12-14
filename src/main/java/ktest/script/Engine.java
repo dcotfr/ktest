@@ -28,7 +28,7 @@ public final class Engine {
         return this;
     }
 
-    public Engine init(final Collection<Map.Entry<String, Token<?>>> pVariables) {
+    public Engine init(final Collection<Map.Entry<String, Token>> pVariables) {
         context.init(pVariables);
         return this;
     }

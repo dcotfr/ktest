@@ -85,12 +85,7 @@ public class PRunCommand implements Runnable {
             final var finalReport = new XUnitReport(subTasks.stream().map(StructuredTaskScope.Subtask::get).toList());
             logTips(finalReport);
             TestCaseRunner.logSynthesis(finalReport);
-            try {
-                Files.writeString(Path.of(report), finalReport.toXml());
-                Matrix.save(Path.of(matrix), env, tags, finalReport);
-            } catch (final IOException e) {
-                throw new KTestException("Failed to write test report.", e);
-            }
+            saveReports(finalReport);
             globalEngine.end();
             if (finalReport.errors() > 0 || finalReport.failures() > 0) {
                 throw new TestFailureOrError(finalReport);
@@ -108,6 +103,15 @@ public class PRunCommand implements Runnable {
         LOG.info("Executed in {} (vs estimated sequential run time {} = gain {}%)", secondsToHuman(parallelTime), secondsToHuman(sequentialTime), estimatedGain);
         if (estimatedGain < 33.3) {
             LOG.info("Tips: although slightly slower, the sequential mode offers a more readable log.");
+        }
+    }
+
+    private void saveReports(final XUnitReport pXmlReport) {
+        try {
+            Files.writeString(Path.of(report), pXmlReport.toXml());
+            Matrix.save(Path.of(matrix), env, tags, pXmlReport);
+        } catch (final IOException e) {
+            throw new KTestException("Failed to write test reports.", e);
         }
     }
 }

@@ -23,6 +23,10 @@ public class KafkaConfigProvider {
         engineFactory = pEngineFactory;
     }
 
+    void reset() {
+        kafkaConfigs.clear();
+    }
+
     Map<String, String> of(final TopicRef pTopic) {
         return kafkaConfigs.computeIfAbsent(pTopic.id(), k -> {
             final var res = new HashMap<String, String>();

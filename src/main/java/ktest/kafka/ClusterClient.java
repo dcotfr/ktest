@@ -94,6 +94,14 @@ public class ClusterClient {
         return null;
     }
 
+    public TopicRef scanSerdes(final String pBroker, final String pTopic) {
+        final var temporaryTopicRef = new TopicRef(pBroker, pTopic, Serde.BYTES, Serde.BYTES);
+        final var keySerde = registryService.lastActiveSchema(temporaryTopicRef, true) != null ? Serde.AVRO : Serde.STRING;
+        final var valueSerde = registryService.lastActiveSchema(temporaryTopicRef, false) != null ? Serde.AVRO : Serde.STRING;
+        kafkaConfigProvider.reset();
+        return new TopicRef(pBroker, pTopic, keySerde, valueSerde);
+    }
+
     private long resetConsumer(final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {
         final var partitions = pConsumer.partitionsFor(pTopicName).stream()
                 .map(p -> new TopicPartition(pTopicName, p.partition())).toList();

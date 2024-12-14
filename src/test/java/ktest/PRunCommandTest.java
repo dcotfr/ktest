@@ -28,7 +28,7 @@ class PRunCommandTest {
     @Test
     @Launch(value = {"prun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.15\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.16\r", pResult.getOutput());
     }
 
     @Test

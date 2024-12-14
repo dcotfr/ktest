@@ -27,6 +27,15 @@ class LogOutputStream extends OutputStream {
     }
 
     @Override
+    public void write(final byte[] pBytes, final int pOffset, final int pLength) {
+        for (var o = pOffset; o < pOffset + pLength; o++) {
+            if (pBytes[o] != 0) {
+                buf.append((char) pBytes[o]);
+            }
+        }
+    }
+
+    @Override
     public void flush() {
         if (buf.isEmpty()) {
             return;

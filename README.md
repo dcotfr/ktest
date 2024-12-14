@@ -26,6 +26,7 @@ Commands:
   prun  Parallel run of test case(s).
   doc   Display full documentation.
   eval  Evaluates a script and displays its final result.
+  scan  Scan topic(s) to extract a sample test case.
 ```
 
 ### Sequential run command arguments: `srun`
@@ -52,6 +53,7 @@ Commands:
 **Exit status:**
 - 0      if all test succeeded,
 - 1      if at least one test failed or there was an exception.
+- 2      if an unexpected exception occurs.
 
 ### Parallel run command arguments: `prun`
 **Usage:** `ktest prun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>] [-m=<matrix>] [-r=<report>] [-t=<tags>]`
@@ -77,6 +79,19 @@ Commands:
 I   -h, --help          Show this help message and exit.
 I   -l, --line=<line>   In-line statements to evaluate.
 I   -V, --version       Print version information and exit.
+```
+
+### Scan of topic(s) to extract a sample case: `scan`
+**Usage:** `Usage: ktest scan [-hV] [-c=<config>] -e=<env> -i=<inputs>`
+
+**Options:**
+```
+I   -c, --config=<config>   Path of the config file.
+I                             Default: ktconfig.yml
+I   -e, --env=<env>         Name of the environment to use.
+I   -h, --help              Show this help message and exit.
+I   -i, --inputs=<inputs>   List of 'topic@broker,...' to scan.
+I   -V, --version           Print version information and exit.
 ```
 
 ### Configuration file

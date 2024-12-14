@@ -10,16 +10,13 @@ import ktest.script.token.Flt;
 import ktest.script.token.Int;
 import ktest.script.token.Token;
 import ktest.script.token.Txt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 @Dependent
 public final class Context {
-    private static final Logger log = LoggerFactory.getLogger(Context.class);
     private final Map<String, Func> functions = new TreeMap<>();
-    private final Map<String, Token<?>> variables = new TreeMap<>();
+    private final Map<String, Token> variables = new TreeMap<>();
     private FoundRecord lastRecord;
     private boolean pauseDisabled;
 
@@ -38,7 +35,7 @@ public final class Context {
         return this;
     }
 
-    Context init(final Collection<Map.Entry<String, Token<?>>> pVariables) {
+    Context init(final Collection<Map.Entry<String, Token>> pVariables) {
         reset();
         if (pVariables != null) {
             pVariables.forEach(entry -> variables.put(entry.getKey(), entry.getValue()));
@@ -64,7 +61,7 @@ public final class Context {
         return new ArrayList<>(functions.values());
     }
 
-    public Collection<Map.Entry<String, Token<?>>> variables() {
+    public Collection<Map.Entry<String, Token>> variables() {
         return new ArrayList<>(variables.entrySet());
     }
 
@@ -76,11 +73,11 @@ public final class Context {
         return pauseDisabled;
     }
 
-    public Token<?> variable(final String pName) {
+    public Token variable(final String pName) {
         return variables.get(pName);
     }
 
-    public Context variable(final String pName, final Token<?> pValue) {
+    public Context variable(final String pName, final Token pValue) {
         variables.put(pName, pValue);
         return this;
     }
