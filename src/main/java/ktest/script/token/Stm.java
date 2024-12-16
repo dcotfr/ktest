@@ -6,7 +6,7 @@ import ktest.script.ScriptException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Stm extends Token<List<Token>> {
+public final class Stm extends Token<List<Token<?>>> {
     private final Stm parent;
 
     Stm(final Stm pParent) {
@@ -18,7 +18,7 @@ public final class Stm extends Token<List<Token>> {
         return parent;
     }
 
-    void add(final Token pToken) {
+    void add(final Token<?> pToken) {
         if (pToken instanceof Stm stm && stm.value().isEmpty()) {
             return;
         }
@@ -29,7 +29,7 @@ public final class Stm extends Token<List<Token>> {
     Token eval(final Context pContext, final Stm pStatement) {
         while (true) {
             int priority = 0;
-            Token toEval = null;
+            Token<?> toEval = null;
             for (final var t : value()) {
                 if (t.priority() > priority) {
                     priority = t.priority();
@@ -53,7 +53,7 @@ public final class Stm extends Token<List<Token>> {
         return eval(pContext, this).value();
     }
 
-    Token evalAt(final Context pContext, final int pIndex) {
+    Token<?> evalAt(final Context pContext, final int pIndex) {
         if (pIndex < 0 || pIndex >= value().size()) {
             throw new ScriptException(syntaxErrorMessage("a token was expected", pIndex));
         }
@@ -67,7 +67,7 @@ public final class Stm extends Token<List<Token>> {
             }
         } else {
             final var parentToken = value().get(pIndex);
-            Token token = null;
+            Token<?> token = null;
             if (!(parentToken instanceof Let)) {
                 token = parentToken.eval(pContext, this);
             } else if (pNullIfOutOfBoundError) {
@@ -87,7 +87,7 @@ public final class Stm extends Token<List<Token>> {
         value().add(compact);
     }
 
-    void replace1With(final int pIndex, final Token pToken) {
+    void replace1With(final int pIndex, final Token<?> pToken) {
         if (pToken != null) {
             value().set(pIndex, pToken);
         } else {
@@ -95,12 +95,12 @@ public final class Stm extends Token<List<Token>> {
         }
     }
 
-    void replace2With(final int pIndex, final Token pToken) {
+    void replace2With(final int pIndex, final Token<?> pToken) {
         replace1With(pIndex + 1, null);
         replace1With(pIndex, pToken);
     }
 
-    void replace3With(final int pIndex, final Token pToken) {
+    void replace3With(final int pIndex, final Token<?> pToken) {
         replace2With(pIndex, pToken);
         replace1With(pIndex - 1, null);
     }

@@ -1,8 +1,6 @@
 package ktest.faker.regex;
 
 import ktest.faker.FakerException;
-import ktest.faker.regex.RegexStyleLexeme;
-import ktest.faker.regex.RepeatableLexeme;
 import org.junit.jupiter.api.Test;
 
 import java.util.regex.Pattern;

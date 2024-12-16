@@ -15,10 +15,13 @@ import java.nio.file.Path;
 
 @ApplicationScoped
 final class KTestConfigProducer {
+    private final CommandLine.ParseResult parsedCommand;
     private KTestConfig kConfig;
 
     @Inject
-    private CommandLine.ParseResult parsedCommand;
+    KTestConfigProducer(final CommandLine.ParseResult pParsedCommand) {
+        parsedCommand = pParsedCommand;
+    }
 
     @Produces
     @DefaultBean

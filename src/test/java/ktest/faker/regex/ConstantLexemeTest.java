@@ -1,8 +1,6 @@
 package ktest.faker.regex;
 
 import ktest.faker.FakerException;
-import ktest.faker.regex.ConstantLexeme;
-import ktest.faker.regex.RepeatableLexeme;
 import org.junit.jupiter.api.Test;
 
 class ConstantLexemeTest extends AbstractLexemeTest<ConstantLexeme> {

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ApplicationScoped
-final class MapConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map> {
+final class MapConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map<String, Object>> {
     @Inject
     private JsonToAvroReader recordRecord;
 
@@ -19,11 +19,9 @@ final class MapConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object convertValue(final Schema.Field pField, final Schema pSchema, final Map pJsonValue, final Deque<String> pPath) {
+    public Object convertValue(final Schema.Field pField, final Schema pSchema, final Map<String, Object> pJsonValue, final Deque<String> pPath) {
         final var result = HashMap.<String, Object>newHashMap(pJsonValue.size());
-        ((Map<String, Object>) pJsonValue).forEach((k, v) ->
-                result.put(k, recordRecord.read(pField, pSchema.getValueType(), v, pPath))
-        );
+        pJsonValue.forEach((k, v) -> result.put(k, recordRecord.read(pField, pSchema.getValueType(), v, pPath)));
         return result;
     }
 

@@ -5,9 +5,9 @@ import org.apache.avro.Schema;
 import java.util.Deque;
 
 abstract class AvroTypeConverterWithStrictJavaTypeCheck<T> implements AvroTypeConverter {
-    private final Class<T> javaType;
+    private final Class<?> javaType;
 
-    AvroTypeConverterWithStrictJavaTypeCheck(final Class<T> pJavaType) {
+    AvroTypeConverterWithStrictJavaTypeCheck(final Class<?> pJavaType) {
         javaType = pJavaType;
     }
 

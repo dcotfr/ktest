@@ -3,16 +3,17 @@ package ktest.script;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 class EngineCompsTest {
-    private static final Logger log = LoggerFactory.getLogger(EngineCompsTest.class);
+    private final Engine engine;
+
     @Inject
-    private Engine engine;
+    EngineCompsTest(final Engine pEngine) {
+        engine = pEngine;
+    }
 
     @Test
     void eqTest() {

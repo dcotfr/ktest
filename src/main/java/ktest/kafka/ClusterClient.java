@@ -15,9 +15,11 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
@@ -69,13 +71,14 @@ public class ClusterClient {
         }
     }
 
+    @Retry(retryOn = {SocketTimeoutException.class})
     public FoundRecord find(final TopicRef pTopic, final TestRecord pRecord, final int pBackOffset) {
         final var consumer = consumer(pTopic);
         var lastOffsetReached = false;
         final var lastOffset = resetConsumer(consumer, pTopic.topic(), pBackOffset);
         if (lastOffset >= 0) {
             while (true) {
-                final var recs = consumer.poll(Duration.ofMillis(1000));
+                final var recs = consumer.poll(Duration.ofMillis(2500));
                 if (lastOffsetReached && recs.isEmpty()) {
                     break;
                 }
@@ -151,7 +154,7 @@ public class ClusterClient {
         });
     }
 
-    private synchronized KafkaConsumer<?, ?> consumer(final TopicRef pTopic) {
+    public synchronized KafkaConsumer<?, ?> consumer(final TopicRef pTopic) {
         return consumers.computeIfAbsent(pTopic.id() + "-" + Thread.currentThread().threadId(), _ -> {
             final var kafkaConfig = kafkaConfigProvider.of(pTopic);
             LOG.trace("{}      Creating new consumer for {}({}).", BLUE, pTopic.id(), kafkaConfig.get("bootstrap.servers"));

@@ -13,11 +13,14 @@ import java.util.regex.Pattern;
 
 @Dependent
 public final class Engine {
-    @Inject
-    private Context context;
+    private final KTestConfig kConfig;
+    private final Context context;
 
     @Inject
-    private KTestConfig kConfig;
+    Engine(final KTestConfig pConfig, final Context pContext) {
+        kConfig = pConfig;
+        context = pContext;
+    }
 
     public Engine reset() {
         context.reset();
@@ -28,7 +31,7 @@ public final class Engine {
         return this;
     }
 
-    public Engine init(final Collection<Map.Entry<String, Token>> pVariables) {
+    public Engine init(final Collection<Map.Entry<String, Token<?>>> pVariables) {
         context.init(pVariables);
         return this;
     }

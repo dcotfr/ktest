@@ -42,20 +42,12 @@ public class KafkaConfigProvider {
             res.put("group.id", engine.evalInLine(brokerConfig.groupId()));
             res.put("auto.offset.reset", "earliest");
             res.put("acks", "all");
-            if (!Strings.isNullOrEmpty(brokerConfig.saslJaasConfig())) {
-                res.put("sasl.jaas.config", engine.evalInLine(brokerConfig.saslJaasConfig()));
-            }
-            if (!Strings.isNullOrEmpty(brokerConfig.saslMechanism())) {
-                res.put("sasl.mechanism", engine.evalInLine(brokerConfig.saslMechanism()));
-            }
-            if (!Strings.isNullOrEmpty(brokerConfig.securityProtocol())) {
-                res.put("security.protocol", engine.evalInLine(brokerConfig.securityProtocol()));
-            }
+            evalAndPutIfPresent(engine, res, "sasl.jaas.config", brokerConfig.saslJaasConfig());
+            evalAndPutIfPresent(engine, res, "sasl.mechanism", brokerConfig.saslMechanism());
+            evalAndPutIfPresent(engine, res, "security.protocol", brokerConfig.securityProtocol());
             final var registryConfig = brokerConfig.registry() != null ? kConfig.registry(engine.evalInLine(brokerConfig.registry())) : null;
             if (registryConfig != null) {
-                if (!Strings.isNullOrEmpty(registryConfig.url())) {
-                    res.put("schema.registry.url", engine.evalInLine(registryConfig.url()));
-                }
+                evalAndPutIfPresent(engine, res, "schema.registry.url", registryConfig.url());
                 if (!Strings.isNullOrEmpty(registryConfig.user())) {
                     res.put("schema.registry.basic.auth.credentials.source", "USER_INFO");
                     res.put("schema.registry.basic.auth.user.info", engine.evalInLine(registryConfig.user()) + ':' + engine.evalInLine(registryConfig.password()));
@@ -64,5 +56,11 @@ public class KafkaConfigProvider {
 
             return res;
         });
+    }
+
+    private static void evalAndPutIfPresent(final Engine pEngine, final HashMap<String, String> pMap, final String pKey, final String pConfig) {
+        if (!Strings.isNullOrEmpty(pConfig)) {
+            pMap.put(pKey, pEngine.evalInLine(pConfig));
+        }
     }
 }

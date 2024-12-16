@@ -4,16 +4,17 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import ktest.script.Engine;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
 class LogFunctionsTest {
-    private static final Logger log = LoggerFactory.getLogger(LogFunctionsTest.class);
+    private final Engine engine;
+
     @Inject
-    private Engine engine;
+    LogFunctionsTest(final Engine pEngine) {
+        engine = pEngine;
+    }
 
     @Test
     void debugTest() {

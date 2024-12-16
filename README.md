@@ -76,22 +76,24 @@ Commands:
 
 **Options:**
 ```
-I   -h, --help          Show this help message and exit.
-I   -l, --line=<line>   In-line statements to evaluate.
-I   -V, --version       Print version information and exit.
+-h, --help          Show this help message and exit.
+-l, --line=<line>   In-line statements to evaluate.
+-V, --version       Print version information and exit.
 ```
 
 ### Scan of topic(s) to extract a sample case: `scan`
-**Usage:** `Usage: ktest scan [-hV] [-c=<config>] -e=<env> -i=<inputs>`
+**Usage:** `Usage: ktest scan [-hV] [-c=<config>] -e=<env> -i=<inputs> [-o=<output>]`
 
 **Options:**
 ```
-I   -c, --config=<config>   Path of the config file.
-I                             Default: ktconfig.yml
-I   -e, --env=<env>         Name of the environment to use.
-I   -h, --help              Show this help message and exit.
-I   -i, --inputs=<inputs>   List of 'topic@broker,...' to scan.
-I   -V, --version           Print version information and exit.
+-c, --config=<config>   Path of the config file.
+                          Default: ktconfig.yml
+-e, --env=<env>         Name of the environment to use.
+-h, --help              Show this help message and exit.
+-i, --inputs=<inputs>   List of 'topic@broker,...' (or '@broker' ref) to scan.
+-o, --output=<output>   Path of output sample file.
+                          Default: ktsample.yml
+-V, --version           Print version information and exit.
 ```
 
 ### Configuration file

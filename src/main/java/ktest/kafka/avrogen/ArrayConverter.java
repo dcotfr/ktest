@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Deque;
 
 @ApplicationScoped
-final class ArrayConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Collection> {
+final class ArrayConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Collection<?>> {
     @Inject
     private JsonToAvroReader jsonToAvroReader;
 
@@ -18,7 +18,7 @@ final class ArrayConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Coll
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object convertValue(final Schema.Field pField, final Schema pSchema, final Collection pValue, final Deque<String> pPath) {
+    public Object convertValue(final Schema.Field pField, final Schema pSchema, final Collection<?> pValue, final Deque<String> pPath) {
         return pValue.stream()
                 .map(item -> jsonToAvroReader.read(pField, pSchema.getElementType(), item, pPath)).toList();
     }

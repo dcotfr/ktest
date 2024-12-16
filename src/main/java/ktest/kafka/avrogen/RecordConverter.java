@@ -8,7 +8,7 @@ import org.apache.avro.generic.GenericRecordBuilder;
 import java.util.Deque;
 import java.util.Map;
 
-final class RecordConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map> {
+final class RecordConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map<String, Object>> {
     private final JsonToAvroReader jsonToAvroReader;
 
     RecordConverter(final JsonToAvroReader pJsonToAvroReader) {
@@ -18,9 +18,9 @@ final class RecordConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object convertValue(final Schema.Field pField, final Schema pSchema, final Map pJsonValue, final Deque<String> pPath) {
+    public Object convertValue(final Schema.Field pField, final Schema pSchema, final Map<String, Object> pJsonValue, final Deque<String> pPath) {
         final var builder = createRecordBuilder(pSchema);
-        ((Map<String, Object>) pJsonValue).forEach((key, value) -> {
+        pJsonValue.forEach((key, value) -> {
             final var subField = pSchema.getField(key);
             if (subField != null) {
                 final var fieldValue = jsonToAvroReader.read(subField, subField.schema(), value, pPath);

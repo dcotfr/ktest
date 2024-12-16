@@ -35,6 +35,6 @@ public class EvalCommand implements Runnable {
             cleanLine = cleanLine.substring(1, cleanLine.length() - 1).trim();
         }
         LOG.debug("{}InLine: {}", logTab.tab(WHITE), cleanLine);
-        LOG.info("{}Result: {}", logTab.tab(WHITE), engine.eval(cleanLine).toString());
+        LOG.info("{}Result: {}", logTab.tab(WHITE), engine.eval(cleanLine));
     }
 }

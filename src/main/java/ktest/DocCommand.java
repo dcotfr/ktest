@@ -92,8 +92,12 @@ public class DocCommand implements Runnable {
     static final String SPECIALS_DOC = BRIGHTYELLOW + "Specials/Tokens:" + WHITE + "\n"
             + "  ;                      Ends the current in-line statement an starts a new one.\n";
 
+    private final Context context;
+
     @Inject
-    private Context context;
+    DocCommand(final Context pContext) {
+        context = pContext;
+    }
 
     @Override
     public void run() {

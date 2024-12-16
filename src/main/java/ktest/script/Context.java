@@ -16,13 +16,15 @@ import java.util.*;
 @Dependent
 public final class Context {
     private final Map<String, Func> functions = new TreeMap<>();
-    private final Map<String, Token> variables = new TreeMap<>();
+    private final Map<String, Token<?>> variables = new TreeMap<>();
+    private final List<Func> funcs;
     private FoundRecord lastRecord;
     private boolean pauseDisabled;
 
     @Inject
-    @All
-    private List<Func> funcs;
+    Context(@All final List<Func> pFuncs) {
+        funcs = pFuncs;
+    }
 
     @PostConstruct
     void init() {
@@ -35,7 +37,7 @@ public final class Context {
         return this;
     }
 
-    Context init(final Collection<Map.Entry<String, Token>> pVariables) {
+    Context init(final Collection<Map.Entry<String, Token<?>>> pVariables) {
         reset();
         if (pVariables != null) {
             pVariables.forEach(entry -> variables.put(entry.getKey(), entry.getValue()));
@@ -61,7 +63,7 @@ public final class Context {
         return new ArrayList<>(functions.values());
     }
 
-    public Collection<Map.Entry<String, Token>> variables() {
+    public Collection<Map.Entry<String, Token<?>>> variables() {
         return new ArrayList<>(variables.entrySet());
     }
 
@@ -73,11 +75,11 @@ public final class Context {
         return pauseDisabled;
     }
 
-    public Token variable(final String pName) {
+    public Token<?> variable(final String pName) {
         return variables.get(pName);
     }
 
-    public Context variable(final String pName, final Token pValue) {
+    public Context variable(final String pName, final Token<?> pValue) {
         variables.put(pName, pValue);
         return this;
     }
