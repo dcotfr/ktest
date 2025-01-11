@@ -44,7 +44,7 @@ class SRunCommandTest {
     @Test
     @Launch(value = {"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.17\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.18\r", pResult.getOutput());
     }
 
     @Test

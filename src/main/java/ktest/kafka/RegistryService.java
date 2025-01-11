@@ -34,7 +34,7 @@ public class RegistryService {
     }
 
     @Retry
-    Schema lastActiveSchema(final TopicRef pTopic, final boolean pKey) {
+    synchronized Schema lastActiveSchema(final TopicRef pTopic, final boolean pKey) {
         final var schemaSuffix = pKey ? "-key" : "-value";
         final var schemaKey = pTopic.topic() + schemaSuffix + "@" + pTopic.broker();
         if (schemas.containsKey(schemaKey)) {
@@ -44,13 +44,15 @@ public class RegistryService {
         Schema res = null;
         final var registryClient = registryClient(pTopic);
         if (registryClient != null) {
-            LOG.trace("{}      Trying to get last active schema of {}.", BLUE, schemaKey);
-            try {
-                final var rawSchemas = registryClient.getSchemas(pTopic.topic() + schemaSuffix, false, true);
-                final var rawSchema = (rawSchemas == null || rawSchemas.isEmpty()) ? null : rawSchemas.getFirst();
-                res = rawSchema == null ? null : new Schema.Parser().parse(rawSchema.canonicalString());
-            } catch (final IOException | RestClientException e) {
-                throw new KTestException("Error while getting schema of " + schemaKey, e);
+            synchronized (registryClient) {
+                LOG.trace("{}      Trying to get last active schema of {}.", BLUE, schemaKey);
+                try {
+                    final var rawSchemas = registryClient.getSchemas(pTopic.topic() + schemaSuffix, false, true);
+                    final var rawSchema = (rawSchemas == null || rawSchemas.isEmpty()) ? null : rawSchemas.getFirst();
+                    res = rawSchema == null ? null : new Schema.Parser().parse(rawSchema.canonicalString());
+                } catch (final IOException | RestClientException e) {
+                    throw new KTestException("Error while getting schema of " + schemaKey, e);
+                }
             }
         }
         schemas.put(schemaKey, res);

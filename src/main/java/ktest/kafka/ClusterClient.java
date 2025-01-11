@@ -74,21 +74,23 @@ public class ClusterClient {
     @Retry(retryOn = {SocketTimeoutException.class})
     public FoundRecord find(final TopicRef pTopic, final TestRecord pRecord, final int pBackOffset) {
         final var consumer = consumer(pTopic);
-        var lastOffsetReached = false;
-        final var lastOffset = resetConsumer(consumer, pTopic.topic(), pBackOffset);
-        if (lastOffset >= 0) {
-            while (true) {
-                final var recs = consumer.poll(Duration.ofMillis(2500));
-                if (lastOffsetReached && recs.isEmpty()) {
-                    break;
-                }
-                for (final var o : recs) {
-                    if (o instanceof ConsumerRecord<?, ?> rec) {
-                        if (assertRecord(pRecord, rec)) {
-                            return new FoundRecord(rec);
-                        }
-                        if (rec.offset() >= lastOffset) {
-                            lastOffsetReached = true;
+        synchronized (consumer) {
+            var lastOffsetReached = false;
+            final var lastOffset = resetConsumer(consumer, pTopic.topic(), pBackOffset);
+            if (lastOffset >= 0) {
+                while (true) {
+                    final var recs = consumer.poll(Duration.ofMillis(2500));
+                    if (lastOffsetReached && recs.isEmpty()) {
+                        break;
+                    }
+                    for (final var o : recs) {
+                        if (o instanceof ConsumerRecord<?, ?> rec) {
+                            if (assertRecord(pRecord, rec)) {
+                                return new FoundRecord(rec);
+                            }
+                            if (rec.offset() >= lastOffset) {
+                                lastOffsetReached = true;
+                            }
                         }
                     }
                 }
@@ -155,7 +157,7 @@ public class ClusterClient {
     }
 
     public synchronized KafkaConsumer<?, ?> consumer(final TopicRef pTopic) {
-        return consumers.computeIfAbsent(pTopic.id() + "-" + Thread.currentThread().threadId(), _ -> {
+        return consumers.computeIfAbsent(pTopic.id(), _ -> {
             final var kafkaConfig = kafkaConfigProvider.of(pTopic);
             LOG.trace("{}      Creating new consumer for {}({}).", BLUE, pTopic.id(), kafkaConfig.get("bootstrap.servers"));
             final var props = new Properties();
@@ -180,7 +182,7 @@ public class ClusterClient {
         final var expectedSerde = pKey ? pTopic.keySerde() : pTopic.valueSerde();
         final var availableSchema = registryService.lastActiveSchema(pTopic, pKey);
         if (expectedSerde == Serde.AVRO && availableSchema == null) {
-            throw new KTestException("Expected Avro schema not found for " + pTopic.id() + (pKey ? "key" : "value"), null);
+            throw new KTestException("Expected Avro schema not found for " + pTopic.topic() + (pKey ? "-key@" : "-value@") + pTopic.broker(), null);
         }
         if (availableSchema == null || expectedSerde == Serde.STRING) {
             return jsonNode instanceof TextNode textNode ? textNode.asText() : jsonNode.toString();

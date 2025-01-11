@@ -28,7 +28,7 @@ class PRunCommandTest {
     @Test
     @Launch(value = {"prun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.17\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.18\r", pResult.getOutput());
     }
 
     @Test
@@ -120,10 +120,15 @@ class PRunCommandTest {
     }
 
     @Test
-    @Launch(value = {"srun", "-e=pi", "-f=src\\test\\resources\\gotoFile.yml"})
+    @Launch(value = {"prun", "-e=pi", "-f=src\\test\\resources\\thread.yml"}, exitCode = 0)
+    void threadTest(final LaunchResult pResult) {
+    }
+
+    @Test
+    @Launch(value = {"prun", "-e=pi", "-f=src\\test\\resources\\gotoFile.yml"})
     void gotoFileTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
-                .filter(log -> log.equals("I   - Step : Step n°1 (SEND)\r"))
+                .filter(log -> log.endsWith(" - Step : Step n°1 (SEND)\r"))
                 .count();
         assertEquals(5, found);
     }

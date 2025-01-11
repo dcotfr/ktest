@@ -22,6 +22,12 @@ class DocCommandTest {
     }
 
     @Test
+    @Launch(value = {"doc", "-V"})
+    void versionOptionTest(final LaunchResult pResult) {
+        assertEquals("I ktest v1.0.18\r", pResult.getOutput());
+    }
+
+    @Test
     @Launch(value = {"doc"})
     void runTest(final LaunchResult pResult) {
         final var expected = String.join("\n",

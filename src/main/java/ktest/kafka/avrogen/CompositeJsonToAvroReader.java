@@ -14,12 +14,11 @@ import java.util.*;
 final class CompositeJsonToAvroReader implements JsonToAvroReader {
     private final List<AvroTypeConverter> converters = new ArrayList<>();
     private final AvroTypeConverter mainRecordConverter;
+    private final List<AvroTypeConverter> foundConverters;
 
     @Inject
-    @All
-    private List<AvroTypeConverter> foundConverters;
-
-    CompositeJsonToAvroReader() {
+    CompositeJsonToAvroReader(@All final List<AvroTypeConverter> pConverters) {
+        foundConverters = pConverters;
         mainRecordConverter = new RecordConverter(this);
     }
 

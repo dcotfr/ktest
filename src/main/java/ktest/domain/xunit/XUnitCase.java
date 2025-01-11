@@ -24,8 +24,6 @@ public final class XUnitCase implements XmlUtils {
 
     public XUnitError error;
 
-    public final List<XSystemOut> systemOuts = new ArrayList<>();
-
     private final long startTimestamp;
     private long endTimestamp;
 
@@ -56,10 +54,6 @@ public final class XUnitCase implements XmlUtils {
         endTimestamp = System.currentTimeMillis();
     }
 
-    public void addSystemOut(final String pContent) {
-        systemOuts.add(new XSystemOut(pContent));
-    }
-
     public String toXml() {
         final var res = new StringBuilder("<testcase");
         res.append(" name=\"").append(fullClean(name)).append("\"");
@@ -73,7 +67,6 @@ public final class XUnitCase implements XmlUtils {
             properties.stream().map(XUnitProperty::toXml).forEach(res::append);
             res.append("</properties>");
         }
-        systemOuts.stream().map(XSystemOut::toXml).forEach(res::append);
         if (skipped != null) {
             res.append(skipped.toXml());
         }
