@@ -18,6 +18,18 @@ environments:
       KAFKA_CENTRAL_CONTEXT=KAFKA_LOCAL_CONTEXT
       info("On Start script !")
     onEnd: info("On End script !")
+  - name: piTag
+    options:
+      backOffset: 100
+      matrix: excel.xlsx
+      report: junit.xml
+      tags: tag1,tag3
+    onStart: |
+      KAFKA_PREFIX=""
+      KAFKA_LOCAL_CONTEXT="pi_broker"
+      KAFKA_CENTRAL_CONTEXT=KAFKA_LOCAL_CONTEXT
+      info("On Start script !")
+    onEnd: info("On End script !")
   - name: local
     onStart: |
       KAFKA_PREFIX="local-"

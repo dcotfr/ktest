@@ -24,7 +24,7 @@ class CustomCommandLineFactory {
                 .setOut(new PrintWriter(new LogOutputStream(Level.INFO), true))
                 .setErr(new PrintWriter(new LogOutputStream(Level.ERROR), true))
                 .setExecutionExceptionHandler((e, commandLine, parseResult) -> {
-                    if (e instanceof KTestException knownException) {
+                    if (e instanceof final KTestException knownException) {
                         LOG.error("{}{}", RED, knownException.getMessage());
                         if (!(knownException instanceof TestFailureOrError)) {
                             LOG.debug("{}Internal trace", RED, knownException);

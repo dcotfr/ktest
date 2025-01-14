@@ -6,6 +6,8 @@ import jakarta.inject.Inject;
 import ktest.core.KTestException;
 import ktest.core.LogTab;
 import ktest.domain.TestCase;
+import ktest.domain.config.EnvironmentConfig;
+import ktest.domain.config.KTestConfig;
 import ktest.domain.xlsx.Matrix;
 import ktest.domain.xunit.XUnitReport;
 import ktest.domain.xunit.XUnitSuite;
@@ -31,33 +33,17 @@ import static ktest.core.LogTab.secondsToHuman;
 public class SRunCommand implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(SRunCommand.class);
 
-    @CommandLine.Option(names = {"-e", "--env"}, description = "Name of the environment to use.", required = true)
-    private String env;
+    @CommandLine.Mixin
+    private Options cliOptions;
 
-    @CommandLine.Option(names = {"-f", "--file"}, description = "Path of test case description file to execute.", defaultValue = "ktestcase.yml")
-    private String file;
-
-    @CommandLine.Option(names = {"-c", "--config"}, description = "Path of the config file.", defaultValue = "ktconfig.yml")
-    private String config;
-
-    @CommandLine.Option(names = {"-r", "--report"}, description = "Path of the test report file (JUnit format).", defaultValue = "ktreport.xml")
-    private String report;
-
-    @CommandLine.Option(names = {"-b", "--back"}, description = "Back offset.", defaultValue = "250")
-    private Integer backOffset;
-
-    @CommandLine.Option(names = {"-t", "--tags"}, description = "Tags to filter test cases to run.")
-    private String tags;
-
-    @CommandLine.Option(names = {"-m", "--matrix"}, description = "Path of the matrix summary file (xlsx format).", defaultValue = "ktmatrix.xlsx")
-    private String matrix;
-
+    private final Instance<KTestConfig> configFactory;
     private final Instance<Engine> engineFactory;
     private final Instance<ClusterClient> kafkaClientFactory;
     private final LogTab logTab = new LogTab(false);
 
     @Inject
-    SRunCommand(final Instance<Engine> pEngineFactory, final Instance<ClusterClient> pKafkaClientFactory) {
+    SRunCommand(final Instance<KTestConfig> pConfigFactory, final Instance<Engine> pEngineFactory, final Instance<ClusterClient> pKafkaClientFactory) {
+        configFactory = pConfigFactory;
         engineFactory = pEngineFactory;
         kafkaClientFactory = pKafkaClientFactory;
     }
@@ -65,15 +51,17 @@ public class SRunCommand implements Runnable {
     @Override
     public void run() {
         final var engine = engineFactory.get();
-        final var testCaseRunner = new TestCaseRunner(engine, kafkaClientFactory.get()).backOffset(backOffset).logTab(logTab);
+        final var testCases = TestCase.load(cliOptions.file);
+        final var currentEnv = configFactory.get().currentEnvironment();
+        final var testCaseRunner = new TestCaseRunner(engine, kafkaClientFactory.get()).backOffset(currentEnv.actualBackOffset(cliOptions)).logTab(logTab);
         var finalFailureOrError = false;
-        final var testCases = TestCase.load(file);
-        if (!Strings.isNullOrEmpty(tags)) {
-            LOG.info("{}Filtering Test Cases by: {}", WHITE, tags);
+        final var actualTags = currentEnv.actualTags(cliOptions);
+        if (!Strings.isNullOrEmpty(actualTags)) {
+            LOG.info("{}Filtering Test Cases by: {}", WHITE, actualTags);
         }
         final var xUnitReport = new XUnitReport();
         final var globalVariables = engine.reset().context().variables();
-        for (final var testCase : filteredByTags(testCases, tags)) {
+        for (final var testCase : filteredByTags(testCases, actualTags)) {
             final var xUnitSuite = xUnitReport.startNewSuite(testCase.name());
             final var stepTags = testCase.tags();
             LOG.info("{}Test Case: {}{}", logTab.tab(WHITE), testCase.name(), stepTags == null || stepTags.isEmpty() ? "" : " " + stepTags);
@@ -88,10 +76,10 @@ public class SRunCommand implements Runnable {
             xUnitSuite.end();
         }
         xUnitReport.end();
-        logOptions(testCases, env, tags);
+        logOptions(testCases, cliOptions.env, actualTags);
         logTips(xUnitReport);
         TestCaseRunner.logSynthesis(xUnitReport);
-        saveReports(xUnitReport);
+        saveReports(xUnitReport, currentEnv);
         engine.end();
         if (finalFailureOrError) {
             throw new TestFailureOrError(xUnitReport);
@@ -107,10 +95,10 @@ public class SRunCommand implements Runnable {
         }
     }
 
-    private void saveReports(final XUnitReport pXmlReport) {
+    private void saveReports(final XUnitReport pXmlReport, final EnvironmentConfig pEnvConfig) {
         try {
-            Files.writeString(Path.of(report), pXmlReport.toXml());
-            Matrix.save(Path.of(matrix), env, tags, pXmlReport);
+            Files.writeString(Path.of(pEnvConfig.actualReport(cliOptions)), pXmlReport.toXml());
+            Matrix.save(Path.of(pEnvConfig.actualMatrix(cliOptions)), cliOptions.env, pEnvConfig.actualTags(cliOptions), pXmlReport);
         } catch (final IOException e) {
             throw new KTestException("Failed to write test reports.", e);
         }

@@ -84,7 +84,7 @@ public class ClusterClient {
                         break;
                     }
                     for (final var o : recs) {
-                        if (o instanceof ConsumerRecord<?, ?> rec) {
+                        if (o instanceof final ConsumerRecord<?, ?> rec) {
                             if (assertRecord(pRecord, rec)) {
                                 return new FoundRecord(rec);
                             }
@@ -185,7 +185,7 @@ public class ClusterClient {
             throw new KTestException("Expected Avro schema not found for " + pTopic.topic() + (pKey ? "-key@" : "-value@") + pTopic.broker(), null);
         }
         if (availableSchema == null || expectedSerde == Serde.STRING) {
-            return jsonNode instanceof TextNode textNode ? textNode.asText() : jsonNode.toString();
+            return jsonNode instanceof final TextNode textNode ? textNode.asText() : jsonNode.toString();
         }
         return jsonAvroConverter.toAvro(jsonNode, availableSchema);
     }

@@ -9,13 +9,13 @@ import java.util.Deque;
 abstract class DateTimeConverter implements AvroTypeConverter {
     @Override
     public final Object convert(final Schema.Field pField, final Schema pSchema, final Object pJsonValue, final Deque<String> pPath) {
-        if (pJsonValue instanceof String dateTimeString) {
+        if (pJsonValue instanceof final String dateTimeString) {
             try {
                 return convertDateTimeString(dateTimeString);
             } catch (final DateTimeParseException e) {
                 throw new AvroGenException("Field " + pPath + " is invalid.", e);
             }
-        } else if (pJsonValue instanceof Number nbr) {
+        } else if (pJsonValue instanceof final Number nbr) {
             return convertNumber(nbr);
         }
 

@@ -15,7 +15,7 @@ class KTestConfigTest {
     @Test
     void testContent() {
         final var environments = kConfig.environments();
-        assertEquals(2, environments.size());
+        assertEquals(3, environments.size());
         final var env = environments.getFirst();
         assertEquals("pi", env.name());
         assertEquals(4, env.onStartScript().size());

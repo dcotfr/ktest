@@ -44,7 +44,7 @@ class SRunCommandTest {
     @Test
     @Launch(value = {"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.18\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.19\r", pResult.getOutput());
     }
 
     @Test
@@ -133,6 +133,15 @@ class SRunCommandTest {
         assertTrue(rec.headers().isEmpty());
         assertEquals("\"K1\"", rec.keyNode().toString());
         assertNull(rec.value());
+    }
+
+    @Test
+    @Launch(value = {"srun", "-e=piTag", "-f=src\\test\\resources\\validFile.yml"}, exitCode = 0)
+    void validFileTagTest(final LaunchResult pResult) {
+        final int found = (int) pResult.getOutputStream().stream()
+                .filter(log -> log.startsWith("I Test Case: "))
+                .count();
+        assertEquals(2, found);
     }
 
     @Test

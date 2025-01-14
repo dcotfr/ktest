@@ -19,7 +19,7 @@ public final class Stm extends Token<List<Token<?>>> {
     }
 
     void add(final Token<?> pToken) {
-        if (pToken instanceof Stm stm && stm.value().isEmpty()) {
+        if (pToken instanceof final Stm stm && stm.value().isEmpty()) {
             return;
         }
         value().add(pToken);
@@ -39,7 +39,7 @@ public final class Stm extends Token<List<Token<?>>> {
             if (toEval == null) {
                 break;
             }
-            if (toEval instanceof Stm stm && stm.value().size() == 1) {
+            if (toEval instanceof final Stm stm && stm.value().size() == 1) {
                 value().set(value().indexOf(toEval), stm.value().getFirst());
             } else {
                 toEval.eval(pContext, this);
@@ -73,7 +73,7 @@ public final class Stm extends Token<List<Token<?>>> {
             } else if (pNullIfOutOfBoundError) {
                 return null;
             }
-            if (token instanceof Num<? extends Number> num) {
+            if (token instanceof final Num<? extends Number> num) {
                 return num;
             }
         }

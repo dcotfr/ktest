@@ -120,6 +120,11 @@ brokers:
     ...
 environments:
   - name: pi
+    options:
+      backOffset: 100
+      matrix: excel.xlsx
+      report: junit.xml
+      tags: pi3+4g,pi4
     onStart: |
       BROKER_USED="pi_broker"
       ...
@@ -132,7 +137,7 @@ environments:
 The test cases are described using yaml files, following the format:
 ```yaml
 name: "Name of the Test Case"
-tags: [ DEV, ... ]
+tags: [ pi4, ... ]
 beforeAll: |
   TIMESTAMP = now()
   ...
@@ -327,3 +332,8 @@ The execution generates a report called 'ktmatrix.xlsx', which contains a matrix
 For example:
 
 ![ktmatrix sample](doc/ktmatrix.png) ![ktmatrix details sample](doc/details.png)
+
+##### How to preset some options based on the environment?
+Environment definitions accept an `options` attribute to predefine the values of `backOffset`, `matrix`, `report` and/or `tags`.
+
+These values then apply when selecting the environment unless other values are forced on the command line.

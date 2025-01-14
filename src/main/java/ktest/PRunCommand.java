@@ -5,6 +5,8 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import ktest.core.KTestException;
 import ktest.domain.TestCase;
+import ktest.domain.config.EnvironmentConfig;
+import ktest.domain.config.KTestConfig;
 import ktest.domain.xlsx.Matrix;
 import ktest.domain.xunit.XUnitReport;
 import ktest.domain.xunit.XUnitSuite;
@@ -31,61 +33,47 @@ import static ktest.core.LogTab.secondsToHuman;
 public class PRunCommand implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(PRunCommand.class);
 
-    @CommandLine.Option(names = {"-e", "--env"}, description = "Name of the environment to use.", required = true)
-    private String env;
+    @CommandLine.Mixin
+    private Options cliOptions;
 
-    @CommandLine.Option(names = {"-f", "--file"}, description = "Path of test case description file to execute.", defaultValue = "ktestcase.yml")
-    private String file;
-
-    @CommandLine.Option(names = {"-c", "--config"}, description = "Path of the config file.", defaultValue = "ktconfig.yml")
-    private String config;
-
-    @CommandLine.Option(names = {"-r", "--report"}, description = "Path of the test report file (JUnit format).", defaultValue = "ktreport.xml")
-    private String report;
-
-    @CommandLine.Option(names = {"-b", "--back"}, description = "Back offset.", defaultValue = "250")
-    private Integer backOffset;
-
-    @CommandLine.Option(names = {"-t", "--tags"}, description = "Tags to filter test cases to run.")
-    private String tags;
-
-    @CommandLine.Option(names = {"-m", "--matrix"}, description = "Path of the matrix summary file (xlsx format).", defaultValue = "ktmatrix.xlsx")
-    private String matrix;
-
+    private final Instance<KTestConfig> configFactory;
     private final Instance<Engine> engineFactory;
     private final Instance<TestCaseRunner> testCaseRunnerFactory;
 
     @Inject
-    PRunCommand(final Instance<Engine> pEngineFactory, final Instance<TestCaseRunner> pTestCaseRunnerFactory) {
+    PRunCommand(final Instance<KTestConfig> pConfigFactory, final Instance<Engine> pEngineFactory, final Instance<TestCaseRunner> pTestCaseRunnerFactory) {
+        configFactory = pConfigFactory;
         engineFactory = pEngineFactory;
         testCaseRunnerFactory = pTestCaseRunnerFactory;
     }
 
     @Override
     public void run() {
-        final var testCases = TestCase.load(file);
-        if (!Strings.isNullOrEmpty(tags)) {
-            LOG.info("{}Filtering Test Cases by: {}", WHITE, tags);
+        final var testCases = TestCase.load(cliOptions.file);
+        final var currentEnv = configFactory.get().currentEnvironment();
+        final var actualTags = currentEnv.actualTags(cliOptions);
+        if (!Strings.isNullOrEmpty(actualTags)) {
+            LOG.info("{}Filtering Test Cases by: {}", WHITE, actualTags);
         }
         final var globalEngine = engineFactory.get();
         final var globalVariables = globalEngine.reset().context().variables();
         try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             LOG.info("Start parallel run.");
             final var subTasks = new ArrayList<StructuredTaskScope.Subtask<XUnitReport>>();
-            filteredByTags(testCases, tags)
+            filteredByTags(testCases, actualTags)
                     .stream()
-                    .map(testCase -> testCaseRunnerFactory.get().testCase(testCase).backOffset(backOffset))
+                    .map(testCase -> testCaseRunnerFactory.get().testCase(testCase).backOffset(currentEnv.actualBackOffset(cliOptions)))
                     .forEach(runner -> {
                         runner.engine().init(globalVariables);
                         subTasks.add(scope.fork(runner));
                     });
             scope.join();
             LOG.info("End parallel run.");
-            logOptions(testCases, env, tags);
+            logOptions(testCases, cliOptions.env, actualTags);
             final var finalReport = new XUnitReport(subTasks.stream().map(StructuredTaskScope.Subtask::get).toList());
             logTips(finalReport);
             TestCaseRunner.logSynthesis(finalReport);
-            saveReports(finalReport);
+            saveReports(finalReport, currentEnv);
             globalEngine.end();
             if (finalReport.errors() > 0 || finalReport.failures() > 0) {
                 throw new TestFailureOrError(finalReport);
@@ -106,10 +94,10 @@ public class PRunCommand implements Runnable {
         }
     }
 
-    private void saveReports(final XUnitReport pXmlReport) {
+    private void saveReports(final XUnitReport pXmlReport, final EnvironmentConfig pEnvConfig) {
         try {
-            Files.writeString(Path.of(report), pXmlReport.toXml());
-            Matrix.save(Path.of(matrix), env, tags, pXmlReport);
+            Files.writeString(Path.of(pEnvConfig.actualReport(cliOptions)), pXmlReport.toXml());
+            Matrix.save(Path.of(pEnvConfig.actualMatrix(cliOptions)), cliOptions.env, pEnvConfig.actualTags(cliOptions), pXmlReport);
         } catch (final IOException e) {
             throw new KTestException("Failed to write test reports.", e);
         }

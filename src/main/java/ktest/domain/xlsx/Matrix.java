@@ -222,9 +222,9 @@ public final class Matrix {
     private static void fillDetailsRow(final Worksheet pWorksheet, final int pRow, final Object[] pCells, final boolean pShowAlarm) {
         var c = 0;
         for (final var cell : pCells) {
-            if (cell instanceof String str) {
+            if (cell instanceof final String str) {
                 pWorksheet.value(pRow, c, str);
-            } else if (cell instanceof Number num) {
+            } else if (cell instanceof final Number num) {
                 pWorksheet.value(pRow, c, num);
             }
             c++;
