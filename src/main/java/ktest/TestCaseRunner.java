@@ -38,6 +38,8 @@ class TestCaseRunner implements Callable<XUnitReport> {
 
     private String currentVariables = "";
 
+    private ParallelState parallelState;
+
     @Inject
     TestCaseRunner(final Engine pEngine, final ClusterClient pKafkaClient) {
         engine = pEngine;
@@ -56,6 +58,11 @@ class TestCaseRunner implements Callable<XUnitReport> {
 
     TestCaseRunner logTab(final LogTab pLogTab) {
         logTab = pLogTab;
+        return this;
+    }
+
+    TestCaseRunner parallelState(final ParallelState pState) {
+        parallelState = pState;
         return this;
     }
 
@@ -78,7 +85,10 @@ class TestCaseRunner implements Callable<XUnitReport> {
         xUnitSuite.end();
         xUnitReport.end();
 
-        LOG.info("{}End Test Case: {}", logTab.tab(WHITE), testCase.name());
+        if (LOG.isInfoEnabled()) {
+            LOG.info("{}End Test Case: {} ({}/{})", logTab.tab(WHITE), testCase.name(),
+                    parallelState != null ? parallelState.endedCount.incrementAndGet() : "?", parallelState != null ? parallelState.subTasks.size() : "?");
+        }
         return xUnitReport;
     }
 

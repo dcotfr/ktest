@@ -18,7 +18,6 @@ import picocli.CommandLine;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.concurrent.StructuredTaskScope;
 
 import static java.lang.Math.round;
@@ -59,18 +58,18 @@ public class PRunCommand implements Runnable {
         final var globalVariables = globalEngine.reset().context().variables();
         try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             LOG.info("Start parallel run.");
-            final var subTasks = new ArrayList<StructuredTaskScope.Subtask<XUnitReport>>();
+            final var parallelState = new ParallelState();
             filteredByTags(testCases, actualTags)
                     .stream()
-                    .map(testCase -> testCaseRunnerFactory.get().testCase(testCase).backOffset(currentEnv.actualBackOffset(cliOptions)))
+                    .map(testCase -> testCaseRunnerFactory.get().testCase(testCase).backOffset(currentEnv.actualBackOffset(cliOptions)).parallelState(parallelState))
                     .forEach(runner -> {
                         runner.engine().init(globalVariables);
-                        subTasks.add(scope.fork(runner));
+                        parallelState.subTasks.add(scope.fork(runner));
                     });
             scope.join();
             LOG.info("End parallel run.");
             logOptions(testCases, cliOptions.env, actualTags);
-            final var finalReport = new XUnitReport(subTasks.stream().map(StructuredTaskScope.Subtask::get).toList());
+            final var finalReport = new XUnitReport(parallelState.subTasks.stream().map(StructuredTaskScope.Subtask::get).toList());
             logTips(finalReport);
             TestCaseRunner.logSynthesis(finalReport);
             saveReports(finalReport, currentEnv);

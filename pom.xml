@@ -6,12 +6,12 @@
 
     <groupId>ktest</groupId>
     <artifactId>ktest</artifactId>
-    <version>1.0.19</version>
+    <version>1.0.20</version>
 
     <properties>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.17.6</quarkus.platform.version>
+        <quarkus.platform.version>3.17.8</quarkus.platform.version>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
         <maven.compiler.source>23</maven.compiler.source>

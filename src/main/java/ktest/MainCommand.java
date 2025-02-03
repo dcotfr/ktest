@@ -15,7 +15,7 @@ import static ktest.MainCommand.VERSION;
         "org.apache.kafka.common.security.scram.internals.ScramSaslClient$ScramSaslClientFactory",
         "sun.security.provider.ConfigFile"})
 public class MainCommand {
-    public static final String VERSION = "ktest v1.0.19";
+    public static final String VERSION = "ktest v1.0.20";
 
     private MainCommand() {
     }

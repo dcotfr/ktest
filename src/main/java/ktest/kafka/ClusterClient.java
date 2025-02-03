@@ -79,8 +79,9 @@ public class ClusterClient {
             final var lastOffset = resetConsumer(consumer, pTopic.topic(), pBackOffset);
             if (lastOffset >= 0) {
                 while (true) {
-                    final var recs = consumer.poll(Duration.ofMillis(2500));
-                    if (lastOffsetReached && recs.isEmpty()) {
+                    final var recs = consumer.poll(Duration.ofMillis(5000));
+                    if (lastOffsetReached || recs.isEmpty()) {
+                        LOG.trace("{}      Search ended with lastOffsetReached={}, recsCount={}.", BLUE, lastOffsetReached, recs.count());
                         break;
                     }
                     for (final var o : recs) {
@@ -110,6 +111,7 @@ public class ClusterClient {
     private long resetConsumer(final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {
         final var partitions = pConsumer.partitionsFor(pTopicName).stream()
                 .map(p -> new TopicPartition(pTopicName, p.partition())).toList();
+        LOG.trace("{}      Reseting consumer for {}.", BLUE, pTopicName);
         var lastOffset = 0L;
         if (!partitions.isEmpty()) {
             pConsumer.assign(partitions);
@@ -118,6 +120,7 @@ public class ClusterClient {
                 pConsumer.seek(e.getKey(), Math.max(e.getValue() - pBackOffset, 0));
             }
         }
+        LOG.trace("{}      Consumer for {} reseted to {}.", BLUE, pTopicName, lastOffset - 1);
         return lastOffset - 1;
     }
 
