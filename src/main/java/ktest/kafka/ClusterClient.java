@@ -75,23 +75,15 @@ public class ClusterClient {
     public FoundRecord find(final TopicRef pTopic, final TestRecord pRecord, final int pBackOffset) {
         final var consumer = consumer(pTopic);
         synchronized (consumer) {
-            var lastOffsetReached = false;
-            final var lastOffset = resetConsumer(consumer, pTopic.topic(), pBackOffset);
-            if (lastOffset >= 0) {
-                while (true) {
-                    final var recs = consumer.poll(Duration.ofMillis(5000));
-                    if (lastOffsetReached || recs.isEmpty()) {
-                        LOG.trace("{}      Search ended with lastOffsetReached={}, recsCount={}.", BLUE, lastOffsetReached, recs.count());
-                        break;
-                    }
-                    for (final var o : recs) {
-                        if (o instanceof final ConsumerRecord<?, ?> rec) {
-                            if (assertRecord(pRecord, rec)) {
-                                return new FoundRecord(rec);
-                            }
-                            if (rec.offset() >= lastOffset) {
-                                lastOffsetReached = true;
-                            }
+            final var searchRange = resetConsumer(consumer, pTopic.topic(), pBackOffset);
+            while (searchRange.hasNext()) {
+                consumer.assign(searchRange.partitionsHavingNext());
+                final var recs = consumer.poll(Duration.ofMillis(2500));
+                for (final var o : recs) {
+                    if (o instanceof final ConsumerRecord<?, ?> rec) {
+                        searchRange.currentOffset(rec.partition(), rec.offset());
+                        if (assertRecord(pRecord, rec)) {
+                            return new FoundRecord(rec);
                         }
                     }
                 }
@@ -108,20 +100,20 @@ public class ClusterClient {
         return new TopicRef(pBroker, pTopic, keySerde, valueSerde);
     }
 
-    private long resetConsumer(final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {
+    private SearchRange resetConsumer(final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {
+        LOG.trace("{}      Start of reset of consumer from {}.", BLUE, pTopicName);
         final var partitions = pConsumer.partitionsFor(pTopicName).stream()
                 .map(p -> new TopicPartition(pTopicName, p.partition())).toList();
-        LOG.trace("{}      Reseting consumer for {}.", BLUE, pTopicName);
-        var lastOffset = 0L;
-        if (!partitions.isEmpty()) {
-            pConsumer.assign(partitions);
-            for (final var e : pConsumer.endOffsets(partitions).entrySet()) {
-                lastOffset = Math.max(lastOffset, e.getValue());
-                pConsumer.seek(e.getKey(), Math.max(e.getValue() - pBackOffset, 0));
-            }
+        final var res = new SearchRange(pTopicName);
+        pConsumer.assign(partitions);
+        for (final var e : pConsumer.endOffsets(partitions).entrySet()) {
+            final var endOffset = e.getValue();
+            final var startOffset = Math.max(endOffset - pBackOffset - 1, 0);
+            res.addRange(e.getKey().partition(), startOffset, endOffset - 1);
+            pConsumer.seek(e.getKey(), startOffset);
         }
-        LOG.trace("{}      Consumer for {} reseted to {}.", BLUE, pTopicName, lastOffset - 1);
-        return lastOffset - 1;
+        LOG.trace("{}      End of reset of consumer from {}.", BLUE, pTopicName);
+        return res;
     }
 
     private boolean assertRecord(final TestRecord pExpected, final ConsumerRecord<?, ?> pActual) {
