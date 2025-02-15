@@ -24,7 +24,7 @@ class DocCommandTest {
     @Test
     @Launch(value = {"doc", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.20\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.21\r", pResult.getOutput());
     }
 
     @Test

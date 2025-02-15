@@ -25,6 +25,9 @@ class SRunCommandTest {
             "I   -h, --help                Show this help message and exit.",
             "I   -m, --matrix=<matrix>     Path of the matrix summary file (xlsx format).",
             "I                               Default: ktmatrix.xlsx",
+            "I   -p, --pause=<autoPause>   Delay of auto pause before first PRESENT/ABSENT",
+            "I                               following SEND (0 for no pause).",
+            "I                               Default: 0",
             "I   -r, --report=<report>     Path of the test report file (JUnit format).",
             "I                               Default: ktreport.xml",
             "I   -t, --tags=<tags>         Tags to filter test cases to run.",
@@ -35,7 +38,7 @@ class SRunCommandTest {
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
                 "I Usage: ktest srun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
-                "I                   [-m=<matrix>] [-r=<report>] [-t=<tags>]",
+                "I                   [-m=<matrix>] [-p=<autoPause>] [-r=<report>] [-t=<tags>]",
                 "I Sequential run of test case(s).",
                 OPTIONS);
         assertEquals(expected, pResult.getOutput());
@@ -44,7 +47,7 @@ class SRunCommandTest {
     @Test
     @Launch(value = {"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.20\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.21\r", pResult.getOutput());
     }
 
     @Test
@@ -136,7 +139,7 @@ class SRunCommandTest {
     }
 
     @Test
-    @Launch(value = {"srun", "-e=piTag", "-f=src\\test\\resources\\validFile.yml"}, exitCode = 0)
+    @Launch(value = {"srun", "-e=piTag", "-f=src\\test\\resources\\validFile.yml"})
     void validFileTagTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
                 .filter(log -> log.startsWith("I Test Case: "))
@@ -151,5 +154,14 @@ class SRunCommandTest {
                 .filter(log -> log.equals("I   - Step : Step n°1 (SEND)\r"))
                 .count();
         assertEquals(5, found);
+    }
+
+    @Test
+    @Launch(value = {"srun", "-e=piTag", "-p=10", "-f=src\\test\\resources\\validFile.yml"})
+    void validFileAutoPauseTest(final LaunchResult pResult) {
+        final int found = (int) pResult.getOutputStream().stream()
+                .filter(log -> log.startsWith("D     Auto pause 10ms before assert..."))
+                .count();
+        assertEquals(2, found);
     }
 }

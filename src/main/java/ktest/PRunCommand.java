@@ -61,7 +61,9 @@ public class PRunCommand implements Runnable {
             final var parallelState = new ParallelState();
             filteredByTags(testCases, actualTags)
                     .stream()
-                    .map(testCase -> testCaseRunnerFactory.get().testCase(testCase).backOffset(currentEnv.actualBackOffset(cliOptions)).parallelState(parallelState))
+                    .map(testCase -> testCaseRunnerFactory.get().testCase(testCase)
+                            .autoPause(currentEnv.actualAutoPause(cliOptions)).backOffset(currentEnv.actualBackOffset(cliOptions))
+                            .parallelState(parallelState))
                     .forEach(runner -> {
                         runner.engine().init(globalVariables);
                         parallelState.subTasks.add(scope.fork(runner));

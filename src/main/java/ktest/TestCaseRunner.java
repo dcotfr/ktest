@@ -33,7 +33,8 @@ class TestCaseRunner implements Callable<XUnitReport> {
     private final ClusterClient kafkaClient;
 
     private TestCase testCase;
-    private Integer backOffset;
+    private int autoPause;
+    private int backOffset;
     private LogTab logTab = new LogTab(true);
 
     private String currentVariables = "";
@@ -51,7 +52,12 @@ class TestCaseRunner implements Callable<XUnitReport> {
         return this;
     }
 
-    TestCaseRunner backOffset(final Integer pBackOffset) {
+    TestCaseRunner autoPause(final int pAutoPause) {
+        autoPause = pAutoPause;
+        return this;
+    }
+
+    TestCaseRunner backOffset(final int pBackOffset) {
         backOffset = pBackOffset;
         return this;
     }
@@ -148,6 +154,7 @@ class TestCaseRunner implements Callable<XUnitReport> {
     }
 
     boolean executeTestCase(final Engine pEngine, final TestCase pTestCase, final XUnitSuite pTestSuite) {
+        Action lastAction = null;
         var skipAfterFailureOrError = false;
         final var steps = pTestCase.steps();
         for (int i = 0; i < steps.size(); i++) {
@@ -178,6 +185,10 @@ class TestCaseRunner implements Callable<XUnitReport> {
                             kafkaClient.send(topicRef, parsedRecord);
                             stepState.success();
                         } else {
+                            if (lastAction == Action.SEND && autoPause > 0) {
+                                LOG.debug("{}Auto pause {}ms before assert...", logTab.tab(LIGHTGRAY), autoPause);
+                                Thread.sleep(autoPause);
+                            }
                             var found = kafkaClient.find(topicRef, parsedRecord, backOffset);
                             pEngine.context().lastRecord(found);
                             if (found == null && action == Action.PRESENT) {
@@ -215,6 +226,7 @@ class TestCaseRunner implements Callable<XUnitReport> {
                 i = target - 1;
             }
             xUnitCase.end();
+            lastAction = action;
         }
         return skipAfterFailureOrError;
     }

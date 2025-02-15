@@ -19,7 +19,7 @@ class PRunCommandTest {
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
                 "I Usage: ktest prun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
-                "I                   [-m=<matrix>] [-r=<report>] [-t=<tags>]",
+                "I                   [-m=<matrix>] [-p=<autoPause>] [-r=<report>] [-t=<tags>]",
                 "I Parallel run of test case(s).",
                 SRunCommandTest.OPTIONS);
         assertEquals(expected, pResult.getOutput());
@@ -28,7 +28,7 @@ class PRunCommandTest {
     @Test
     @Launch(value = {"prun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.20\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.21\r", pResult.getOutput());
     }
 
     @Test
@@ -131,5 +131,14 @@ class PRunCommandTest {
                 .filter(log -> log.endsWith(" - Step : Step n°1 (SEND)\r"))
                 .count();
         assertEquals(5, found);
+    }
+
+    @Test
+    @Launch(value = {"prun", "-e=pi", "-p=10", "-f=src\\test\\resources\\validFile.yml"}, exitCode = 1)
+    void validFileAutoPauseTest(final LaunchResult pResult) {
+        final int found = (int) pResult.getOutputStream().stream()
+                .filter(log -> log.contains("Auto pause 10ms before assert..."))
+                .count();
+        assertEquals(4, found);
     }
 }

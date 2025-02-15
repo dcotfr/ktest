@@ -53,7 +53,9 @@ public class SRunCommand implements Runnable {
         final var engine = engineFactory.get();
         final var testCases = TestCase.load(cliOptions.file);
         final var currentEnv = configFactory.get().currentEnvironment();
-        final var testCaseRunner = new TestCaseRunner(engine, kafkaClientFactory.get()).backOffset(currentEnv.actualBackOffset(cliOptions)).logTab(logTab);
+        final var testCaseRunner = new TestCaseRunner(engine, kafkaClientFactory.get())
+                .autoPause(currentEnv.actualAutoPause(cliOptions)).backOffset(currentEnv.actualBackOffset(cliOptions))
+                .logTab(logTab);
         var finalFailureOrError = false;
         final var actualTags = currentEnv.actualTags(cliOptions);
         if (!Strings.isNullOrEmpty(actualTags)) {

@@ -44,6 +44,9 @@ Commands:
 -h, --help                Show this help message and exit.
 -m, --matrix=<matrix>     Path of the matrix summary file (xlsx format).
                             Default: ktmatrix.xlsx
+-p, --pause=<autoPause>   Delay of auto pause before first PRESENT/ABSENT
+                            following SEND (0 for no pause).
+                            Default: 0
 -r, --report=<report>     Path of the test report file (JUnit format).
                             Default: ktreport.
 -t, --tags=<tags>         Tags to filter test cases to run.
@@ -334,6 +337,6 @@ For example:
 ![ktmatrix sample](doc/ktmatrix.png) ![ktmatrix details sample](doc/details.png)
 
 ##### How to preset some options based on the environment?
-Environment definitions accept an `options` attribute to predefine the values of `backOffset`, `matrix`, `report` and/or `tags`.
+Environment definitions accept an `options` attribute to predefine the values of `àutoPause`, `backOffset`, `matrix`, `report` and/or `tags`.
 
 These values then apply when selecting the environment unless other values are forced on the command line.

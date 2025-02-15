@@ -8,6 +8,12 @@ import java.util.Collections;
 import java.util.List;
 
 public record EnvironmentConfig(String name, PresetOptions options, String onStart, String onEnd) implements Named {
+    public Integer actualAutoPause(final PresetOptions pCliOptions) {
+        if (pCliOptions != null && pCliOptions.autoPause != null) {
+            return pCliOptions.autoPause;
+        }
+        return options != null ? options.autoPause : null;
+    }
     public Integer actualBackOffset(final PresetOptions pCliOptions) {
         if (pCliOptions != null && pCliOptions.backOffset != null) {
             return pCliOptions.backOffset;
