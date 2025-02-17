@@ -12,14 +12,14 @@ public record EnvironmentConfig(String name, PresetOptions options, String onSta
         if (pCliOptions != null && pCliOptions.autoPause != 0) {
             return pCliOptions.autoPause;
         }
-        return options != null && options.autoPause != null ? pCliOptions.autoPause : 0;
+        return options != null && options.autoPause != null ? options.autoPause : 0;
     }
 
     public Integer actualBackOffset(final PresetOptions pCliOptions) {
         if (pCliOptions != null && pCliOptions.backOffset != 250) {
             return pCliOptions.backOffset;
         }
-        return options != null && options.backOffset != null ? pCliOptions.backOffset : 250;
+        return options != null && options.backOffset != null ? options.backOffset : 250;
     }
 
     public String actualMatrix(final PresetOptions pCliOptions) {
