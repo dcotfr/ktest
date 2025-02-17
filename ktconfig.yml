@@ -12,6 +12,8 @@ brokers:
 
 environments:
   - name: pi
+    options:
+      autoPause: 25
     onStart: |
       KAFKA_PREFIX=""
       KAFKA_LOCAL_CONTEXT="pi_broker"

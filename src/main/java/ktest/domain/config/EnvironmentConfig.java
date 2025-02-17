@@ -9,16 +9,17 @@ import java.util.List;
 
 public record EnvironmentConfig(String name, PresetOptions options, String onStart, String onEnd) implements Named {
     public Integer actualAutoPause(final PresetOptions pCliOptions) {
-        if (pCliOptions != null && pCliOptions.autoPause != null) {
+        if (pCliOptions != null && pCliOptions.autoPause != 0) {
             return pCliOptions.autoPause;
         }
-        return options != null ? options.autoPause : null;
+        return options != null && options.autoPause != null ? pCliOptions.autoPause : 0;
     }
+
     public Integer actualBackOffset(final PresetOptions pCliOptions) {
-        if (pCliOptions != null && pCliOptions.backOffset != null) {
+        if (pCliOptions != null && pCliOptions.backOffset != 250) {
             return pCliOptions.backOffset;
         }
-        return options != null ? options.backOffset : null;
+        return options != null && options.backOffset != null ? pCliOptions.backOffset : 250;
     }
 
     public String actualMatrix(final PresetOptions pCliOptions) {
