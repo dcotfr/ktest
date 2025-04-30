@@ -17,7 +17,6 @@ final class MapConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map<St
         super(Map.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Object convertValue(final Schema.Field pField, final Schema pSchema, final Map<String, Object> pJsonValue, final Deque<String> pPath) {
         final var result = HashMap.<String, Object>newHashMap(pJsonValue.size());
@@ -27,6 +26,6 @@ final class MapConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map<St
 
     @Override
     public boolean canManage(final Schema pSchema, final Deque<String> pPath) {
-        return pSchema.getType().equals(Schema.Type.MAP);
+        return pSchema.getType() == Schema.Type.MAP;
     }
 }

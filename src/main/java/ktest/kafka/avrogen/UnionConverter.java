@@ -39,6 +39,6 @@ final class UnionConverter implements AvroTypeConverter {
 
     @Override
     public boolean canManage(final Schema pSchema, final Deque<String> pPath) {
-        return pSchema.getType().equals(Schema.Type.UNION);
+        return pSchema.getType() == Schema.Type.UNION;
     }
 }

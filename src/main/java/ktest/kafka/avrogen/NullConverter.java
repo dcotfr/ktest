@@ -14,6 +14,6 @@ final class NullConverter implements AvroTypeConverter {
 
     @Override
     public boolean canManage(final Schema pSchema, final Deque<String> pPath) {
-        return pSchema.getType().equals(Schema.Type.NULL);
+        return pSchema.getType() == Schema.Type.NULL;
     }
 }

@@ -25,6 +25,6 @@ final class EnumConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Strin
 
     @Override
     public boolean canManage(final Schema pSchema, final Deque<String> pPath) {
-        return pSchema.getType().equals(Schema.Type.ENUM);
+        return pSchema.getType() == Schema.Type.ENUM;
     }
 }

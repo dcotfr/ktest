@@ -9,7 +9,7 @@ public final class LogTab {
         showThread = pShowThread;
     }
 
-    private int tab = 0;
+    private int tab;
 
     public void inc() {
         tab += 2;

@@ -67,7 +67,7 @@ public class ScanCommand implements Runnable {
         res.add("---");
         res.add("name: Sample Test Case");
         res.add("steps:");
-        for (var input : parsedInputs) {
+        for (final var input : parsedInputs) {
             LOG.info("Scanning last record of {}@{}", input.topic, input.broker);
             final var topicRef = kafkaClient.scanSerdes(input.broker, input.topic);
             final var found = kafkaClient.find(topicRef, matchAllRecord, 1);

@@ -18,6 +18,6 @@ public class Length extends Func {
     @Override
     public Int apply(final Context pContext, final Stm pParam) {
         final var params = extractParam(pContext, pParam, String.class);
-        return new Int(((String) params[0]).length());
+        return new Int(((CharSequence) params[0]).length());
     }
 }

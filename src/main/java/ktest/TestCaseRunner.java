@@ -25,6 +25,7 @@ import java.util.stream.IntStream;
 
 import static ktest.core.AnsiColor.*;
 
+@SuppressWarnings("BusyWait")
 @Dependent
 class TestCaseRunner implements Callable<XUnitReport> {
     private static final Logger LOG = LoggerFactory.getLogger(TestCaseRunner.class);
@@ -158,7 +159,7 @@ class TestCaseRunner implements Callable<XUnitReport> {
         var skipAfterFailureOrError = false;
         final var steps = pTestCase.steps();
         for (int i = 0; i < steps.size(); i++) {
-            var step = steps.get(i);
+            final var step = steps.get(i);
             final var action = step.action();
             final var xUnitCase = pTestSuite.startNewCase(step.name() + " (" + action + ")", pTestCase.name(), action == Action.PRESENT || action == Action.ABSENT);
             try {

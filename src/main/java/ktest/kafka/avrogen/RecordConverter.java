@@ -16,7 +16,6 @@ final class RecordConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map
         jsonToAvroReader = pJsonToAvroReader;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Object convertValue(final Schema.Field pField, final Schema pSchema, final Map<String, Object> pJsonValue, final Deque<String> pPath) {
         final var builder = createRecordBuilder(pSchema);
@@ -40,6 +39,6 @@ final class RecordConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map
 
     @Override
     public boolean canManage(final Schema pSchema, final Deque<String> pPath) {
-        return pSchema.getType().equals(Schema.Type.RECORD);
+        return pSchema.getType() == Schema.Type.RECORD;
     }
 }

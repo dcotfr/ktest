@@ -60,7 +60,7 @@ public final class Stm extends Token<List<Token<?>>> {
         return value().get(pIndex).eval(pContext, this);
     }
 
-    Num<? extends Number> evalAsNumAt(final Context pContext, final int pIndex, boolean pNullIfOutOfBoundError) {
+    Num<? extends Number> evalAsNumAt(final Context pContext, final int pIndex, final boolean pNullIfOutOfBoundError) {
         if (pIndex < 0 || pIndex >= value().size()) {
             if (pNullIfOutOfBoundError) {
                 return null;

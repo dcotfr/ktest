@@ -37,7 +37,7 @@ final class BytesDecimalConverter implements AvroTypeConverter {
 
     @Override
     public boolean canManage(final Schema pSchema, final Deque<String> pPath) {
-        return BYTES.equals(pSchema.getType())
+        return BYTES == pSchema.getType()
                 && AvroTypeConverter.isLogicalType(pSchema, "decimal")
                 && pSchema.getObjectProp("scale") != null;
     }

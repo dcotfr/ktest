@@ -71,7 +71,7 @@ public class ClusterClient {
         }
     }
 
-    @Retry(retryOn = {SocketTimeoutException.class})
+    @Retry(retryOn = SocketTimeoutException.class)
     public FoundRecord find(final TopicRef pTopic, final TestRecord pRecord, final int pBackOffset) {
         final var consumer = consumer(pTopic);
         synchronized (consumer) {

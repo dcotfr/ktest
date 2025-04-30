@@ -244,7 +244,7 @@ public final class Matrix {
         return (int) STEP_STATES
                 .stream()
                 .filter(s -> s.testCase().equals(pTestCase) && s.broker().equals(pBroker)
-                        && s.topic().equals(pTopic) && s.action().equals(pAction)
+                        && s.topic().equals(pTopic) && s.action() == pAction
                         && (pAll || s.succeeded()))
                 .count();
     }
@@ -257,7 +257,7 @@ public final class Matrix {
 
     private static synchronized int maxTags() {
         var res = 0;
-        for (var s : STEP_STATES) {
+        for (final var s : STEP_STATES) {
             if (s.tags() != null && s.tags().size() > res) {
                 res = s.tags().size();
             }

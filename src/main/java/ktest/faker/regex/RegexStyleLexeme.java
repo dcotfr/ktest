@@ -53,7 +53,7 @@ final class RegexStyleLexeme extends RepeatableLexeme<RegexStyleLexeme> {
 
         final var deduplicatedChars = new StringBuilder();
         var previous = 0;
-        for (var c : sortedChars) {
+        for (final var c : sortedChars) {
             if (previous != c) {
                 deduplicatedChars.append(c);
             }

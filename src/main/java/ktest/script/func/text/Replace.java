@@ -18,6 +18,6 @@ public class Replace extends Func {
     @Override
     public Txt apply(final Context pContext, final Stm pParam) {
         final var params = extractParam(pContext, pParam, String.class, String.class, String.class);
-        return new Txt(((String) params[0]).replace((String) params[1], (String) params[2]));
+        return new Txt(((String) params[0]).replace((CharSequence) params[1], (CharSequence) params[2]));
     }
 }

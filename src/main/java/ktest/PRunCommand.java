@@ -56,7 +56,7 @@ public class PRunCommand implements Runnable {
         }
         final var globalEngine = engineFactory.get();
         final var globalVariables = globalEngine.reset().context().variables();
-        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+        try (final var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             LOG.info("Start parallel run.");
             final var parallelState = new ParallelState();
             filteredByTags(testCases, actualTags)

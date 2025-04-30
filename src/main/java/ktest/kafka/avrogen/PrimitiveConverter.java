@@ -22,6 +22,6 @@ class PrimitiveConverter<T> extends AvroTypeConverterWithStrictJavaTypeCheck<T> 
 
     @Override
     public final boolean canManage(final Schema pSchema, final Deque<String> pPath) {
-        return pSchema.getType().equals(avroType);
+        return pSchema.getType() == avroType;
     }
 }

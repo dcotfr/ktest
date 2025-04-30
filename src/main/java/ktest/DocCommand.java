@@ -113,7 +113,7 @@ public class DocCommand implements Runnable {
         var maxCmd = 0;
         var maxPar = 0;
         var maxRes = 0;
-        for (var f : context.functions()) {
+        for (final var f : context.functions()) {
             maxCmd = max(maxCmd, f.command().length());
             final var doc = f.doc();
             maxPar = max(maxPar, doc.param().length());
@@ -121,7 +121,7 @@ public class DocCommand implements Runnable {
         }
         System.out.println(BRIGHTYELLOW + "Scripting Functions:" + WHITE);
         FuncType previousType = null;
-        for (var f : context.functions().stream().sorted(Comparator.comparing(o -> o.doc().type())).toList()) {
+        for (final var f : context.functions().stream().sorted(Comparator.comparing(o -> o.doc().type())).toList()) {
             if (f.doc().type() != previousType) {
                 System.out.println(" " + f.doc().type() + ":");
                 previousType = f.doc().type();

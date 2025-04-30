@@ -24,7 +24,7 @@ abstract class DateTimeConverter implements AvroTypeConverter {
 
     @Override
     public final boolean canManage(final Schema pSchema, final Deque<String> pPath) {
-        return getUnderlyingSchemaType().equals(pSchema.getType()) && AvroTypeConverter.isLogicalType(pSchema, getLogicalType().getName());
+        return getUnderlyingSchemaType() == pSchema.getType() && AvroTypeConverter.isLogicalType(pSchema, getLogicalType().getName());
     }
 
     abstract Object convertDateTimeString(final String pDateTimeString);

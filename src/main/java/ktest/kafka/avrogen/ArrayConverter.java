@@ -16,7 +16,6 @@ final class ArrayConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Coll
         super(Collection.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Object convertValue(final Schema.Field pField, final Schema pSchema, final Collection<?> pValue, final Deque<String> pPath) {
         return pValue.stream()
@@ -25,6 +24,6 @@ final class ArrayConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Coll
 
     @Override
     public boolean canManage(final Schema pSchema, final Deque<String> pPath) {
-        return pSchema.getType().equals(Schema.Type.ARRAY);
+        return pSchema.getType() == Schema.Type.ARRAY;
     }
 }

@@ -31,7 +31,7 @@ public final class RegexStyleFaker {
         var lexemeType = CONSTANT;
         var root = res.rootLexeme();
         final var lexeme = new StringBuilder();
-        for (var c : res.config().toCharArray()) {
+        for (final var c : res.config().toCharArray()) {
             if (c == '[') {
                 if (previousChar != '\\') {
                     if (lexemeType == REGEX) {
