@@ -42,3 +42,5 @@ build/
 /report.xlsx
 /ktsample.yml
 /ktsample-test.yml
+/docker/graalvm-jdk-*
+/docker/upx-*
