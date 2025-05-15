@@ -25,7 +25,7 @@ class EvalCommandTest {
     @Test
     @Launch(value = {"eval", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.22\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.23\r", pResult.getOutput());
     }
 
     @Test
