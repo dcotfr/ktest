@@ -44,6 +44,9 @@ public class KafkaConfigProvider {
             res.put("acks", "all");
             evalAndPutIfPresent(engine, res, "sasl.jaas.config", brokerConfig.saslJaasConfig());
             evalAndPutIfPresent(engine, res, "sasl.mechanism", brokerConfig.saslMechanism());
+            if ("OAUTHBEARER".equals(res.get("sasl.mechanism"))) {
+                res.put("sasl.login.callback.handler.class", "io.strimzi.kafka.oauth.client.JaasClientOauthLoginCallbackHandler");
+            }
             evalAndPutIfPresent(engine, res, "security.protocol", brokerConfig.securityProtocol());
             final var registryConfig = brokerConfig.registry() != null ? kConfig.registry(engine.evalInLine(brokerConfig.registry())) : null;
             if (registryConfig != null) {

@@ -69,4 +69,20 @@ class EngineMiscTest {
         assertEquals(30L, engine.context().variable("y").value());
         assertEquals(300L, engine.context().variable("z").value());
     }
+
+    @Test
+    void coalesceTest() {
+        engine.reset().eval("empty = coalesce()");
+        assertEquals("", engine.context().variable("empty").value());
+        engine.eval("five = coalesce(5)");
+        assertEquals(5L, engine.context().variable("five").value());
+        engine.eval("x = coalesce(undefined, five)");
+        assertEquals(5L, engine.context().variable("x").value());
+        engine.eval("x = coalesce(undefined, \"\", empty, \"Def\", five)");
+        assertEquals("Def", engine.context().variable("x").value());
+        engine.eval("x = coalesce(\"\", undefined, empty, five, \"Def\")");
+        assertEquals(5L, engine.context().variable("x").value());
+        engine.eval("x = coalesce(undefined, 5.2, empty)");
+        assertEquals(5.2, engine.context().variable("x").value());
+    }
 }

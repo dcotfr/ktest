@@ -13,9 +13,11 @@ import static ktest.MainCommand.VERSION;
 @RegisterForReflection(classNames = {"org.apache.kafka.common.security.scram.ScramLoginModule",
         "org.apache.kafka.common.security.scram.internals.ScramSaslClient",
         "org.apache.kafka.common.security.scram.internals.ScramSaslClient$ScramSaslClientFactory",
+        "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule",
+        "io.strimzi.kafka.oauth.client.JaasClientOauthLoginCallbackHandler",
         "sun.security.provider.ConfigFile"})
 public class MainCommand {
-    public static final String VERSION = "ktest v1.0.23";
+    public static final String VERSION = "ktest v1.0.24";
 
     MainCommand() {
     }

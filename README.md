@@ -236,6 +236,7 @@ Scripting Functions:
   sgn     (-9.63)                                -1                                     Returns the sign of the number (-1, 0 or 1).
   sqr     (2)                                    1.4142135623730951                     Returns the square root of the number.
  MISC:
+  coalesce(a, "", 5.2)                           5.2                                    Returns the first defined and non empty value.
   env     ("SHELL")                              "/bin/bash"                            Returns the value of an ENV variable.
   goto    ("NameOfStep")                                                                Jump and continue to named Step.
   jq      ("{\"a\":{\"b\":3.4}}", "/a/b")        3.4                                    Returns the value of an attribute from a json string.

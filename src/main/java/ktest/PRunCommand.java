@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.util.concurrent.StructuredTaskScope;
 
 import static java.lang.Math.round;
+import static java.util.concurrent.StructuredTaskScope.Subtask.State.SUCCESS;
 import static ktest.MainCommand.VERSION;
 import static ktest.TestCaseRunner.filteredByTags;
 import static ktest.TestCaseRunner.logOptions;
@@ -71,7 +72,9 @@ public class PRunCommand implements Runnable {
             scope.join();
             LOG.info("End parallel run.");
             logOptions(testCases, cliOptions.env, actualTags);
-            final var finalReport = new XUnitReport(parallelState.subTasks.stream().map(StructuredTaskScope.Subtask::get).toList());
+            final var finalReport = new XUnitReport(parallelState.subTasks.stream()
+                    .filter(subTask -> subTask.state() == SUCCESS)
+                    .map(StructuredTaskScope.Subtask::get).toList());
             logTips(finalReport);
             TestCaseRunner.logSynthesis(finalReport);
             saveReports(finalReport, currentEnv);

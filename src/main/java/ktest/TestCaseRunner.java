@@ -205,13 +205,10 @@ class TestCaseRunner implements Callable<XUnitReport> {
                                 stepState.success();
                             }
                         }
-                    } catch (final RuntimeException e) {
+                    } catch (final RuntimeException | InterruptedException e) {
                         LOG.error("{}{} error.", logTab.tab(RED), action, e);
                         xUnitCase.error("Action error: " + e.getMessage(), e);
                         skipAfterFailureOrError = true;
-                    } catch (final InterruptedException e) {
-                        LOG.error("Interrupted!", e);
-                        Thread.currentThread().interrupt();
                     }
                     evalScript(pEngine, "after", step.afterScript());
                     logTab.dec();
