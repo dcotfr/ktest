@@ -1,7 +1,7 @@
 package ktest.domain.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Strings;
+import ktest.core.Strings;
 import ktest.domain.Named;
 
 public record BrokerConfig(String name, @JsonProperty("bootstrap.servers") String bootstrapServers,

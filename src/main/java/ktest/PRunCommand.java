@@ -1,9 +1,9 @@
 package ktest;
 
-import com.google.common.base.Strings;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import ktest.core.KTestException;
+import ktest.core.Strings;
 import ktest.domain.TestCase;
 import ktest.domain.config.EnvironmentConfig;
 import ktest.domain.config.KTestConfig;

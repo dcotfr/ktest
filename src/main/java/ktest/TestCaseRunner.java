@@ -1,9 +1,9 @@
 package ktest;
 
-import com.google.common.base.Strings;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import ktest.core.LogTab;
+import ktest.core.Strings;
 import ktest.domain.Action;
 import ktest.domain.TestCase;
 import ktest.domain.TestRecord;
@@ -183,7 +183,7 @@ class TestCaseRunner implements Callable<XUnitReport> {
                     LOG.debug("{}Record: {}", logTab.tab(LIGHTGRAY), parsedRecord);
                     try {
                         if (action == Action.SEND) {
-                            kafkaClient.send(topicRef, parsedRecord);
+                            kafkaClient.send(topicRef, parsedRecord, pEngine.evalInLine(step.keySchema()), pEngine.evalInLine(step.valueSchema()));
                             stepState.success();
                         } else {
                             if (lastAction == Action.SEND && autoPause > 0) {

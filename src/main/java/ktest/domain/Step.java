@@ -12,6 +12,7 @@ import java.util.List;
 public record Step(String name, String before,
                    @JsonProperty(required = true) String broker, @JsonProperty(required = true) String topic,
                    Serde keySerde, Serde valueSerde,
+                   String keySchema, String valueSchema,
                    @JsonProperty(required = true) Action action,
                    @JsonProperty(required = true) TestRecord record,
                    String after) implements Named {

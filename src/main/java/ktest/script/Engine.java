@@ -13,6 +13,8 @@ import java.util.regex.Pattern;
 
 @Dependent
 public final class Engine {
+    private static final Pattern VARIABLE_PATTERN = Pattern.compile("(\\$\\{[^}]*+})");
+
     private final KTestConfig kConfig;
     private final Context context;
 
@@ -63,8 +65,7 @@ public final class Engine {
             return null;
         }
 
-        final var pattern = Pattern.compile("(\\$\\{[^}]*+})");
-        final var matcher = pattern.matcher(pAttribute);
+        final var matcher = VARIABLE_PATTERN.matcher(pAttribute);
         var res = pAttribute;
         while (matcher.find()) {
             final var group = matcher.group();

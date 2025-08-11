@@ -1,6 +1,6 @@
 package ktest.domain.xlsx;
 
-import com.google.common.base.Strings;
+import ktest.core.Strings;
 import ktest.domain.Action;
 import ktest.domain.xunit.XUnitReport;
 import ktest.kafka.TopicRef;

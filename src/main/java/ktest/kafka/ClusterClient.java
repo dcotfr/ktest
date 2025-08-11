@@ -49,15 +49,15 @@ public class ClusterClient {
         jsonAvroConverter = pJsonAvroConverter;
     }
 
-    public void send(final TopicRef pTopic, final TestRecord pRecord) {
+    public void send(final TopicRef pTopic, final TestRecord pRecord, final String pForcedKeySchema, final String pForcedValueSchema) {
         final var producer = producer(pTopic);
         LOG.trace("{}      Sending record to {}.", BLUE, pTopic.id());
 
         final var rec = new ProducerRecord<>(pTopic.topic(),
                 null,
                 pRecord.longTimestamp(),
-                convert(pTopic, pRecord, true),
-                convert(pTopic, pRecord, false),
+                convert(pTopic, pRecord, true, pForcedKeySchema),
+                convert(pTopic, pRecord, false, pForcedValueSchema),
                 kafkaHeaders(pRecord.headers()));
         try {
             final var futur = producer.send(rec);
@@ -94,8 +94,8 @@ public class ClusterClient {
 
     public TopicRef scanSerdes(final String pBroker, final String pTopic) {
         final var temporaryTopicRef = new TopicRef(pBroker, pTopic, Serde.BYTES, Serde.BYTES);
-        final var keySerde = registryService.lastActiveSchema(temporaryTopicRef, true) != null ? Serde.AVRO : Serde.STRING;
-        final var valueSerde = registryService.lastActiveSchema(temporaryTopicRef, false) != null ? Serde.AVRO : Serde.STRING;
+        final var keySerde = registryService.lastActiveSchema(temporaryTopicRef, true, null) != null ? Serde.AVRO : Serde.STRING;
+        final var valueSerde = registryService.lastActiveSchema(temporaryTopicRef, false, null) != null ? Serde.AVRO : Serde.STRING;
         kafkaConfigProvider.reset();
         return new TopicRef(pBroker, pTopic, keySerde, valueSerde);
     }
@@ -169,13 +169,13 @@ public class ClusterClient {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private Object convert(final TopicRef pTopic, final TestRecord pRecord, final boolean pKey) {
+    private Object convert(final TopicRef pTopic, final TestRecord pRecord, final boolean pKey, final String pForcedSchema) {
         final var jsonNode = pKey ? pRecord.keyNode() : pRecord.valueNode();
         if (jsonNode == null) {
             return null;
         }
         final var expectedSerde = pKey ? pTopic.keySerde() : pTopic.valueSerde();
-        final var availableSchema = registryService.lastActiveSchema(pTopic, pKey);
+        final var availableSchema = registryService.lastActiveSchema(pTopic, pKey, pForcedSchema);
         if (expectedSerde == Serde.AVRO && availableSchema == null) {
             throw new KTestException("Expected Avro schema not found for " + pTopic.topic() + (pKey ? "-key@" : "-value@") + pTopic.broker(), null);
         }

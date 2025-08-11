@@ -1,9 +1,9 @@
 package ktest.kafka;
 
-import com.google.common.base.Strings;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import ktest.core.Strings;
 import ktest.domain.config.KTestConfig;
 import ktest.script.Engine;
 

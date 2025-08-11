@@ -1,16 +1,16 @@
 package ktest.script.func;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import ktest.script.Context;
 import ktest.script.token.Stm;
 import ktest.script.token.Txt;
-import jakarta.enterprise.context.ApplicationScoped;
 
 import static ktest.script.func.FuncType.MISC;
 
 @ApplicationScoped
 public class Env extends Func {
     protected Env() {
-        super("env", new FuncDoc(MISC,"\"SHELL\"", "\"/bin/bash\"", "Returns the value of an ENV variable."));
+        super("env", new FuncDoc(MISC, "\"SHELL\"", "\"/bin/bash\"", "Returns the value of an ENV variable."));
     }
 
     @Override

@@ -151,6 +151,7 @@ steps:
     topic: DestinationTopicName
     keySerde: STRING
     valueSerde: AVRO
+    valueSchema: forced-schema-name
     action: SEND
     record:
       headers:

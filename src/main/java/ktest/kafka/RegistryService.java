@@ -6,6 +6,7 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import ktest.core.KTestException;
+import ktest.core.Strings;
 import ktest.domain.config.KTestConfig;
 import org.apache.avro.Schema;
 import org.eclipse.microprofile.faulttolerance.Retry;
@@ -34,9 +35,12 @@ public class RegistryService {
     }
 
     @Retry
-    synchronized Schema lastActiveSchema(final TopicRef pTopic, final boolean pKey) {
-        final var schemaSuffix = pKey ? "-key" : "-value";
-        final var schemaKey = pTopic.topic() + schemaSuffix + "@" + pTopic.broker();
+    synchronized Schema lastActiveSchema(final TopicRef pTopic, final boolean pKey, final String pForcedSchema) {
+        String schemaName = pForcedSchema;
+        if (Strings.isNullOrEmpty(pForcedSchema)) {
+            schemaName = pTopic.topic() + (pKey ? "-key" : "-value");
+        }
+        final String schemaKey = schemaName + "@" + pTopic.broker();
         if (schemas.containsKey(schemaKey)) {
             return schemas.get(schemaKey);
         }
@@ -47,7 +51,7 @@ public class RegistryService {
             synchronized (registryClient) {
                 LOG.trace("{}      Trying to get last active schema of {}.", BLUE, schemaKey);
                 try {
-                    final var rawSchemas = registryClient.getSchemas(pTopic.topic() + schemaSuffix, false, true);
+                    final var rawSchemas = registryClient.getSchemas(schemaName, false, true);
                     final var rawSchema = (rawSchemas == null || rawSchemas.isEmpty()) ? null : rawSchemas.getFirst();
                     res = rawSchema == null ? null : new Schema.Parser().parse(rawSchema.canonicalString());
                 } catch (final IOException | RestClientException e) {
@@ -68,7 +72,7 @@ public class RegistryService {
 
         return registries.computeIfAbsent(registryRef, k -> {
             LOG.trace("{}      Connecting to registry {}({}).", BLUE, registryRef, registryConfig.url());
-            return new CachedSchemaRegistryClient(registryConfig.url(), 128, kafkaConfigProvider.of(pTopic));
+            return new CachedSchemaRegistryClient(registryConfig.url(), 256, kafkaConfigProvider.of(pTopic));
         });
     }
 }

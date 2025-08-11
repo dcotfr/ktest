@@ -1,6 +1,6 @@
 package ktest.domain.config;
 
-import com.google.common.base.Strings;
+import ktest.core.Strings;
 import ktest.domain.Named;
 
 import java.util.Arrays;
