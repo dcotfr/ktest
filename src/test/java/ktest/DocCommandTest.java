@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @QuarkusMainTest
 class DocCommandTest {
     @Test
-    @Launch(value = {"doc", "-h"})
+    @Launch({"doc", "-h"})
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
                 "I Usage: ktest doc [-hV]",
@@ -22,13 +22,13 @@ class DocCommandTest {
     }
 
     @Test
-    @Launch(value = {"doc", "-V"})
+    @Launch({"doc", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.25\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.26\r", pResult.getOutput());
     }
 
     @Test
-    @Launch(value = {"doc"})
+    @Launch("doc")
     void runTest(final LaunchResult pResult) {
         final var expected = String.join("\n",
                         DocCommand.SAMPLE_CONFIG, DocCommand.SAMPLE_TEST_CASE,

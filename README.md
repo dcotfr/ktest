@@ -42,13 +42,13 @@ Commands:
 -f, --file=<file>         Path of test case description file to execute.
                             Default: ktestcase.yml
 -h, --help                Show this help message and exit.
--m, --matrix=<matrix>     Path of the matrix summary file (xlsx format).
+-m, --matrix=<matrix>     Path of matrix summary (xlsx format) (- to disable).
                             Default: ktmatrix.xlsx
 -p, --pause=<autoPause>   Delay of auto pause before first PRESENT/ABSENT
                             following SEND (0 for no pause).
                             Default: 0
--r, --report=<report>     Path of the test report file (JUnit format).
-                            Default: ktreport.
+-r, --report=<report>     Path of test report (JUnit format) (- to disable).
+                            Default: ktreport.xml
 -t, --tags=<tags>         Tags to filter test cases to run.
 -V, --version             Print version information and exit.
 ```

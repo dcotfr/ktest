@@ -17,7 +17,7 @@ import static ktest.MainCommand.VERSION;
         "io.strimzi.kafka.oauth.client.JaasClientOauthLoginCallbackHandler",
         "sun.security.provider.ConfigFile"})
 public class MainCommand {
-    public static final String VERSION = "ktest v1.0.25";
+    public static final String VERSION = "ktest v1.0.26";
 
     MainCommand() {
     }

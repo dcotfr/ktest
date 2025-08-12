@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @QuarkusMainTest
 class PRunCommandTest {
     @Test
-    @Launch(value = {"prun", "-h"})
+    @Launch({"prun", "-h"})
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
                 "I Usage: ktest prun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
@@ -26,9 +26,9 @@ class PRunCommandTest {
     }
 
     @Test
-    @Launch(value = {"prun", "-V"})
+    @Launch({"prun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.25\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.26\r", pResult.getOutput());
     }
 
     @Test
@@ -44,7 +44,7 @@ class PRunCommandTest {
     }
 
     @Test
-    @Launch(value = {"prun", "-e=pi", "-f=src\\test\\resources\\validFile.yml", "-t=tag2"})
+    @Launch({"prun", "-e=pi", "-f=src\\test\\resources\\validFile.yml", "-t=tag2"})
     void validFileTest(final LaunchResult pResult) {
         final var testCases = TestCase.load("src\\test\\resources\\validFile.yml");
         assertEquals(4, testCases.size());
@@ -117,15 +117,21 @@ class PRunCommandTest {
         assertTrue(rec.headers().isEmpty());
         assertEquals("\"K1\"", rec.keyNode().toString());
         assertNull(rec.value());
+
+        final var log = pResult.getOutputStream();
+        final var logSize = log.size();
+        assertEquals("D Writing xUnit report 'ktreport.xml'.\r", log.get(logSize - 3));
+        assertEquals("D Writing Excel report 'ktmatrix.xlsx'.\r", log.get(logSize - 2));
     }
 
     @Test
     @Launch(value = {"prun", "-e=pi", "-f=src\\test\\resources\\thread.yml"}, exitCode = 0)
     void threadTest(final LaunchResult pResult) {
+        // Nothing to test
     }
 
     @Test
-    @Launch(value = {"prun", "-e=pi", "-f=src\\test\\resources\\gotoFile.yml"})
+    @Launch({"prun", "-e=pi", "-f=src\\test\\resources\\gotoFile.yml"})
     void gotoFileTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
                 .filter(log -> log.endsWith(" - Step : Step n°1 (SEND)\r"))

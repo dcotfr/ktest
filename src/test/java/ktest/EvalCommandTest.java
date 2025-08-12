@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @QuarkusMainTest
 class EvalCommandTest {
     @Test
-    @Launch(value = {"eval", "-h"})
+    @Launch({"eval", "-h"})
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
                 "I Usage: ktest eval [-hV] -l=<line>",
@@ -23,13 +23,13 @@ class EvalCommandTest {
     }
 
     @Test
-    @Launch(value = {"eval", "-V"})
+    @Launch({"eval", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.25\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.26\r", pResult.getOutput());
     }
 
     @Test
-    @Launch(value = {"eval", "-l=a=2;b=3;a*b"})
+    @Launch({"eval", "-l=a=2;b=3;a*b"})
     void simpleInlineTest(final LaunchResult pResult) {
         final var res = pResult.getOutputStream();
         assertEquals("D InLine: a=2;b=3;a*b\r", res.getFirst());
@@ -37,7 +37,7 @@ class EvalCommandTest {
     }
 
     @Test
-    @Launch(value = {"eval", "-l=\" a=2; b=3; a*b \""})
+    @Launch({"eval", "-l=\" a=2; b=3; a*b \""})
     void spacedInlineTest(final LaunchResult pResult) {
         final var res = pResult.getOutputStream();
         assertEquals("D InLine: a=2; b=3; a*b\r", res.getFirst());
@@ -45,7 +45,7 @@ class EvalCommandTest {
     }
 
     @Test
-    @Launch(value = {"eval", "-l=key=aeskey();info(\"key=\",key);encrypted=aesenc(\"Clear Text\",key);info(\"encrypted=\", encrypted);aesdec(encrypted,key)"})
+    @Launch({"eval", "-l=key=aeskey();info(\"key=\",key);encrypted=aesenc(\"Clear Text\",key);info(\"encrypted=\", encrypted);aesdec(encrypted,key)"})
     void complexInlineTest(final LaunchResult pResult) {
         final var res = pResult.getOutputStream();
         assertEquals("D InLine: key=aeskey();info(\"key=\",key);encrypted=aesenc(\"Clear Text\",key);info(\"encrypted=\", encrypted);aesdec(encrypted,key)\r", res.getFirst());

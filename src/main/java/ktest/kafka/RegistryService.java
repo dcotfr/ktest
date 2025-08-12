@@ -17,8 +17,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ktest.core.AnsiColor.BLUE;
-
 @ApplicationScoped
 public class RegistryService {
     private static final Logger LOG = LoggerFactory.getLogger(RegistryService.class);
@@ -35,7 +33,7 @@ public class RegistryService {
     }
 
     @Retry
-    synchronized Schema lastActiveSchema(final TopicRef pTopic, final boolean pKey, final String pForcedSchema) {
+    synchronized Schema lastActiveSchema(final String pLogPrefix, final TopicRef pTopic, final boolean pKey, final String pForcedSchema) {
         String schemaName = pForcedSchema;
         if (Strings.isNullOrEmpty(pForcedSchema)) {
             schemaName = pTopic.topic() + (pKey ? "-key" : "-value");
@@ -46,10 +44,10 @@ public class RegistryService {
         }
 
         Schema res = null;
-        final var registryClient = registryClient(pTopic);
+        final var registryClient = registryClient(pLogPrefix, pTopic);
         if (registryClient != null) {
             synchronized (registryClient) {
-                LOG.trace("{}      Trying to get last active schema of {}.", BLUE, schemaKey);
+                LOG.trace("{}  Trying to get last active schema of {}.", pLogPrefix, schemaKey);
                 try {
                     final var rawSchemas = registryClient.getSchemas(schemaName, false, true);
                     final var rawSchema = (rawSchemas == null || rawSchemas.isEmpty()) ? null : rawSchemas.getFirst();
@@ -63,7 +61,7 @@ public class RegistryService {
         return res;
     }
 
-    private synchronized SchemaRegistryClient registryClient(final TopicRef pTopic) {
+    private synchronized SchemaRegistryClient registryClient(final String pLogPrefix, final TopicRef pTopic) {
         final var registryRef = kConfig.broker(pTopic.broker()).registry();
         final var registryConfig = registryRef != null ? kConfig.registry(registryRef) : null;
         if (registryConfig == null) {
@@ -71,7 +69,7 @@ public class RegistryService {
         }
 
         return registries.computeIfAbsent(registryRef, k -> {
-            LOG.trace("{}      Connecting to registry {}({}).", BLUE, registryRef, registryConfig.url());
+            LOG.trace("{}  Connecting to registry {}({}).", pLogPrefix, registryRef, registryConfig.url());
             return new CachedSchemaRegistryClient(registryConfig.url(), 256, kafkaConfigProvider.of(pTopic));
         });
     }

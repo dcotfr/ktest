@@ -42,6 +42,10 @@ public class KafkaConfigProvider {
             res.put("group.id", engine.evalInLine(brokerConfig.groupId()));
             res.put("auto.offset.reset", "earliest");
             res.put("acks", "all");
+            res.put("enable.metrics.push", "false");
+            res.put("producer.compression.type", "none");
+            res.put("connections.max.idle.ms", "900000");
+            res.put("enable.auto.commit", "false");
             evalAndPutIfPresent(engine, res, "sasl.jaas.config", brokerConfig.saslJaasConfig());
             evalAndPutIfPresent(engine, res, "sasl.mechanism", brokerConfig.saslMechanism());
             if ("OAUTHBEARER".equals(res.get("sasl.mechanism"))) {

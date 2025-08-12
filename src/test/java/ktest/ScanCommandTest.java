@@ -25,7 +25,7 @@ class ScanCommandTest {
             "I   -V, --version           Print version information and exit.\r");
 
     @Test
-    @Launch(value = {"scan", "-h"})
+    @Launch({"scan", "-h"})
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
                 "I Usage: ktest scan [-hV] [-c=<config>] -e=<env> -i=<inputs> [-o=<output>]",
@@ -35,9 +35,9 @@ class ScanCommandTest {
     }
 
     @Test
-    @Launch(value = {"scan", "-V"})
+    @Launch({"scan", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.25\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.26\r", pResult.getOutput());
     }
 
     @Test
@@ -53,7 +53,7 @@ class ScanCommandTest {
     }
 
     @Test
-    @Launch(value = {"scan", "-e=pi", "-i=InputTopic@pi_broker, InputTopicStr @ pi_broker,OutputTopic@pi_broker", "-o=ktsample-test.yml"})
+    @Launch({"scan", "-e=pi", "-i=InputTopic@pi_broker, InputTopicStr @ pi_broker,OutputTopic@pi_broker", "-o=ktsample-test.yml"})
     void validSelectTest(final LaunchResult pResult) throws IOException {
         assertEquals("I Scanning last record of InputTopic@pi_broker\r", pResult.getOutputStream().getFirst());
         assertEquals("I Scanning last record of InputTopicStr@pi_broker\r", pResult.getOutputStream().get(1));
@@ -65,7 +65,7 @@ class ScanCommandTest {
     }
 
     @Test
-    @Launch(value = {"scan", "-e=pi", "-i=@pi_broker", "-o=ktsample-test.yml"})
+    @Launch({"scan", "-e=pi", "-i=@pi_broker", "-o=ktsample-test.yml"})
     void validAutoTest(final LaunchResult pResult) throws IOException {
         assertEquals("I Auto scan broker 'pi_broker'...\r", pResult.getOutputStream().getFirst());
         assertEquals("I Scanning last record of CompactTopic@pi_broker\r", pResult.getOutputStream().get(1));

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import ktest.core.KTestException;
+import ktest.core.LogTab;
 import ktest.core.Strings;
 import ktest.domain.TestRecord;
 import ktest.domain.config.KTestConfig;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ktest.MainCommand.VERSION;
+import static ktest.core.AnsiColor.BLUE;
 
 @CommandLine.Command(name = "scan", description = "Scan topic(s) to extract a sample test case.",
         mixinStandardHelpOptions = true, showDefaultValues = true, version = VERSION)
@@ -67,10 +69,11 @@ public class ScanCommand implements Runnable {
         res.add("---");
         res.add("name: Sample Test Case");
         res.add("steps:");
+        final var logPrefix = LogTab.tab(BLUE, 1, false);
         for (final var input : parsedInputs) {
             LOG.info("Scanning last record of {}@{}", input.topic, input.broker);
-            final var topicRef = kafkaClient.scanSerdes(input.broker, input.topic);
-            final var found = kafkaClient.find(topicRef, matchAllRecord, 1);
+            final var topicRef = kafkaClient.scanSerdes(logPrefix, input.broker, input.topic);
+            final var found = kafkaClient.find(logPrefix, topicRef, matchAllRecord, 1);
             if (found != null) {
                 res.addAll(createStepFromRecord(found, topicRef, ++stepId));
             } else {
@@ -110,7 +113,7 @@ public class ScanCommand implements Runnable {
 
     private List<ParsedInput> autoScan(final String pBroker) {
         LOG.info("Auto scan broker '{}'...", pBroker);
-        final var consumer = kafkaClient.consumer(new TopicRef(pBroker, "", Serde.BYTES, Serde.BYTES));
+        final var consumer = kafkaClient.consumer(LogTab.tab(BLUE, 1, false), new TopicRef(pBroker, "", Serde.BYTES, Serde.BYTES));
         return consumer.listTopics().keySet().stream()
                 .filter(topic -> !topic.startsWith("_"))
                 .sorted()

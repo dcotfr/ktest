@@ -23,18 +23,18 @@ class SRunCommandTest {
             "I   -f, --file=<file>         Path of test case description file to execute.",
             "I                               Default: ktestcase.yml",
             "I   -h, --help                Show this help message and exit.",
-            "I   -m, --matrix=<matrix>     Path of the matrix summary file (xlsx format).",
+            "I   -m, --matrix=<matrix>     Path of matrix summary (xlsx format) (- to disable).",
             "I                               Default: ktmatrix.xlsx",
             "I   -p, --pause=<autoPause>   Delay of auto pause before first PRESENT/ABSENT",
             "I                               following SEND (0 for no pause).",
             "I                               Default: 0",
-            "I   -r, --report=<report>     Path of the test report file (JUnit format).",
+            "I   -r, --report=<report>     Path of test report (JUnit format) (- to disable).",
             "I                               Default: ktreport.xml",
             "I   -t, --tags=<tags>         Tags to filter test cases to run.",
             "I   -V, --version             Print version information and exit.\r");
 
     @Test
-    @Launch(value = {"srun", "-h"})
+    @Launch({"srun", "-h"})
     void helpOptionTest(final LaunchResult pResult) {
         final var expected = String.join(System.lineSeparator(),
                 "I Usage: ktest srun [-hV] [-b=<backOffset>] [-c=<config>] -e=<env> [-f=<file>]",
@@ -45,9 +45,9 @@ class SRunCommandTest {
     }
 
     @Test
-    @Launch(value = {"srun", "-V"})
+    @Launch({"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.25\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.26\r", pResult.getOutput());
     }
 
     @Test
@@ -139,7 +139,7 @@ class SRunCommandTest {
     }
 
     @Test
-    @Launch(value = {"srun", "-e=piTag", "-f=src\\test\\resources\\validFile.yml"})
+    @Launch({"srun", "-e=piTag", "-f=src\\test\\resources\\validFile.yml"})
     void validFileTagTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
                 .filter(log -> log.startsWith("I Test Case: "))
@@ -148,16 +148,26 @@ class SRunCommandTest {
     }
 
     @Test
-    @Launch(value = {"srun", "-e=pi", "-f=src\\test\\resources\\gotoFile.yml"})
+    @Launch({"srun", "-e=piTag", "-f=src\\test\\resources\\validFile.yml", "-r=-", "-m=-"})
+    void validWithoutReportTest(final LaunchResult pResult) {
+        for (final var log : pResult.getOutputStream()) {
+            if (log.contains("Writing xUnit report") || log.contains("Writing Excel report")) {
+                fail("Should not write test report");
+            }
+        }
+    }
+
+    @Test
+    @Launch({"srun", "-e=pi", "-f=src\\test\\resources\\gotoFile.yml"})
     void gotoFileTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
-                .filter(log -> log.equals("I   - Step : Step n°1 (SEND)\r"))
+                .filter(log -> "I   - Step : Step n°1 (SEND)\r".equals(log))
                 .count();
         assertEquals(5, found);
     }
 
     @Test
-    @Launch(value = {"srun", "-e=piTag", "-p=10", "-f=src\\test\\resources\\validFile.yml"})
+    @Launch({"srun", "-e=piTag", "-p=10", "-f=src\\test\\resources\\validFile.yml"})
     void validFileAutoPauseTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
                 .filter(log -> log.startsWith("D     Auto pause 10ms before assert..."))

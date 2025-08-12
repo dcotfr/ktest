@@ -28,8 +28,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import static ktest.core.AnsiColor.BLUE;
-
 @RegisterForReflection(registerFullHierarchy = true)
 @ApplicationScoped
 public class ClusterClient {
@@ -49,15 +47,15 @@ public class ClusterClient {
         jsonAvroConverter = pJsonAvroConverter;
     }
 
-    public void send(final TopicRef pTopic, final TestRecord pRecord, final String pForcedKeySchema, final String pForcedValueSchema) {
-        final var producer = producer(pTopic);
-        LOG.trace("{}      Sending record to {}.", BLUE, pTopic.id());
+    public void send(final String pLogPrefix, final TopicRef pTopic, final TestRecord pRecord, final String pForcedKeySchema, final String pForcedValueSchema) {
+        final var producer = producer(pLogPrefix, pTopic);
+        LOG.trace("{}  Sending record to {}.", pLogPrefix, pTopic.id());
 
         final var rec = new ProducerRecord<>(pTopic.topic(),
                 null,
                 pRecord.longTimestamp(),
-                convert(pTopic, pRecord, true, pForcedKeySchema),
-                convert(pTopic, pRecord, false, pForcedValueSchema),
+                convert(pLogPrefix, pTopic, pRecord, true, pForcedKeySchema),
+                convert(pLogPrefix, pTopic, pRecord, false, pForcedValueSchema),
                 kafkaHeaders(pRecord.headers()));
         try {
             final var futur = producer.send(rec);
@@ -66,19 +64,28 @@ public class ClusterClient {
         } catch (final ExecutionException | TimeoutException e) {
             throw new KTestException("Failed to send record to " + pTopic.id(), e);
         } catch (final InterruptedException e) {
-            LOG.error("Interrupted!", e);
+            LOG.error("{}Interrupted!", pLogPrefix, e);
             Thread.currentThread().interrupt();
         }
     }
 
     @Retry(retryOn = SocketTimeoutException.class)
-    public FoundRecord find(final TopicRef pTopic, final TestRecord pRecord, final int pBackOffset) {
-        final var consumer = consumer(pTopic);
+    public FoundRecord find(final String pLogPrefix, final TopicRef pTopic, final TestRecord pRecord, final int pBackOffset) {
+        final var consumer = consumer(pLogPrefix, pTopic);
         synchronized (consumer) {
-            final var searchRange = resetConsumer(consumer, pTopic.topic(), pBackOffset);
+            final var searchRange = resetConsumer(pLogPrefix, consumer, pTopic.topic(), pBackOffset);
             while (searchRange.hasNext()) {
-                consumer.assign(searchRange.partitionsHavingNext());
-                final var recs = consumer.poll(Duration.ofMillis(2500));
+                final var remainingPartitions = searchRange.partitionsHavingNext();
+                if (remainingPartitions.isEmpty()) {
+                    return null;
+                }
+                consumer.assign(remainingPartitions);
+                final var recs = consumer.poll(Duration.ofMillis(5000));
+                LOG.trace("{}  Comparing with {} records from topic {}.", pLogPrefix, recs.count(), pTopic.id());
+                consumer.commitSync();
+                if (recs.isEmpty()) {
+                    return null;
+                }
                 for (final var o : recs) {
                     if (o instanceof final ConsumerRecord<?, ?> rec) {
                         searchRange.currentOffset(rec.partition(), rec.offset());
@@ -92,16 +99,16 @@ public class ClusterClient {
         return null;
     }
 
-    public TopicRef scanSerdes(final String pBroker, final String pTopic) {
+    public TopicRef scanSerdes(final String pLogPrefix, final String pBroker, final String pTopic) {
         final var temporaryTopicRef = new TopicRef(pBroker, pTopic, Serde.BYTES, Serde.BYTES);
-        final var keySerde = registryService.lastActiveSchema(temporaryTopicRef, true, null) != null ? Serde.AVRO : Serde.STRING;
-        final var valueSerde = registryService.lastActiveSchema(temporaryTopicRef, false, null) != null ? Serde.AVRO : Serde.STRING;
+        final var keySerde = registryService.lastActiveSchema(pLogPrefix, temporaryTopicRef, true, null) != null ? Serde.AVRO : Serde.STRING;
+        final var valueSerde = registryService.lastActiveSchema(pLogPrefix, temporaryTopicRef, false, null) != null ? Serde.AVRO : Serde.STRING;
         kafkaConfigProvider.reset();
         return new TopicRef(pBroker, pTopic, keySerde, valueSerde);
     }
 
-    private SearchRange resetConsumer(final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {
-        LOG.trace("{}      Start of reset of consumer from {}.", BLUE, pTopicName);
+    private SearchRange resetConsumer(final String pLogPrefix, final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {
+        LOG.trace("{}  Start of reset of consumer from {}.", pLogPrefix, pTopicName);
         final var partitions = pConsumer.partitionsFor(pTopicName).stream()
                 .map(p -> new TopicPartition(pTopicName, p.partition())).toList();
         final var res = new SearchRange(pTopicName);
@@ -112,7 +119,7 @@ public class ClusterClient {
             res.addRange(e.getKey().partition(), startOffset, endOffset - 1);
             pConsumer.seek(e.getKey(), startOffset);
         }
-        LOG.trace("{}      End of reset of consumer from {}.", BLUE, pTopicName);
+        LOG.trace("{}  End of reset of consumer from {}.", pLogPrefix, pTopicName);
         return res;
     }
 
@@ -141,20 +148,20 @@ public class ClusterClient {
         return true;
     }
 
-    private synchronized KafkaProducer<Object, Object> producer(final TopicRef pTopic) {
+    private synchronized KafkaProducer<Object, Object> producer(final String pLogPrefix, final TopicRef pTopic) {
         return producers.computeIfAbsent(pTopic.id(), _ -> {
             final var kafkaConfig = kafkaConfigProvider.of(pTopic);
-            LOG.trace("{}      Creating new producer for {}({}).", BLUE, pTopic.id(), kafkaConfig.get("bootstrap.servers"));
+            LOG.trace("{}  Creating new producer for {}({}).", pLogPrefix, pTopic.id(), kafkaConfig.get("bootstrap.servers"));
             final var props = new Properties();
             props.putAll(kafkaConfig);
             return new KafkaProducer<>(props);
         });
     }
 
-    public synchronized KafkaConsumer<?, ?> consumer(final TopicRef pTopic) {
+    public synchronized KafkaConsumer<?, ?> consumer(final String pLogPrefix, final TopicRef pTopic) {
         return consumers.computeIfAbsent(pTopic.id(), _ -> {
             final var kafkaConfig = kafkaConfigProvider.of(pTopic);
-            LOG.trace("{}      Creating new consumer for {}({}).", BLUE, pTopic.id(), kafkaConfig.get("bootstrap.servers"));
+            LOG.trace("{}  Creating new consumer for {}({}).", pLogPrefix, pTopic.id(), kafkaConfig.get("bootstrap.servers"));
             final var props = new Properties();
             props.putAll(kafkaConfig);
             return new KafkaConsumer<>(props);
@@ -169,13 +176,13 @@ public class ClusterClient {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private Object convert(final TopicRef pTopic, final TestRecord pRecord, final boolean pKey, final String pForcedSchema) {
+    private Object convert(final String pLogPrefix, final TopicRef pTopic, final TestRecord pRecord, final boolean pKey, final String pForcedSchema) {
         final var jsonNode = pKey ? pRecord.keyNode() : pRecord.valueNode();
         if (jsonNode == null) {
             return null;
         }
         final var expectedSerde = pKey ? pTopic.keySerde() : pTopic.valueSerde();
-        final var availableSchema = registryService.lastActiveSchema(pTopic, pKey, pForcedSchema);
+        final var availableSchema = registryService.lastActiveSchema(pLogPrefix, pTopic, pKey, pForcedSchema);
         if (expectedSerde == Serde.AVRO && availableSchema == null) {
             throw new KTestException("Expected Avro schema not found for " + pTopic.topic() + (pKey ? "-key@" : "-value@") + pTopic.broker(), null);
         }

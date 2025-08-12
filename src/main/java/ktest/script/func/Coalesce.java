@@ -17,12 +17,12 @@ public class Coalesce extends Func {
 
     @Override
     public Token<?> apply(final Context pContext, final Stm pParam) {
-        for (var p : pParam.value()) {
+        for (final var p : pParam.value()) {
             try {
                 if (!"".equals(((Stm) p).evalValue(pContext))) {
                     return p;
                 }
-            } catch (final ScriptException e) {
+            } catch (final ScriptException _) {
                 // Undefined value, continue...
             }
         }

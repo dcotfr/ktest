@@ -2,12 +2,9 @@ package ktest;
 
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-import ktest.core.KTestException;
 import ktest.core.Strings;
 import ktest.domain.TestCase;
-import ktest.domain.config.EnvironmentConfig;
 import ktest.domain.config.KTestConfig;
-import ktest.domain.xlsx.Matrix;
 import ktest.domain.xunit.XUnitReport;
 import ktest.domain.xunit.XUnitSuite;
 import ktest.script.Engine;
@@ -15,14 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.concurrent.StructuredTaskScope;
 
 import static java.lang.Math.round;
 import static java.util.concurrent.StructuredTaskScope.Subtask.State.SUCCESS;
 import static ktest.MainCommand.VERSION;
+import static ktest.SRunCommand.saveReports;
 import static ktest.TestCaseRunner.filteredByTags;
 import static ktest.TestCaseRunner.logOptions;
 import static ktest.core.AnsiColor.WHITE;
@@ -77,7 +72,7 @@ public class PRunCommand implements Runnable {
                     .map(StructuredTaskScope.Subtask::get).toList());
             logTips(finalReport);
             TestCaseRunner.logSynthesis(finalReport);
-            saveReports(finalReport, currentEnv);
+            saveReports(cliOptions, finalReport, currentEnv);
             globalEngine.end();
             if (finalReport.errors() > 0 || finalReport.failures() > 0) {
                 throw new TestFailureOrError(finalReport);
@@ -95,15 +90,6 @@ public class PRunCommand implements Runnable {
         LOG.info("Executed in {} (vs estimated sequential run time {} = gain {}%)", secondsToHuman(parallelTime), secondsToHuman(sequentialTime), estimatedGain);
         if (estimatedGain < 33.3) {
             LOG.info("Tips: although slightly slower, the sequential mode offers a more readable log.");
-        }
-    }
-
-    private void saveReports(final XUnitReport pXmlReport, final EnvironmentConfig pEnvConfig) {
-        try {
-            Files.writeString(Path.of(pEnvConfig.actualReport(cliOptions)), pXmlReport.toXml());
-            Matrix.save(Path.of(pEnvConfig.actualMatrix(cliOptions)), cliOptions.env, pEnvConfig.actualTags(cliOptions), pXmlReport);
-        } catch (final IOException e) {
-            throw new KTestException("Failed to write test reports.", e);
         }
     }
 }

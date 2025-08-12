@@ -81,7 +81,7 @@ public class SRunCommand implements Runnable {
         logOptions(testCases, cliOptions.env, actualTags);
         logTips(xUnitReport);
         TestCaseRunner.logSynthesis(xUnitReport);
-        saveReports(xUnitReport, currentEnv);
+        saveReports(cliOptions, xUnitReport, currentEnv);
         engine.end();
         if (finalFailureOrError) {
             throw new TestFailureOrError(xUnitReport);
@@ -97,10 +97,18 @@ public class SRunCommand implements Runnable {
         }
     }
 
-    private void saveReports(final XUnitReport pXmlReport, final EnvironmentConfig pEnvConfig) {
+    static void saveReports(final Options pOptions, final XUnitReport pXmlReport, final EnvironmentConfig pEnvConfig) {
         try {
-            Files.writeString(Path.of(pEnvConfig.actualReport(cliOptions)), pXmlReport.toXml());
-            Matrix.save(Path.of(pEnvConfig.actualMatrix(cliOptions)), cliOptions.env, pEnvConfig.actualTags(cliOptions), pXmlReport);
+            final var xUnitReportName = pEnvConfig.actualReport(pOptions);
+            if (!"-".equals(xUnitReportName)) {
+                LOG.debug("Writing xUnit report '{}'.", xUnitReportName);
+                Files.writeString(Path.of(xUnitReportName), pXmlReport.toXml());
+            }
+            final var excelReportName = pEnvConfig.actualMatrix(pOptions);
+            if (!"-".equals(excelReportName)) {
+                LOG.debug("Writing Excel report '{}'.", excelReportName);
+                Matrix.save(Path.of(excelReportName), pOptions.env, pEnvConfig.actualTags(pOptions), pXmlReport);
+            }
         } catch (final IOException e) {
             throw new KTestException("Failed to write test reports.", e);
         }

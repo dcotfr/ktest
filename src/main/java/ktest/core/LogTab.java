@@ -19,8 +19,12 @@ public final class LogTab {
         tab -= 2;
     }
 
+    public static String tab(final String pColor, final int pTab, final boolean pShowThread) {
+        return (pShowThread ? Thread.currentThread().threadId() + " " : "") + " ".repeat(pTab) + pColor;
+    }
+
     public String tab(final String pColor) {
-        return (showThread ? Thread.currentThread().threadId() + " " : "") + " ".repeat(tab) + pColor;
+        return tab(pColor, tab, showThread);
     }
 
     public static String secondsToHuman(final double pSeconds) {

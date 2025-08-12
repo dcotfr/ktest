@@ -36,7 +36,7 @@ class TestCaseRunner implements Callable<XUnitReport> {
     private TestCase testCase;
     private int autoPause;
     private int backOffset;
-    private LogTab logTab = new LogTab(true);
+    private LogTab logTab;
 
     private String currentVariables = "";
 
@@ -46,6 +46,7 @@ class TestCaseRunner implements Callable<XUnitReport> {
     TestCaseRunner(final Engine pEngine, final ClusterClient pKafkaClient) {
         engine = pEngine;
         kafkaClient = pKafkaClient;
+        logTab(new LogTab(true));
     }
 
     TestCaseRunner testCase(final TestCase pTestCase) {
@@ -183,19 +184,19 @@ class TestCaseRunner implements Callable<XUnitReport> {
                     LOG.debug("{}Record: {}", logTab.tab(LIGHTGRAY), parsedRecord);
                     try {
                         if (action == Action.SEND) {
-                            kafkaClient.send(topicRef, parsedRecord, pEngine.evalInLine(step.keySchema()), pEngine.evalInLine(step.valueSchema()));
+                            kafkaClient.send(logTab.tab(BLUE), topicRef, parsedRecord, pEngine.evalInLine(step.keySchema()), pEngine.evalInLine(step.valueSchema()));
                             stepState.success();
                         } else {
                             if (lastAction == Action.SEND && autoPause > 0) {
                                 LOG.debug("{}Auto pause {}ms before assert...", logTab.tab(LIGHTGRAY), autoPause);
                                 Thread.sleep(autoPause);
                             }
-                            var found = kafkaClient.find(topicRef, parsedRecord, backOffset);
+                            var found = kafkaClient.find(logTab.tab(BLUE), topicRef, parsedRecord, backOffset);
                             pEngine.context().lastRecord(found);
                             if (found == null && action == Action.PRESENT) {
                                 LOG.trace("{}Retrying find with larger range...", logTab.tab(LIGHTGRAY));
                                 Thread.sleep(250);
-                                found = kafkaClient.find(topicRef, parsedRecord, 2 * backOffset);
+                                found = kafkaClient.find(logTab.tab(BLUE), topicRef, parsedRecord, 2 * backOffset);
                             }
                             if ((found != null && action == Action.ABSENT) || (found == null && action == Action.PRESENT)) {
                                 LOG.warn("{}{} assertion failed for record {}.", logTab.tab(RED), action, parsedRecord);
