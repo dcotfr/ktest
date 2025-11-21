@@ -142,16 +142,20 @@ class TestCaseRunner implements Callable<XUnitReport> {
         if (pLines.isEmpty()) {
             return;
         }
-        LOG.debug("{}Executing {} script...", logTab.tab(LIGHTGRAY), pName);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("{}Executing {} script...", logTab.tab(LIGHTGRAY), pName);
+        }
         pEngine.eval(pLines);
         final var variables = pEngine.context().variables();
         final var newVariables = String.join("\n", variables.stream().map(e -> e.getKey() + ':' + e.getValue()).toList());
         if (!newVariables.equals(currentVariables)) {
             currentVariables = newVariables;
-            LOG.debug("{}Variables:", logTab.tab(LIGHTGRAY));
-            logTab.inc();
-            variables.forEach(e -> LOG.debug("{}{} = {}", logTab.tab(LIGHTGRAY), e.getKey(), e.getValue()));
-            logTab.dec();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("{}Variables:", logTab.tab(LIGHTGRAY));
+                logTab.inc();
+                variables.forEach(e -> LOG.debug("{}{} = {}", logTab.tab(LIGHTGRAY), e.getKey(), e.getValue()));
+                logTab.dec();
+            }
         }
     }
 
@@ -179,9 +183,13 @@ class TestCaseRunner implements Callable<XUnitReport> {
                     stepState.success();
                 } else {
                     logTab.inc();
-                    LOG.debug("{}Target: {}", logTab.tab(LIGHTGRAY), topicRef.id());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("{}Target: {}", logTab.tab(LIGHTGRAY), topicRef.id());
+                    }
                     final var parsedRecord = evalInLine(pEngine, step.record());
-                    LOG.debug("{}Record: {}", logTab.tab(LIGHTGRAY), parsedRecord);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("{}Record: {}", logTab.tab(LIGHTGRAY), parsedRecord);
+                    }
                     try {
                         if (action == Action.SEND) {
                             kafkaClient.send(logTab.tab(BLUE), topicRef, parsedRecord, pEngine.evalInLine(step.keySchema()), pEngine.evalInLine(step.valueSchema()));

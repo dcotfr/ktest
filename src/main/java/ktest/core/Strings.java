@@ -9,8 +9,6 @@ public final class Strings {
     }
 
     public static String repeat(final String pModel, final int pCount) {
-        final var res = new StringBuilder();
-        res.append(String.valueOf(pModel).repeat(Math.max(0, pCount)));
-        return res.toString();
+        return String.valueOf(pModel).repeat(Math.max(0, pCount));
     }
 }

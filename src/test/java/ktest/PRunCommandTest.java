@@ -28,7 +28,7 @@ class PRunCommandTest {
     @Test
     @Launch({"prun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.26\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.27\r", pResult.getOutput());
     }
 
     @Test
@@ -146,5 +146,14 @@ class PRunCommandTest {
                 .filter(log -> log.contains("Auto pause 10ms before assert..."))
                 .count();
         assertEquals(4, found);
+    }
+
+    @Test
+    @Launch({"srun", "-e=pi", "-f=src\\test\\resources\\customSubject.yml"})
+    void customSubjectTest(final LaunchResult pResult) {
+        final int found = (int) pResult.getOutputStream().stream()
+                .filter(log -> log.startsWith("I  - Success: 1"))
+                .count();
+        assertEquals(1, found);
     }
 }

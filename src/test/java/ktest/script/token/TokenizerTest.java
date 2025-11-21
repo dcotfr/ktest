@@ -64,7 +64,7 @@ class TokenizerTest {
 
     @Test
     void expressionTest() {
-        var res = assertOnlyOneStmAndEval("(2*(3.1+4.2))/5");
+        final var res = assertOnlyOneStmAndEval("(2*(3.1+4.2))/5");
         assertEquals("[Stm:[Int:2, Mul:*, Stm:[Flt:3.1, Add:+, Flt:4.2]], Div:/, Int:5]", res);
     }
 
@@ -203,7 +203,7 @@ class TokenizerTest {
     }
 
     private String assertOnlyOneStmAndEval(final String pCommand) {
-        var stms = tokenizer.tokenize(pCommand);
+        final var stms = tokenizer.tokenize(pCommand);
         assertEquals(1, stms.size());
         return stms.getFirst().value().toString();
     }

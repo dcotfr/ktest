@@ -30,7 +30,7 @@ final class UnionConverter implements AvroTypeConverter {
                 } else {
                     return nestedValue;
                 }
-            } catch (final AvroRuntimeException e) {
+            } catch (final AvroRuntimeException _) {
                 // thrown only for union of more complex types like records
             }
         }

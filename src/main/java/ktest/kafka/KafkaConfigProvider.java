@@ -46,6 +46,9 @@ public class KafkaConfigProvider {
             res.put("producer.compression.type", "none");
             res.put("connections.max.idle.ms", "900000");
             res.put("enable.auto.commit", "false");
+            res.put("auto.register.schemas", "false");
+            res.put("key.subject.name.strategy", CustomSubjectNameStrategy.class.getName());
+            res.put("value.subject.name.strategy", CustomSubjectNameStrategy.class.getName());
             evalAndPutIfPresent(engine, res, "sasl.jaas.config", brokerConfig.saslJaasConfig());
             evalAndPutIfPresent(engine, res, "sasl.mechanism", brokerConfig.saslMechanism());
             if ("OAUTHBEARER".equals(res.get("sasl.mechanism"))) {
@@ -65,7 +68,7 @@ public class KafkaConfigProvider {
         });
     }
 
-    private static void evalAndPutIfPresent(final Engine pEngine, final HashMap<String, String> pMap, final String pKey, final String pConfig) {
+    private static void evalAndPutIfPresent(final Engine pEngine, final Map<String, String> pMap, final String pKey, final String pConfig) {
         if (!Strings.isNullOrEmpty(pConfig)) {
             pMap.put(pKey, pEngine.evalInLine(pConfig));
         }

@@ -342,3 +342,18 @@ For example:
 Environment definitions accept an `options` attribute to predefine the values of `àutoPause`, `backOffset`, `matrix`, `report` and/or `tags`.
 
 These values then apply when selecting the environment unless other values are forced on the command line.
+
+##### How to test a topic not using the default TopicNameStrategy for schema naming?
+The names of the target schemas can be forced with the keySchema and valueSchema attributes.
+
+For example:
+```yaml
+name: Custom Subject Naming Strategy
+steps:
+  - name: Forced Value Schema
+    ...
+    valueSerde: AVRO
+    valueSchema: forced-schema-name
+    record:
+    ...
+```

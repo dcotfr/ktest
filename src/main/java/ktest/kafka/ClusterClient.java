@@ -58,6 +58,7 @@ public class ClusterClient {
                 convert(pLogPrefix, pTopic, pRecord, false, pForcedValueSchema),
                 kafkaHeaders(pRecord.headers()));
         try {
+            CustomSubjectNameStrategy.define(pTopic.topic(), pForcedKeySchema, pForcedValueSchema);
             final var futur = producer.send(rec);
             producer.flush();
             futur.get(30, TimeUnit.SECONDS);

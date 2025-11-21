@@ -47,7 +47,7 @@ class SRunCommandTest {
     @Test
     @Launch({"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.26\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.27\r", pResult.getOutput());
     }
 
     @Test
@@ -161,7 +161,7 @@ class SRunCommandTest {
     @Launch({"srun", "-e=pi", "-f=src\\test\\resources\\gotoFile.yml"})
     void gotoFileTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
-                .filter(log -> "I   - Step : Step n°1 (SEND)\r".equals(log))
+                .filter("I   - Step : Step n°1 (SEND)\r"::equals)
                 .count();
         assertEquals(5, found);
     }
@@ -173,5 +173,14 @@ class SRunCommandTest {
                 .filter(log -> log.startsWith("D     Auto pause 10ms before assert..."))
                 .count();
         assertEquals(2, found);
+    }
+
+    @Test
+    @Launch({"srun", "-e=pi", "-f=src\\test\\resources\\customSubject.yml"})
+    void customSubjectTest(final LaunchResult pResult) {
+        final int found = (int) pResult.getOutputStream().stream()
+                .filter(log -> log.startsWith("I  - Success: 1"))
+                .count();
+        assertEquals(1, found);
     }
 }

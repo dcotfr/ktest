@@ -1,0 +1,47 @@
+name: Custom Subject Test
+beforeAll: |
+  BASE_TIMESTAMP = now()
+  STEP1_1_CID = uuid()
+steps:
+  - name: Step n°1.1
+    before: TIMESTAMP = BASE_TIMESTAMP + 1000
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputTopic
+    keySerde: STRING
+    valueSerde: AVRO
+    valueSchema: InputCustomSchema-value
+    action: SEND
+    record:
+      headers:
+        correlation.id: "${STEP1_1_CID}"
+      key: |
+        code: P1
+        label: Product 1
+      value: |
+        sender: Source
+        eventType: CREATE
+        eventTsp: ${TIMESTAMP}
+        code: P1
+        label: Product 1
+        commandAt: ${BASE_TIMESTAMP}
+        sentAt: ${BASE_TIMESTAMP + 100}
+        weight: 12030.5
+  - name: Unnamed
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputTopic
+    action: PRESENT
+    record:
+      headers:
+        correlation.id: "${STEP1_1_CID}"
+      key: |
+        code: P1
+        label: Product 1
+      value: |
+        sender: Source
+        eventType: CREATE
+        eventTsp: ${TIMESTAMP}
+        code: P1
+        label: Product 1
+        commandAt: ${BASE_TIMESTAMP}
+        sentAt: ${BASE_TIMESTAMP + 100}
+        weight: 12030.5
