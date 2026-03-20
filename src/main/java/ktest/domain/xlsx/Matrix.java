@@ -277,7 +277,7 @@ public final class Matrix {
                 .stream().toList();
     }
 
-    private static String columnRef(int pColumn) {
+    static String columnRef(int pColumn) {
         final var res = new StringBuilder();
         while (pColumn >= 0) {
             res.append((char) ('A' + (pColumn % 26)));

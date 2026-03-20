@@ -11,7 +11,6 @@ import ktest.domain.config.KTestConfig;
 import ktest.domain.xlsx.Matrix;
 import ktest.domain.xunit.XUnitReport;
 import ktest.domain.xunit.XUnitSuite;
-import ktest.kafka.ClusterClient;
 import ktest.script.Engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,14 +37,14 @@ public class SRunCommand implements Runnable {
 
     private final Instance<KTestConfig> configFactory;
     private final Instance<Engine> engineFactory;
-    private final Instance<ClusterClient> kafkaClientFactory;
+    private final Instance<TestCaseRunner> testCaseRunnerFactory;
     private final LogTab logTab = new LogTab(false);
 
     @Inject
-    SRunCommand(final Instance<KTestConfig> pConfigFactory, final Instance<Engine> pEngineFactory, final Instance<ClusterClient> pKafkaClientFactory) {
+    SRunCommand(final Instance<KTestConfig> pConfigFactory, final Instance<Engine> pEngineFactory, final Instance<TestCaseRunner> pTestCaseRunnerFactory) {
         configFactory = pConfigFactory;
         engineFactory = pEngineFactory;
-        kafkaClientFactory = pKafkaClientFactory;
+        testCaseRunnerFactory = pTestCaseRunnerFactory;
     }
 
     @Override
@@ -53,7 +52,7 @@ public class SRunCommand implements Runnable {
         final var engine = engineFactory.get();
         final var testCases = TestCase.load(cliOptions.file);
         final var currentEnv = configFactory.get().currentEnvironment();
-        final var testCaseRunner = new TestCaseRunner(engine, kafkaClientFactory.get())
+        final var testCaseRunner = testCaseRunnerFactory.get()
                 .autoPause(currentEnv.actualAutoPause(cliOptions)).backOffset(currentEnv.actualBackOffset(cliOptions))
                 .logTab(logTab);
         var finalFailureOrError = false;

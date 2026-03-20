@@ -6,21 +6,21 @@
 
     <groupId>ktest</groupId>
     <artifactId>ktest</artifactId>
-    <version>1.0.27</version>
+    <version>1.0.28</version>
 
     <properties>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.29.4</quarkus.platform.version>
-        <compiler-plugin.version>3.14.1</compiler-plugin.version>
-        <surefire-plugin.version>3.5.4</surefire-plugin.version>
+        <quarkus.platform.version>3.32.4</quarkus.platform.version>
+        <compiler-plugin.version>3.15.0</compiler-plugin.version>
+        <surefire-plugin.version>3.5.5</surefire-plugin.version>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <avro-serializer.version>7.9.4</avro-serializer.version>
+        <avro-serializer.version>7.9.5</avro-serializer.version>
         <jsonassert.version>1.5.3</jsonassert.version>
-        <fastexcel.version>0.19.0</fastexcel.version>
+        <fastexcel.version>0.20.0</fastexcel.version>
         <bouncy-castle.version>2.1.22</bouncy-castle.version>
     </properties>
 
@@ -58,7 +58,7 @@
             <artifactId>jsonassert</artifactId>
             <version>${jsonassert.version}</version>
         </dependency>
-        <!-- Pour Kafka. -->
+        <!-- For Kafka. -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-messaging-kafka</artifactId>
@@ -103,21 +103,21 @@
             <groupId>io.strimzi</groupId>
             <artifactId>kafka-oauth-common</artifactId>
         </dependency>
-        <!-- Pour supporter du retry. -->
+        <!-- For retry support. -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
         </dependency>
-        <!-- Pour Excel. -->
+        <!-- For Excel. -->
         <dependency>
             <groupId>org.dhatim</groupId>
             <artifactId>fastexcel</artifactId>
             <version>${fastexcel.version}</version>
         </dependency>
-        <!-- Pour les tests. -->
+        <!-- For tests. -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit5</artifactId>
+            <artifactId>quarkus-junit</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -139,7 +139,7 @@
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
-                    <argLine>--enable-preview --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+                    <argLine>@{argLine} --enable-preview --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -169,7 +169,7 @@
                         </goals>
                         <configuration>
                             <systemPropertyVariables>
-                                <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+                                <argLine>@{argLine} --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
                                 <native.image.path>
                                     ${project.build.directory}/${project.build.finalName}-runner
                                 </native.image.path>

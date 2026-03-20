@@ -1,10 +1,12 @@
 package ktest.domain.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.smallrye.common.constraint.NotNull;
 import ktest.core.Strings;
 import ktest.domain.Named;
 
-public record BrokerConfig(String name, @JsonProperty("bootstrap.servers") String bootstrapServers,
+public record BrokerConfig(@NotNull String name,
+                           @JsonProperty(value = "bootstrap.servers", required = true) String bootstrapServers,
                            @JsonProperty("sasl.jaas.config") String saslJaasConfig,
                            @JsonProperty("sasl.mechanism") String saslMechanism,
                            @JsonProperty("security.protocol") String securityProtocol,

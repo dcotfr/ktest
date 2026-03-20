@@ -5,8 +5,8 @@ public interface XmlUtils {
 
     default String minimalClean(final String pString) {
         return pString == null ? "" :
-                pString.replace("<", "&lt;")
-                        .replace("&", "&amp;");
+                pString.replace("&", "&amp;")
+                        .replace("<", "&lt;");
     }
 
     default String fullClean(final String pString) {

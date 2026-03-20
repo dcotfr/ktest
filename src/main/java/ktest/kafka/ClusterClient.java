@@ -2,12 +2,14 @@ package ktest.kafka;
 
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import ktest.core.KTestException;
 import ktest.domain.TestRecord;
 import ktest.json.JsonAssert;
 import ktest.kafka.avrogen.JsonAvroConverter;
+import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -45,6 +47,12 @@ public class ClusterClient {
         kafkaConfigProvider = pKafkaConfigProvider;
         registryService = pRegistryService;
         jsonAvroConverter = pJsonAvroConverter;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        consumers.values().forEach(c -> c.close(CloseOptions.timeout(Duration.ofSeconds(5))));
+        producers.values().forEach(p -> p.close(Duration.ofSeconds(5)));
     }
 
     public void send(final String pLogPrefix, final TopicRef pTopic, final TestRecord pRecord, final String pForcedKeySchema, final String pForcedValueSchema) {

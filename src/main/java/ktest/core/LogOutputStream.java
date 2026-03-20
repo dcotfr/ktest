@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
+import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 class LogOutputStream extends OutputStream {
@@ -28,11 +30,7 @@ class LogOutputStream extends OutputStream {
 
     @Override
     public void write(final byte[] pBytes, final int pOffset, final int pLength) {
-        for (var o = pOffset; o < pOffset + pLength; o++) {
-            if (pBytes[o] != 0) {
-                buf.append((char) pBytes[o]);
-            }
-        }
+        buf.append(new String(pBytes, pOffset, pLength, StandardCharsets.UTF_8));
     }
 
     @Override
@@ -42,5 +40,11 @@ class LogOutputStream extends OutputStream {
         }
         Arrays.stream(buf.toString().split(System.lineSeparator())).forEach(l -> LOG.atLevel(level).log(l));
         buf = new StringBuilder();
+    }
+
+    @Override
+    public void close() throws IOException {
+        flush();
+        super.close();
     }
 }

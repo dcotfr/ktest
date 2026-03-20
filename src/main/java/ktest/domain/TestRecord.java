@@ -39,7 +39,14 @@ public final class TestRecord {
     }
 
     public Long longTimestamp() {
-        return timestamp != null ? Long.parseLong(timestamp) : null;
+        if (timestamp == null) {
+            return null;
+        }
+        try {
+            return Long.parseLong(timestamp);
+        } catch (final NumberFormatException e) {
+            throw new KTestException("Invalid timestamp: " + timestamp, e);
+        }
     }
 
     public Map<String, String> headers() {

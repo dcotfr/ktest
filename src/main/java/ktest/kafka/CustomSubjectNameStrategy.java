@@ -19,7 +19,7 @@ public class CustomSubjectNameStrategy implements SubjectNameStrategy {
 
     @Override
     public void configure(final Map<String, ?> pMap) {
-        // Rien à configurer
+        // Nothing to configure
     }
 
     @Override

@@ -16,7 +16,7 @@ import java.nio.file.Path;
 @ApplicationScoped
 final class KTestConfigProducer {
     private final CommandLine.ParseResult parsedCommand;
-    private KTestConfig kConfig;
+    private volatile KTestConfig kConfig;
 
     @Inject
     KTestConfigProducer(final CommandLine.ParseResult pParsedCommand) {

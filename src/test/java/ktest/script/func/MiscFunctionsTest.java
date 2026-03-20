@@ -63,6 +63,8 @@ class MiscFunctionsTest {
     void envTest() {
         assertEquals(System.getenv("JAVA_HOME"), engine.eval("env(\"JAVA_HOME\")"));
         assertEquals("", engine.eval("env(\"DoesNotExistEnvVariable\")"));
+        assertEquals(System.getenv("JAVA_HOME"), engine.eval("env(\"JAVA_HOME\", \"DefaultValue\")"));
+        assertEquals("DefaultValue", engine.eval("env(\"DoesNotExistEnvVariable\", \"DefaultValue\")"));
     }
 
     @Test

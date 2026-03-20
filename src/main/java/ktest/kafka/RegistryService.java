@@ -3,6 +3,7 @@ package ktest.kafka;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import ktest.core.KTestException;
@@ -30,6 +31,17 @@ public class RegistryService {
     RegistryService(final KTestConfig pConfig, final KafkaConfigProvider pKafkaConfigProvider) {
         kConfig = pConfig;
         kafkaConfigProvider = pKafkaConfigProvider;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        for (final var client : registries.values()) {
+            try {
+                client.close();
+            } catch (final IOException e) {
+                LOG.trace("  Registry client {} final closing failed with {}.", client, e.getMessage());
+            }
+        }
     }
 
     @Retry

@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 @Dependent
 public final class Engine {
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("(\\$\\{[^}]*+})");
+    private static final Tokenizer TOKENIZER = new Tokenizer();
 
     private final KTestConfig kConfig;
     private final Context context;
@@ -48,7 +49,7 @@ public final class Engine {
 
     public Object eval(final String pLine) {
         Object res = null;
-        for (final var stm : new Tokenizer().tokenize(pLine)) {
+        for (final var stm : TOKENIZER.tokenize(pLine)) {
             res = stm.evalValue(context);
         }
         return res;
@@ -69,8 +70,8 @@ public final class Engine {
         var res = pAttribute;
         while (matcher.find()) {
             final var group = matcher.group();
-            final var repl = eval(group.substring(2, group.length() - 1)).toString();
-            res = res.replace(group, repl);
+            final var evalGroup = eval(group.substring(2, group.length() - 1));
+            res = res.replace(group, evalGroup != null ? evalGroup.toString() : "");
         }
         return res;
     }
