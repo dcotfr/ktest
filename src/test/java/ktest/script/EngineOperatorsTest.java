@@ -5,7 +5,7 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 @QuarkusTest
 class EngineOperatorsTest {
@@ -23,33 +23,17 @@ class EngineOperatorsTest {
 
     @Test
     void invalidAddTest() {
-        try {
-            engine.eval("\"left\"+2");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in >>>left<<<+2", e.getMessage());
-        }
+        var e = assertThrowsExactly(ScriptException.class, () -> engine.eval("\"left\"+2"));
+        assertEquals("Syntax error: a number was expected in >>>left<<<+2", e.getMessage());
 
-        try {
-            engine.eval("2.1+\"right\"");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 2.1+>>>right<<<", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("2.1+\"right\""));
+        assertEquals("Syntax error: a number was expected in 2.1+>>>right<<<", e.getMessage());
 
-        try {
-            engine.eval("2++");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 2++", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("2++"));
+        assertEquals("Syntax error: a number was expected in 2++", e.getMessage());
 
-        try {
-            engine.eval("3.1+");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 3.1+", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("3.1+"));
+        assertEquals("Syntax error: a number was expected in 3.1+", e.getMessage());
     }
 
     @Test
@@ -62,33 +46,17 @@ class EngineOperatorsTest {
 
     @Test
     void invalidSubTest() {
-        try {
-            engine.eval("\"left\"-(7-2)");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in >>>left<<<-5", e.getMessage());
-        }
+        var e = assertThrowsExactly(ScriptException.class, () -> engine.eval("\"left\"-(7-2)"));
+        assertEquals("Syntax error: a number was expected in >>>left<<<-5", e.getMessage());
 
-        try {
-            engine.eval("5-\"right\"");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 5->>>right<<<", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("5-\"right\""));
+        assertEquals("Syntax error: a number was expected in 5->>>right<<<", e.getMessage());
 
-        try {
-            engine.eval("5--");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 5--", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("5--"));
+        assertEquals("Syntax error: a number was expected in 5--", e.getMessage());
 
-        try {
-            engine.eval("5.3-");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 5.3-", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("5.3-"));
+        assertEquals("Syntax error: a number was expected in 5.3-", e.getMessage());
     }
 
     @Test
@@ -100,33 +68,17 @@ class EngineOperatorsTest {
 
     @Test
     void invalidMulTest() {
-        try {
-            engine.eval("\"left\"*2");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in >>>left<<<*2", e.getMessage());
-        }
+        var e = assertThrowsExactly(ScriptException.class, () -> engine.eval("\"left\"*2"));
+        assertEquals("Syntax error: a number was expected in >>>left<<<*2", e.getMessage());
 
-        try {
-            engine.eval("4*\"right\"");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 4*>>>right<<<", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("4*\"right\""));
+        assertEquals("Syntax error: a number was expected in 4*>>>right<<<", e.getMessage());
 
-        try {
-            engine.eval("3.5*+");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 3.5*+", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("3.5*+"));
+        assertEquals("Syntax error: a number was expected in 3.5*+", e.getMessage());
 
-        try {
-            engine.eval("8.74*");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 8.74*", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("8.74*"));
+        assertEquals("Syntax error: a number was expected in 8.74*", e.getMessage());
     }
 
     @Test
@@ -138,40 +90,20 @@ class EngineOperatorsTest {
 
     @Test
     void invalidDivTest() {
-        try {
-            engine.eval("5/0");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: divide by zero in 5/>>>0<<<", e.getMessage());
-        }
+        var e = assertThrowsExactly(ScriptException.class, () -> engine.eval("5/0"));
+        assertEquals("Syntax error: divide by zero in 5/>>>0<<<", e.getMessage());
 
-        try {
-            engine.eval("\"left\"/2.2");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in >>>left<<</2.2", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("\"left\"/2.2"));
+        assertEquals("Syntax error: a number was expected in >>>left<<</2.2", e.getMessage());
 
-        try {
-            engine.eval("4/\"right\"");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 4/>>>right<<<", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("4/\"right\""));
+        assertEquals("Syntax error: a number was expected in 4/>>>right<<<", e.getMessage());
 
-        try {
-            engine.eval("3.12/-");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 3.12/-", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("3.12/-"));
+        assertEquals("Syntax error: a number was expected in 3.12/-", e.getMessage());
 
-        try {
-            engine.eval("8/");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a number was expected in 8/", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("8/"));
+        assertEquals("Syntax error: a number was expected in 8/", e.getMessage());
     }
 
     @Test

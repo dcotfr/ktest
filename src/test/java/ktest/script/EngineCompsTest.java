@@ -26,24 +26,14 @@ class EngineCompsTest {
 
     @Test
     void invalidSyntaxTest() {
-        try {
-            engine.eval("==2");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a token was expected in ==2", e.getMessage());
-        }
-        try {
-            engine.eval("2>=");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a token was expected in 2>=", e.getMessage());
-        }
-        try {
-            engine.eval("<");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a token was expected in <", e.getMessage());
-        }
+        var e = assertThrowsExactly(ScriptException.class, () -> engine.eval("==2"));
+        assertEquals("Syntax error: a token was expected in ==2", e.getMessage());
+
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("2>="));
+        assertEquals("Syntax error: a token was expected in 2>=", e.getMessage());
+
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("<"));
+        assertEquals("Syntax error: a token was expected in <", e.getMessage());
     }
 
     @Test
@@ -126,5 +116,18 @@ class EngineCompsTest {
         assertTrue((Long) engine.reset().eval("(1>0)?(now())") >= System.currentTimeMillis());
 
         assertEquals(8L, engine.reset().eval("1?y=6+2"));
+    }
+
+    @Test
+    void ifElseTest() {
+        engine.reset().eval("0?r=\"yes\":r=\"no\"");
+        assertEquals("no", engine.context().variable("r").value());
+
+        engine.reset().eval("1==1?x=2*2:x=3*3");
+        assertEquals(4L, engine.context().variable("x").value());
+
+        assertEquals("yes", engine.reset().eval("\"A\"==\"A\"?\"yes\":\"no\""));
+
+        assertEquals("no", engine.reset().eval("\"A\"!=\"A\"?\"yes\":\"no\""));
     }
 }

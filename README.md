@@ -189,6 +189,7 @@ Operators/Tokens:
 ```
 Conditions/Tokens:
   ?    cnd?stm           Execute a statement only if condition is true (=1).
+  ?:   c?true:else       Ternary if: execute 'true' statement if condition is true, else execute 'else' statement.
   ==   "A"=="A"    1     Equal: true if arguments are equals.
   !=     5!=5      0     Not Equal: true if arguments are differents.
   <=    2<=1+1     1     Lesser or Equal: true if left argument is smaller or equal to right argument.

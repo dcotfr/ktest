@@ -1,9 +1,9 @@
 package ktest.script.func.time;
 
-import ktest.script.Engine;
-import ktest.script.ScriptException;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import ktest.script.Engine;
+import ktest.script.ScriptException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,12 +21,8 @@ class TimeFunctionsTest {
 
     @Test
     void invalidTime2TxtTest() {
-        try {
-            engine.eval("time2txt(\"aaaa-MM-jj\", 1708854821321)");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Invalid date/time format in time2txt: aaaa-MM-jj", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> engine.eval("time2txt(\"aaaa-MM-jj\", 1708854821321)"));
+        assertEquals("Invalid date/time format in time2txt: aaaa-MM-jj", e.getMessage());
     }
 
     @Test
@@ -36,19 +32,11 @@ class TimeFunctionsTest {
 
     @Test
     void invalidTxt2timeTest() {
-        try {
-            engine.eval("txt2time(\"aaaa/mm/jj\", \"2024/07/17\")");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Invalid date/time format in txt2time: aaaa/mm/jj", e.getMessage());
-        }
+        var e = assertThrowsExactly(ScriptException.class, () -> engine.eval("txt2time(\"aaaa/mm/jj\", \"2024/07/17\")"));
+        assertEquals("Invalid date/time format in txt2time: aaaa/mm/jj", e.getMessage());
 
-        try {
-            engine.eval("txt2time(\"yyyy-MM-dd\", \"year/07/17\")");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Invalid date string in txt2time: year/07/17", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> engine.eval("txt2time(\"yyyy-MM-dd\", \"year/07/17\")"));
+        assertEquals("Invalid date string in txt2time: year/07/17", e.getMessage());
     }
 
     @Test

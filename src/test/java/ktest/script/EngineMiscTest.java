@@ -30,12 +30,8 @@ class EngineMiscTest {
 
     @Test
     void invalidLetTest() {
-        try {
-            engine.reset().eval("var=");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: a token was expected in var", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> engine.reset().eval("var="));
+        assertEquals("Syntax error: a token was expected in var", e.getMessage());
     }
 
     @Test
@@ -49,12 +45,8 @@ class EngineMiscTest {
 
     @Test
     void invalidVarTest() {
-        try {
-            engine.reset().eval("a=b");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: unknown variable in a>>>b<<<", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> engine.reset().eval("a=b"));
+        assertEquals("Syntax error: unknown variable in a>>>b<<<", e.getMessage());
     }
 
     @Test

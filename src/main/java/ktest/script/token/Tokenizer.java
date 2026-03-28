@@ -68,6 +68,11 @@ public final class Tokenizer {
                 stm.group();
                 stm.add(new If());
                 stm.add(tokenize(buf.readEndOfBuffer()).getFirst());
+            } else if (buf.current() == ':') {
+                buf.pop();
+                stm.group();
+                stm.add(new Else());
+                stm.add(tokenize(buf.readEndOfBuffer()).getFirst());
             } else if (buf.current() == ';') {
                 buf.pop();
                 stm = new Stm(null);

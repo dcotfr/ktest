@@ -44,3 +44,4 @@ build/
 /ktsample-test.yml
 /docker/graalvm-jdk-*
 /docker/upx-*
+/docker/*.iprof

@@ -83,6 +83,7 @@ public class DocCommand implements Runnable {
             + "  )     -(-4)      4     Right brace: ends increased priority.\n";
     static final String CONDITIONS_DOC = BRIGHTYELLOW + "Conditions/Tokens:" + WHITE + "\n"
             + "  ?    cnd?stm           Executes a statement only if condition is true (=1).\n"
+            + "  ?:   c?true:else       Ternary if: execute 'true' statement if condition is true, else execute 'else' statement.\n"
             + "  ==   \"A\"==\"A\"    1     Equal: true if arguments are equals.\n"
             + "  !=     5!=5      0     Not Equal: true if arguments are differents.\n"
             + "  <=    2<=1+1     1     Lesser or Equal: true if left argument is smaller or equal to right argument.\n"

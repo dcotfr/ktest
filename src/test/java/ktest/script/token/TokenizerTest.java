@@ -4,7 +4,7 @@ import ktest.script.ScriptException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 class TokenizerTest {
     private final Tokenizer tokenizer = new Tokenizer();
@@ -26,40 +26,20 @@ class TokenizerTest {
 
     @Test
     void unexpectedLetTest() {
-        try {
-            tokenizer.tokenize("=1");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Unexpected affectation\n=1\n^\n", e.getMessage());
-        }
+        var e = assertThrowsExactly(ScriptException.class, () -> tokenizer.tokenize("=1"));
+        assertEquals("Unexpected affectation\n=1\n^\n", e.getMessage());
 
-        try {
-            tokenizer.tokenize("1=2");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Unexpected affectation\n1=2\n-^\n", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> tokenizer.tokenize("1=2"));
+        assertEquals("Unexpected affectation\n1=2\n-^\n", e.getMessage());
 
-        try {
-            tokenizer.tokenize("A=1=3");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Unexpected affectation\nA=1=3\n---^\n", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> tokenizer.tokenize("A=1=3"));
+        assertEquals("Unexpected affectation\nA=1=3\n---^\n", e.getMessage());
 
-        try {
-            tokenizer.tokenize("1+a=2");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Unexpected affectation\n1+a=2\n---^\n", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> tokenizer.tokenize("1+a=2"));
+        assertEquals("Unexpected affectation\n1+a=2\n---^\n", e.getMessage());
 
-        try {
-            tokenizer.tokenize("A_B_2=!1.2 3");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Unexpected character\nA_B_2=!1.2 3\n------^\n", e.getMessage());
-        }
+        e = assertThrowsExactly(ScriptException.class, () -> tokenizer.tokenize("A_B_2=!1.2 3"));
+        assertEquals("Unexpected character\nA_B_2=!1.2 3\n------^\n", e.getMessage());
     }
 
     @Test
@@ -91,52 +71,32 @@ class TokenizerTest {
 
     @Test
     void unexpectedCommaTest() {
-        try {
-            tokenizer.tokenize("1 , 2");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Unexpected comma\n1 , 2\n--^\n", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> tokenizer.tokenize("1 , 2"));
+        assertEquals("Unexpected comma\n1 , 2\n--^\n", e.getMessage());
     }
 
     @Test
     void unexpectedRightParenthesisTest() {
-        try {
-            tokenizer.tokenize("var)");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Unexpected right parenthesis\nvar)\n---^\n", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> tokenizer.tokenize("var)"));
+        assertEquals("Unexpected right parenthesis\nvar)\n---^\n", e.getMessage());
     }
 
     @Test
     void missingRightParenthesisTest() {
-        try {
-            tokenizer.tokenize("func(1+2()");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Parenthesis not matching\n(1+2()\n-----^\n", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> tokenizer.tokenize("func(1+2()"));
+        assertEquals("Parenthesis not matching\n(1+2()\n-----^\n", e.getMessage());
     }
 
     @Test
     void missingDoubleQuoteTest() {
-        try {
-            tokenizer.tokenize("orphan \" in text");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Double quote not matching\norphan \" in text\n---------------^\n", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> tokenizer.tokenize("orphan \" in text"));
+        assertEquals("Double quote not matching\norphan \" in text\n---------------^\n", e.getMessage());
     }
 
     @Test
     void unexpectedCharTest() {
-        try {
-            tokenizer.tokenize("1.2.3").getFirst().value();
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Unexpected char\n1.2.3\n---^\n", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> tokenizer.tokenize("1.2.3").getFirst().value());
+        assertEquals("Unexpected char\n1.2.3\n---^\n", e.getMessage());
     }
 
     @Test
@@ -191,6 +151,18 @@ class TokenizerTest {
         assertEquals("[Stm:[Stm:[Int:1, Gt:>, Int:0]], If:?, Stm:[Stm:[Fun:now(Stm:[])]]]", res);
         res = assertOnlyOneStmAndEval("1?y=6+2");
         assertEquals("[Stm:[Int:1], If:?, Stm:[Let:y, Int:6, Add:+, Int:2]]", res);
+    }
+
+    @Test
+    void ifElseTest() {
+        var res = assertOnlyOneStmAndEval("0?\"yes\":\"no\"");
+        assertEquals("[Stm:[Int:0], If:?, Stm:[Stm:[Txt:yes], Else::, Stm:[Txt:no]]]", res);
+
+        res = assertOnlyOneStmAndEval("1==0?x=\"true\":x=\"false\"");
+        assertEquals("[Stm:[Int:1, Eq:==, Int:0], If:?, Stm:[Stm:[Let:x, Txt:true], Else::, Stm:[Let:x, Txt:false]]]", res);
+
+        res = assertOnlyOneStmAndEval("1?x=2*2:x=3*3");
+        assertEquals("[Stm:[Int:1], If:?, Stm:[Stm:[Let:x, Int:2, Mul:*, Int:2], Else::, Stm:[Let:x, Int:3, Mul:*, Int:3]]]", res);
     }
 
     @Test

@@ -19,32 +19,20 @@ class MiscFunctionsTest {
 
     @Test
     void unknownFunctionTest() {
-        try {
-            engine.eval("plouf()");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Syntax error: unknown function in >>>plouf<<<", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> engine.eval("plouf()"));
+        assertEquals("Syntax error: unknown function in >>>plouf<<<", e.getMessage());
     }
 
     @Test
     void invalidNumberOfArg() {
-        try {
-            engine.eval("uuid(1)");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Invalid number of arguments in uuid: 0 expected, 1 found.", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> engine.eval("uuid(1)"));
+        assertEquals("Invalid number of arguments in uuid: 0 expected, 1 found.", e.getMessage());
     }
 
     @Test
     void invalidTypeOfArg() {
-        try {
-            engine.eval("regexgen(1)");
-            fail();
-        } catch (final ScriptException e) {
-            assertEquals("Invalid type of argument in regexgen: class java.lang.String expected, class java.lang.Long found.", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> engine.eval("regexgen(1)"));
+        assertEquals("Invalid type of argument in regexgen: class java.lang.String expected, class java.lang.Long found.", e.getMessage());
     }
 
     @Test
@@ -89,11 +77,7 @@ class MiscFunctionsTest {
 
         assertEquals("", engine.eval("jq(record(),\"/notfound\")"));
 
-        try {
-            engine.eval("jq(\"notjson\",\"/notfound\")");
-            fail("Should have throw");
-        } catch (final ScriptException e) {
-            assertEquals("jq requires a valid json string as first argument.", e.getMessage());
-        }
+        final var e = assertThrowsExactly(ScriptException.class, () -> engine.eval("jq(\"notjson\",\"/notfound\")"));
+        assertEquals("jq requires a valid json string as first argument.", e.getMessage());
     }
 }
