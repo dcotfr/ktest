@@ -18,39 +18,39 @@ class EvalCommandTest {
                 "I Evaluates a script and displays its final result.",
                 "I   -h, --help          Show this help message and exit.",
                 "I   -l, --line=<line>   In-line statement(s) to evaluate.",
-                "I   -V, --version       Print version information and exit.\r");
+                "I   -V, --version       Print version information and exit.");
         assertEquals(expected, pResult.getOutput());
     }
 
     @Test
     @Launch({"eval", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.29\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.30", pResult.getOutput());
     }
 
     @Test
     @Launch({"eval", "-l=a=2;b=3;a*b"})
     void simpleInlineTest(final LaunchResult pResult) {
         final var res = pResult.getOutputStream();
-        assertEquals("D InLine: a=2;b=3;a*b\r", res.getFirst());
-        assertEquals("I Result: 6\r", pResult.getOutputStream().get(1));
+        assertEquals("D InLine: a=2;b=3;a*b", res.getFirst());
+        assertEquals("I Result: 6", pResult.getOutputStream().get(1));
     }
 
     @Test
     @Launch({"eval", "-l=\" a=2; b=3; a*b \""})
     void spacedInlineTest(final LaunchResult pResult) {
         final var res = pResult.getOutputStream();
-        assertEquals("D InLine: a=2; b=3; a*b\r", res.getFirst());
-        assertEquals("I Result: 6\r", res.get(1));
+        assertEquals("D InLine: a=2; b=3; a*b", res.getFirst());
+        assertEquals("I Result: 6", res.get(1));
     }
 
     @Test
     @Launch({"eval", "-l=key=aeskey();info(\"key=\",key);encrypted=aesenc(\"Clear Text\",key);info(\"encrypted=\", encrypted);aesdec(encrypted,key)"})
     void complexInlineTest(final LaunchResult pResult) {
         final var res = pResult.getOutputStream();
-        assertEquals("D InLine: key=aeskey();info(\"key=\",key);encrypted=aesenc(\"Clear Text\",key);info(\"encrypted=\", encrypted);aesdec(encrypted,key)\r", res.getFirst());
+        assertEquals("D InLine: key=aeskey();info(\"key=\",key);encrypted=aesenc(\"Clear Text\",key);info(\"encrypted=\", encrypted);aesdec(encrypted,key)", res.getFirst());
         assertTrue(res.get(1).startsWith("I key="));
         assertTrue(res.get(2).startsWith("I encrypted="));
-        assertEquals("I Result: Clear Text\r", res.get(3));
+        assertEquals("I Result: Clear Text", res.get(3));
     }
 }

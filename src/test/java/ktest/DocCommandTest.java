@@ -17,14 +17,14 @@ class DocCommandTest {
                 "I Usage: ktest doc [-hV]",
                 "I Display of the full documentation.",
                 "I   -h, --help      Show this help message and exit.",
-                "I   -V, --version   Print version information and exit.\r");
+                "I   -V, --version   Print version information and exit.");
         assertEquals(expected, pResult.getOutput());
     }
 
     @Test
     @Launch({"doc", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.29\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.30", pResult.getOutput());
     }
 
     @Test

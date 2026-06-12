@@ -22,7 +22,7 @@ class ScanCommandTest {
             "I   -i, --inputs=<inputs>   List of 'topic@broker,...' (or '@broker' ref) to scan.",
             "I   -o, --output=<output>   Path of output sample file.",
             "I                             Default: ktsample.yml",
-            "I   -V, --version           Print version information and exit.\r");
+            "I   -V, --version           Print version information and exit.");
 
     @Test
     @Launch({"scan", "-h"})
@@ -37,29 +37,29 @@ class ScanCommandTest {
     @Test
     @Launch({"scan", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.29\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.30", pResult.getOutput());
     }
 
     @Test
     @Launch(value = {"scan", "-e=dev", "-i=topic1,topic2"}, exitCode = 1)
     void invalidInputs(final LaunchResult pResult) {
-        assertEquals("E Malformated inputs: topic1,topic2\r", pResult.getOutputStream().getFirst());
+        assertEquals("E Malformated inputs: topic1,topic2", pResult.getOutputStream().getFirst());
     }
 
     @Test
     @Launch(value = {"scan", "-e=dev", "-i=topic1@undefined"}, exitCode = 1)
     void unknownBroker(final LaunchResult pResult) {
-        assertEquals("E Unknown broker 'undefined' in inputs: topic1@undefined\r", pResult.getOutputStream().getFirst());
+        assertEquals("E Unknown broker 'undefined' in inputs: topic1@undefined", pResult.getOutputStream().getFirst());
     }
 
     @Test
     @Launch({"scan", "-e=pi", "-i=InputTopic@pi_broker, InputTopicStr @ pi_broker,OutputTopic@pi_broker", "-o=ktsample-test.yml"})
     void validSelectTest(final LaunchResult pResult) throws IOException {
-        assertEquals("I Scanning last record of InputTopic@pi_broker\r", pResult.getOutputStream().getFirst());
-        assertEquals("I Scanning last record of InputTopicStr@pi_broker\r", pResult.getOutputStream().get(1));
-        assertEquals("I Scanning last record of OutputTopic@pi_broker\r", pResult.getOutputStream().get(2));
-        assertEquals("W No record found in OutputTopic@pi_broker\r", pResult.getOutputStream().get(3));
-        assertEquals("I Sample test case created in ktsample-test.yml file.\r", pResult.getOutputStream().get(4));
+        assertEquals("I Scanning last record of InputTopic@pi_broker", pResult.getOutputStream().getFirst());
+        assertEquals("I Scanning last record of InputTopicStr@pi_broker", pResult.getOutputStream().get(1));
+        assertEquals("I Scanning last record of OutputTopic@pi_broker", pResult.getOutputStream().get(2));
+        assertEquals("W No record found in OutputTopic@pi_broker", pResult.getOutputStream().get(3));
+        assertEquals("I Sample test case created in ktsample-test.yml file.", pResult.getOutputStream().get(4));
 
         validateFile();
     }
@@ -67,16 +67,16 @@ class ScanCommandTest {
     @Test
     @Launch({"scan", "-e=pi", "-i=@pi_broker", "-o=ktsample-test.yml"})
     void validAutoTest(final LaunchResult pResult) throws IOException {
-        assertEquals("I Auto scan broker 'pi_broker'...\r", pResult.getOutputStream().getFirst());
-        assertEquals("I Scanning last record of CompactTopic@pi_broker\r", pResult.getOutputStream().get(1));
-        assertEquals("W No record found in CompactTopic@pi_broker\r", pResult.getOutputStream().get(2));
-        assertEquals("I Scanning last record of InputTopic@pi_broker\r", pResult.getOutputStream().get(3));
-        assertEquals("I Scanning last record of InputTopicStr@pi_broker\r", pResult.getOutputStream().get(4));
-        assertEquals("I Scanning last record of OutputTopic@pi_broker\r", pResult.getOutputStream().get(5));
-        assertEquals("W No record found in OutputTopic@pi_broker\r", pResult.getOutputStream().get(6));
-        assertEquals("I Scanning last record of OutputTopicStr@pi_broker\r", pResult.getOutputStream().get(7));
-        assertEquals("W No record found in OutputTopicStr@pi_broker\r", pResult.getOutputStream().get(8));
-        assertEquals("I Sample test case created in ktsample-test.yml file.\r", pResult.getOutputStream().get(9));
+        assertEquals("I Auto scan broker 'pi_broker'...", pResult.getOutputStream().getFirst());
+        assertEquals("I Scanning last record of CompactTopic@pi_broker", pResult.getOutputStream().get(1));
+        assertEquals("W No record found in CompactTopic@pi_broker", pResult.getOutputStream().get(2));
+        assertEquals("I Scanning last record of InputTopic@pi_broker", pResult.getOutputStream().get(3));
+        assertEquals("I Scanning last record of InputTopicStr@pi_broker", pResult.getOutputStream().get(4));
+        assertEquals("I Scanning last record of OutputTopic@pi_broker", pResult.getOutputStream().get(5));
+        assertEquals("W No record found in OutputTopic@pi_broker", pResult.getOutputStream().get(6));
+        assertEquals("I Scanning last record of OutputTopicStr@pi_broker", pResult.getOutputStream().get(7));
+        assertEquals("W No record found in OutputTopicStr@pi_broker", pResult.getOutputStream().get(8));
+        assertEquals("I Sample test case created in ktsample-test.yml file.", pResult.getOutputStream().get(9));
 
         validateFile();
     }

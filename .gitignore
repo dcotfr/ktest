@@ -45,3 +45,4 @@ build/
 /docker/graalvm-jdk-*
 /docker/upx-*
 /docker/*.iprof
+/AGENTS.md

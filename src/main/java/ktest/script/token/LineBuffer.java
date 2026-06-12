@@ -1,131 +1,48 @@
 package ktest.script.token;
 
 final class LineBuffer {
-    private final char[] chars;
+    private final String line;
     private int pos;
 
     LineBuffer(final String pLine) {
-        chars = pLine.toCharArray();
+        line = pLine;
     }
 
     boolean hasNext() {
-        return pos < chars.length;
+        return pos < line.length();
     }
 
-    char current() {
-        return hasNext() ? chars[pos] : '\0';
+    char peek() {
+        return hasNext() ? line.charAt(pos) : '\0';
     }
 
     int pos() {
         return pos;
     }
 
-    boolean isDigit() {
-        final var c = current();
-        return c >= '0' && c <= '9';
-    }
-
-    boolean isLParent() {
-        return current() == '(';
-    }
-
-    boolean isRParent() {
-        return current() == ')';
-    }
-
-    boolean isIgnorable() {
-        final var c = current();
-        return c == ' ' || c == '\t' || c == '\n';
-    }
-
-    private boolean isDot() {
-        return current() == '.';
-    }
-
-    boolean isLetter() {
-        final var c = current();
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-    }
-
-    boolean isUnderscore() {
-        return current() == '_';
-    }
-
-    boolean isDQuote() {
-        return current() == '"';
-    }
-
     char pop() {
-        final var res = current();
+        final var res = peek();
         pos++;
         return res;
     }
 
-    Num<? extends Number> readNum() {
-        final StringBuilder raw = new StringBuilder();
-        while (isDigit()) {
-            raw.append(pop());
+    boolean match(final char c) {
+        if (peek() == c) {
+            pos++;
+            return true;
         }
-        if (isDot()) {
-            do {
-                raw.append(pop());
-            } while (isDigit());
-            return new Flt(Double.parseDouble(raw.toString()));
-        }
-        return new Int(Long.parseLong(raw.toString()));
+        return false;
     }
 
-    Var readIdentifier() {
-        final StringBuilder raw = new StringBuilder();
-        while (isLetter() || isDigit() || isUnderscore() || isDot()) {
-            raw.append(pop());
-        }
-        return new Var(raw.toString());
+    String remaining() {
+        return line.substring(pos);
     }
 
-    Txt readTxt() {
-        final StringBuilder res = new StringBuilder();
-        while (hasNext() && !isDQuote()) {
-            res.append(pop());
-        }
-        if (hasNext()) {
-            pop();
-            return new Txt(res.toString());
-        }
-        return null;
+    void flush() {
+        pos = line.length();
     }
 
-    String readParam() {
-        final StringBuilder res = new StringBuilder();
-        final var subBuf = new LineBuffer(new String(chars).substring(pos));
-        if (isLParent()) {
-            int parenthesisDepth = 0;
-            while (subBuf.hasNext()) {
-                if (subBuf.isRParent()) {
-                    subBuf.pop();
-                    parenthesisDepth--;
-                    if (parenthesisDepth == 0) {
-                        break;
-                    }
-                } else if (subBuf.isLParent()) {
-                    subBuf.pop();
-                    parenthesisDepth++;
-                } else if (subBuf.isDQuote()) {
-                    subBuf.pop();
-                    subBuf.readTxt();
-                } else {
-                    subBuf.pop();
-                }
-            }
-            res.append(subBuf.chars, 0, subBuf.pos);
-        }
-        pos += subBuf.pos;
-        return res.toString();
-    }
-
-    String readEndOfBuffer() {
-        final var res = new String(chars).substring(pos);
-        pos = chars.length;
-        return res;
+    String substring(int begin, int end) {
+        return line.substring(begin, end);
     }
 }

@@ -31,7 +31,7 @@ class SRunCommandTest {
             "I   -r, --report=<report>     Path of test report (JUnit format) (- to disable).",
             "I                               Default: ktreport.xml",
             "I   -t, --tags=<tags>         Tags to filter test cases to run.",
-            "I   -V, --version             Print version information and exit.\r");
+            "I   -V, --version             Print version information and exit.");
 
     @Test
     @Launch({"srun", "-h"})
@@ -47,25 +47,25 @@ class SRunCommandTest {
     @Test
     @Launch({"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.29\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.30", pResult.getOutput());
     }
 
     @Test
     @Launch(value = {"srun", "-e=dev", "-f=</->>"}, exitCode = 1)
     void invalidFilePathTest(final LaunchResult pResult) {
-        assertEquals("E Failed to read test case file </->>\r", pResult.getOutputStream().getFirst());
+        assertEquals("E Failed to read test case file " + System.getProperty("user.dir") + "/</->>", pResult.getOutputStream().getFirst());
     }
 
     @Test
     @Launch(value = {"srun", "-e=dev", "-f=unknownFile.yml"}, exitCode = 1)
     void fileNotFoundTest(final LaunchResult pResult) {
-        assertEquals("E Failed to read test case file C:\\Users\\David\\IdeaProjects\\ktest\\unknownFile.yml\r", pResult.getOutputStream().getFirst());
+        assertEquals("E Failed to read test case file " + System.getProperty("user.dir") + "/unknownFile.yml", pResult.getOutputStream().getFirst());
     }
 
     @Test
-    @Launch(value = {"srun", "-e=pi", "-f=src\\test\\resources\\validFile.yml"}, exitCode = 1)
+    @Launch(value = {"srun", "-e=pi", "-f=src/test/resources/validFile.yml"}, exitCode = 1)
     void validFileTest(final LaunchResult pResult) {
-        final var testCases = TestCase.load("src\\test\\resources\\validFile.yml");
+        final var testCases = TestCase.load("src/test/resources/validFile.yml");
         assertEquals(4, testCases.size());
         final var testCase = testCases.getFirst();
         assertEquals("Test Case 1", testCase.name());
@@ -139,7 +139,7 @@ class SRunCommandTest {
     }
 
     @Test
-    @Launch({"srun", "-e=piTag", "-f=src\\test\\resources\\validFile.yml"})
+    @Launch({"srun", "-e=piTag", "-f=src/test/resources/validFile.yml"})
     void validFileTagTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
                 .filter(log -> log.startsWith("I Test Case: "))
@@ -148,7 +148,7 @@ class SRunCommandTest {
     }
 
     @Test
-    @Launch({"srun", "-e=piTag", "-f=src\\test\\resources\\validFile.yml", "-r=-", "-m=-"})
+    @Launch({"srun", "-e=piTag", "-f=src/test/resources/validFile.yml", "-r=-", "-m=-"})
     void validWithoutReportTest(final LaunchResult pResult) {
         for (final var log : pResult.getOutputStream()) {
             if (log.contains("Writing xUnit report") || log.contains("Writing Excel report")) {
@@ -158,16 +158,16 @@ class SRunCommandTest {
     }
 
     @Test
-    @Launch({"srun", "-e=pi", "-f=src\\test\\resources\\gotoFile.yml"})
+    @Launch({"srun", "-e=pi", "-f=src/test/resources/gotoFile.yml"})
     void gotoFileTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
-                .filter("I   - Step : Step n°1 (SEND)\r"::equals)
+                .filter("I   - Step : Step n°1 (SEND)"::equals)
                 .count();
         assertEquals(5, found);
     }
 
     @Test
-    @Launch({"srun", "-e=piTag", "-p=10", "-f=src\\test\\resources\\validFile.yml"})
+    @Launch({"srun", "-e=piTag", "-p=10", "-f=src/test/resources/validFile.yml"})
     void validFileAutoPauseTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
                 .filter(log -> log.startsWith("D     Auto pause 10ms before assert..."))
@@ -176,7 +176,7 @@ class SRunCommandTest {
     }
 
     @Test
-    @Launch({"srun", "-e=pi", "-f=src\\test\\resources\\customSubject.yml"})
+    @Launch({"srun", "-e=pi", "-f=src/test/resources/customSubject.yml"})
     void customSubjectTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
                 .filter(log -> log.startsWith("I  - Success: 1"))

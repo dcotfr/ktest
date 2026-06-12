@@ -6,22 +6,23 @@
 
     <groupId>ktest</groupId>
     <artifactId>ktest</artifactId>
-    <version>1.0.29</version>
+    <version>1.0.30</version>
 
     <properties>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.34.1</quarkus.platform.version>
+        <quarkus.platform.version>3.37.2</quarkus.platform.version>
         <compiler-plugin.version>3.15.0</compiler-plugin.version>
-        <surefire-plugin.version>3.5.5</surefire-plugin.version>
+        <surefire-plugin.version>3.5.6</surefire-plugin.version>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <avro-serializer.version>7.9.5</avro-serializer.version>
+        <avro-serializer.version>8.2.2</avro-serializer.version>
         <jsonassert.version>1.5.3</jsonassert.version>
         <fastexcel.version>0.20.0</fastexcel.version>
-        <bouncy-castle.version>2.1.22</bouncy-castle.version>
+        <bouncy-castle.version>2.1.23</bouncy-castle.version>
+        <brotli.version>0.1.2</brotli.version>
     </properties>
 
     <dependencyManagement>
@@ -102,6 +103,11 @@
         <dependency>
             <groupId>io.strimzi</groupId>
             <artifactId>kafka-oauth-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.brotli</groupId>
+            <artifactId>dec</artifactId>
+            <version>${brotli.version}</version>
         </dependency>
         <!-- For retry support. -->
         <dependency>

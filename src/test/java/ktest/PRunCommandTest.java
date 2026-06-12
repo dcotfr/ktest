@@ -28,25 +28,25 @@ class PRunCommandTest {
     @Test
     @Launch({"prun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.29\r", pResult.getOutput());
+        assertEquals("I ktest v1.0.30", pResult.getOutput());
     }
 
     @Test
     @Launch(value = {"prun", "-e=dev", "-f=</->>"}, exitCode = 1)
     void invalidFilePathTest(final LaunchResult pResult) {
-        assertEquals("E Failed to read test case file </->>\r", pResult.getOutputStream().getFirst());
+        assertEquals("E Failed to read test case file " + System.getProperty("user.dir") + "/</->>", pResult.getOutputStream().getFirst());
     }
 
     @Test
     @Launch(value = {"prun", "-e=dev", "-f=unknownFile.yml"}, exitCode = 1)
     void fileNotFoundTest(final LaunchResult pResult) {
-        assertEquals("E Failed to read test case file C:\\Users\\David\\IdeaProjects\\ktest\\unknownFile.yml\r", pResult.getOutputStream().getFirst());
+        assertEquals("E Failed to read test case file " + System.getProperty("user.dir") + "/unknownFile.yml", pResult.getOutputStream().getFirst());
     }
 
     @Test
-    @Launch({"prun", "-e=pi", "-f=src\\test\\resources\\validFile.yml", "-t=tag2"})
+    @Launch({"prun", "-e=pi", "-f=src/test/resources/validFile.yml", "-t=tag2"})
     void validFileTest(final LaunchResult pResult) {
-        final var testCases = TestCase.load("src\\test\\resources\\validFile.yml");
+        final var testCases = TestCase.load("src/test/resources/validFile.yml");
         assertEquals(4, testCases.size());
         final var testCase = testCases.getFirst();
         assertEquals("Test Case 1", testCase.name());
@@ -120,27 +120,27 @@ class PRunCommandTest {
 
         final var log = pResult.getOutputStream();
         final var logSize = log.size();
-        assertEquals("D Writing xUnit report 'ktreport.xml'.\r", log.get(logSize - 3));
-        assertEquals("D Writing Excel report 'ktmatrix.xlsx'.\r", log.get(logSize - 2));
+        assertEquals("D Writing xUnit report 'ktreport.xml'.", log.get(logSize - 3));
+        assertEquals("D Writing Excel report 'ktmatrix.xlsx'.", log.get(logSize - 2));
     }
 
     @Test
-    @Launch(value = {"prun", "-e=pi", "-f=src\\test\\resources\\thread.yml"}, exitCode = 0)
+    @Launch(value = {"prun", "-e=pi", "-f=src/test/resources/thread.yml"}, exitCode = 0)
     void threadTest(final LaunchResult pResult) {
         // Nothing to test
     }
 
     @Test
-    @Launch({"prun", "-e=pi", "-f=src\\test\\resources\\gotoFile.yml"})
+    @Launch({"prun", "-e=pi", "-f=src/test/resources/gotoFile.yml"})
     void gotoFileTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
-                .filter(log -> log.endsWith(" - Step : Step n°1 (SEND)\r"))
+                .filter(log -> log.endsWith(" - Step : Step n°1 (SEND)"))
                 .count();
         assertEquals(5, found);
     }
 
     @Test
-    @Launch(value = {"prun", "-e=pi", "-p=10", "-f=src\\test\\resources\\validFile.yml"}, exitCode = 1)
+    @Launch(value = {"prun", "-e=pi", "-p=10", "-f=src/test/resources/validFile.yml"}, exitCode = 1)
     void validFileAutoPauseTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
                 .filter(log -> log.contains("Auto pause 10ms before assert..."))
@@ -149,7 +149,7 @@ class PRunCommandTest {
     }
 
     @Test
-    @Launch({"srun", "-e=pi", "-f=src\\test\\resources\\customSubject.yml"})
+    @Launch({"srun", "-e=pi", "-f=src/test/resources/customSubject.yml"})
     void customSubjectTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
                 .filter(log -> log.startsWith("I  - Success: 1"))
