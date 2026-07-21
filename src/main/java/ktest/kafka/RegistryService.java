@@ -23,7 +23,7 @@ public class RegistryService {
     private static final Logger LOG = LoggerFactory.getLogger(RegistryService.class);
 
     private final Map<String, SchemaRegistryClient> registries = new HashMap<>();
-    private final Map<String, Schema> schemas = new HashMap<>();
+    private final Map<String, SchemaWrapper> schemas = new HashMap<>();
     private final KTestConfig kConfig;
     private final KafkaConfigProvider kafkaConfigProvider;
 
@@ -45,32 +45,39 @@ public class RegistryService {
     }
 
     @Retry
-    synchronized Schema lastActiveSchema(final String pLogPrefix, final TopicRef pTopic, final boolean pKey, final String pForcedSchema) {
+    SchemaWrapper lastActiveSchema(final String pLogPrefix, final TopicRef pTopic, final boolean pKey, final String pForcedSchema) {
         String schemaName = pForcedSchema;
         if (Strings.isNullOrEmpty(pForcedSchema)) {
             schemaName = pTopic.topic() + (pKey ? "-key" : "-value");
         }
         final String schemaKey = schemaName + "@" + pTopic.broker();
-        if (schemas.containsKey(schemaKey)) {
-            return schemas.get(schemaKey);
-        }
-
-        Schema res = null;
         final var registryClient = registryClient(pLogPrefix, pTopic);
-        if (registryClient != null) {
-            synchronized (registryClient) {
-                LOG.trace("{}  Trying to get last active schema of {}.", pLogPrefix, schemaKey);
-                try {
-                    final var rawSchemas = registryClient.getSchemas(schemaName, false, true);
-                    final var rawSchema = (rawSchemas == null || rawSchemas.isEmpty()) ? null : rawSchemas.getFirst();
-                    res = rawSchema == null ? null : new Schema.Parser().parse(rawSchema.canonicalString());
-                } catch (final IOException | RestClientException e) {
-                    throw new KTestException("Error while getting schema of " + schemaKey, e);
-                }
-            }
+        if (registryClient == null) {
+            return null;
         }
-        schemas.put(schemaKey, res);
-        return res;
+        synchronized (registryClient) {
+            if (schemas.containsKey(schemaKey)) {
+                return schemas.get(schemaKey);
+            }
+
+            LOG.trace("{}  Trying to get last active schema of {}.", pLogPrefix, schemaKey);
+            SchemaWrapper res = null;
+            try {
+                final var rawSchemas = registryClient.getSchemas(schemaName, false, true);
+                final var rawSchema = (rawSchemas == null || rawSchemas.isEmpty()) ? null : rawSchemas.getFirst();
+                if (rawSchema != null) {
+                    res = switch (rawSchema.schemaType()) {
+                        case "AVRO" -> SchemaWrapper.ofAvro(new Schema.Parser().parse(rawSchema.canonicalString()));
+                        case "JSON" -> SchemaWrapper.ofJson(rawSchema.canonicalString());
+                        default -> null;
+                    };
+                }
+            } catch (final IOException | RestClientException e) {
+                throw new KTestException("Error while getting schema of " + schemaKey, e);
+            }
+            schemas.put(schemaKey, res);
+            return res;
+        }
     }
 
     private synchronized SchemaRegistryClient registryClient(final String pLogPrefix, final TopicRef pTopic) {
@@ -80,7 +87,7 @@ public class RegistryService {
             return null;
         }
 
-        return registries.computeIfAbsent(registryRef, k -> {
+        return registries.computeIfAbsent(registryRef, _ -> {
             LOG.trace("{}  Connecting to registry {}({}).", pLogPrefix, registryRef, registryConfig.url());
             return new CachedSchemaRegistryClient(registryConfig.url(), 256, kafkaConfigProvider.of(pTopic));
         });

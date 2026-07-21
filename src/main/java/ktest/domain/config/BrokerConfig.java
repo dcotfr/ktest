@@ -12,6 +12,8 @@ public record BrokerConfig(@NotNull String name,
                            @JsonProperty("security.protocol") String securityProtocol,
                            @JsonProperty("client.id.prefix") String clientIdPrefix,
                            @JsonProperty("group.id") String groupId,
+                           @JsonProperty("send.timeout.sec") Long sendTimeoutSec,
+                           @JsonProperty("poll.duration.ms") Long pollDurationMs,
                            String registry) implements Named {
     public String clientIdPrefix() {
         return Strings.isNullOrEmpty(clientIdPrefix) ? "ktest-consumer-" : clientIdPrefix;
@@ -19,5 +21,13 @@ public record BrokerConfig(@NotNull String name,
 
     public String groupId() {
         return Strings.isNullOrEmpty(groupId) ? "ktest-group" : groupId;
+    }
+
+    public long defaultSendTimeoutSec() {
+        return sendTimeoutSec != null ? sendTimeoutSec : 30L;
+    }
+
+    public long defaultPollDurationMs() {
+        return pollDurationMs != null ? pollDurationMs : 5000L;
     }
 }

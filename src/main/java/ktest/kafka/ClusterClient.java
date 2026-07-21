@@ -7,6 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import ktest.core.KTestException;
 import ktest.domain.TestRecord;
+import ktest.domain.config.KTestConfig;
 import ktest.json.JsonAssert;
 import ktest.kafka.avrogen.JsonAvroConverter;
 import org.apache.kafka.clients.consumer.CloseOptions;
@@ -40,13 +41,15 @@ public class ClusterClient {
     private final KafkaConfigProvider kafkaConfigProvider;
     private final RegistryService registryService;
     private final JsonAvroConverter jsonAvroConverter;
+    private final KTestConfig kTestConfig;
 
     @Inject
     public ClusterClient(final KafkaConfigProvider pKafkaConfigProvider, final RegistryService pRegistryService,
-                         final JsonAvroConverter pJsonAvroConverter) {
+                         final JsonAvroConverter pJsonAvroConverter, final KTestConfig pKTestConfig) {
         kafkaConfigProvider = pKafkaConfigProvider;
         registryService = pRegistryService;
         jsonAvroConverter = pJsonAvroConverter;
+        kTestConfig = pKTestConfig;
     }
 
     @PreDestroy
@@ -69,7 +72,8 @@ public class ClusterClient {
             CustomSubjectNameStrategy.define(pTopic.topic(), pForcedKeySchema, pForcedValueSchema);
             final var futur = producer.send(rec);
             producer.flush();
-            futur.get(30, TimeUnit.SECONDS);
+            final var brokerConfig = kTestConfig.broker(pTopic.broker());
+            futur.get(brokerConfig.defaultSendTimeoutSec(), TimeUnit.SECONDS);
         } catch (final ExecutionException | TimeoutException e) {
             throw new KTestException("Failed to send record to " + pTopic.id(), e);
         } catch (final InterruptedException e) {
@@ -83,15 +87,19 @@ public class ClusterClient {
         final var consumer = consumer(pLogPrefix, pTopic);
         synchronized (consumer) {
             final var searchRange = resetConsumer(pLogPrefix, consumer, pTopic.topic(), pBackOffset);
+            var previous = List.<TopicPartition>of();
             while (searchRange.hasNext()) {
                 final var remainingPartitions = searchRange.partitionsHavingNext();
                 if (remainingPartitions.isEmpty()) {
                     return null;
+                } else if (!remainingPartitions.equals(previous)) {
+                    consumer.assign(remainingPartitions);
+                    previous = List.copyOf(remainingPartitions);
                 }
-                consumer.assign(remainingPartitions);
-                final var recs = consumer.poll(Duration.ofMillis(5000));
+                final var pollDuration = kTestConfig.broker(pTopic.broker()).defaultPollDurationMs();
+                final var recs = consumer.poll(Duration.ofMillis(pollDuration));
                 LOG.trace("{}  Comparing with {} records from topic {}.", pLogPrefix, recs.count(), pTopic.id());
-                consumer.commitSync();
+                consumer.commitAsync();
                 if (recs.isEmpty()) {
                     return null;
                 }
@@ -110,8 +118,10 @@ public class ClusterClient {
 
     public TopicRef scanSerdes(final String pLogPrefix, final String pBroker, final String pTopic) {
         final var temporaryTopicRef = new TopicRef(pBroker, pTopic, Serde.BYTES, Serde.BYTES);
-        final var keySerde = registryService.lastActiveSchema(pLogPrefix, temporaryTopicRef, true, null) != null ? Serde.AVRO : Serde.STRING;
-        final var valueSerde = registryService.lastActiveSchema(pLogPrefix, temporaryTopicRef, false, null) != null ? Serde.AVRO : Serde.STRING;
+        final var keySchema = registryService.lastActiveSchema(pLogPrefix, temporaryTopicRef, true, null);
+        final var valueSchema = registryService.lastActiveSchema(pLogPrefix, temporaryTopicRef, false, null);
+        final var keySerde = keySchema != null ? keySchema.serde() : Serde.STRING;
+        final var valueSerde = valueSchema != null ? valueSchema.serde() : Serde.STRING;
         kafkaConfigProvider.reset();
         return new TopicRef(pBroker, pTopic, keySerde, valueSerde);
     }
@@ -198,6 +208,11 @@ public class ClusterClient {
         if (availableSchema == null || expectedSerde == Serde.STRING) {
             return jsonNode instanceof final TextNode textNode ? textNode.asText() : jsonNode.toString();
         }
-        return jsonAvroConverter.toAvro(jsonNode, availableSchema);
+        // Currently only Avro schema is supported for conversion
+        if (availableSchema.isAvro()) {
+            return jsonAvroConverter.toAvro(jsonNode, availableSchema.avroSchema());
+        }
+        // JSON schema not yet implemented for conversion
+        return jsonNode instanceof final TextNode textNode ? textNode.asText() : jsonNode.toString();
     }
 }

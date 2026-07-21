@@ -15,9 +15,15 @@ import static ktest.MainCommand.VERSION;
         "org.apache.kafka.common.security.scram.internals.ScramSaslClient$ScramSaslClientFactory",
         "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule",
         "io.strimzi.kafka.oauth.client.JaasClientOauthLoginCallbackHandler",
+        "io.confluent.kafka.serializers.schema.id.ConfigSchemaIdDeserializer",
+        "io.confluent.kafka.serializers.schema.id.DualSchemaIdDeserializer",
+        "io.confluent.kafka.serializers.schema.id.HeaderSchemaIdSerializer",
+        "io.confluent.kafka.serializers.schema.id.PrefixSchemaIdSerializer",
+        "io.confluent.kafka.serializers.schema.id.SchemaIdDeserializer",
+        "io.confluent.kafka.serializers.schema.id.SchemaIdSerializer",
         "sun.security.provider.ConfigFile"})
 public class MainCommand {
-    public static final String VERSION = "ktest v1.0.30";
+    public static final String VERSION = "ktest v1.0.31";
 
     MainCommand() {
     }

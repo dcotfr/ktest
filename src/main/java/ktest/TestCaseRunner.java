@@ -227,8 +227,9 @@ class TestCaseRunner implements Callable<XUnitReport> {
                         .filter(idx -> e.stepName().equalsIgnoreCase(steps.get(idx).name()))
                         .findFirst().orElse(-1);
                 if (target < 0) {
-                    throw new ScriptException("Step '" + e.stepName() + "' not found");
+                    throw new ScriptException("Step '" + e.stepName() + "' not found", e);
                 }
+                LOG.debug("{}Goto to step '{}'.", logTab.tab(LIGHTGRAY), e.stepName());
                 i = target - 1;
             }
             xUnitCase.end();

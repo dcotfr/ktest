@@ -46,3 +46,4 @@ build/
 /docker/upx-*
 /docker/*.iprof
 /AGENTS.md
+/doc/archi.md

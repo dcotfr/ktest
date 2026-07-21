@@ -115,10 +115,12 @@ brokers:
   - name: pi_broker
     bootstrap.servers: 192.168.0.105:9092
     registry: pi_registry
-    sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username='USER' password='${env(\"PASSWORD\")}';
+    sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username='USER' password='${env("PASSWORD")}';
     sasl.mechanism: PLAIN
     security.protocol: SASL_SSL
     group.id: pi.ktest-group
+    send.timeout.sec: 30
+    poll.duration.ms: 5000
   - name: local_broker
     ...
 environments:
