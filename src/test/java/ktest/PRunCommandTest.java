@@ -28,7 +28,7 @@ class PRunCommandTest {
     @Test
     @Launch({"prun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.31", pResult.getOutput());
+        assertEquals("I ktest v1.0.32", pResult.getOutput());
     }
 
     @Test
@@ -122,6 +122,8 @@ class PRunCommandTest {
         final var logSize = log.size();
         assertEquals("D Writing xUnit report 'ktreport.xml'.", log.get(logSize - 3));
         assertEquals("D Writing Excel report 'ktmatrix.xlsx'.", log.get(logSize - 2));
+
+        assertEquals(1, log.stream().filter(l -> l.contains("Success: 3")).count());
     }
 
     @Test
@@ -149,11 +151,18 @@ class PRunCommandTest {
     }
 
     @Test
-    @Launch({"srun", "-e=pi", "-f=src/test/resources/customSubject.yml"})
+    @Launch({"prun", "-e=pi", "-f=src/test/resources/customSubject.yml"})
     void customSubjectTest(final LaunchResult pResult) {
         final int found = (int) pResult.getOutputStream().stream()
                 .filter(log -> log.startsWith("I  - Success: 1"))
                 .count();
         assertEquals(1, found);
+    }
+
+    @Test
+    @Launch(value = {"prun", "-e=pi", "-f=src/test/resources/jsonFile.yml"}, exitCode = 1)
+    void jsonFileTest(final LaunchResult pResult) {
+        assertEquals(1, pResult.getOutputStream().stream().filter(log -> log.contains("Success: 1")).count());
+        assertEquals(1, pResult.getOutputStream().stream().filter(log -> log.contains("Failure: 1")).count());
     }
 }

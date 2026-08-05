@@ -1,5 +1,6 @@
 package ktest.kafka;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.annotation.PreDestroy;
@@ -10,6 +11,7 @@ import ktest.domain.TestRecord;
 import ktest.domain.config.KTestConfig;
 import ktest.json.JsonAssert;
 import ktest.kafka.avrogen.JsonAvroConverter;
+import ktest.kafka.jsongen.JsonConverter;
 import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -35,21 +37,25 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class ClusterClient {
     private static final Logger LOG = LoggerFactory.getLogger(ClusterClient.class);
-
     private final Map<String, KafkaProducer<Object, Object>> producers = new HashMap<>();
     private final Map<String, KafkaConsumer<Object, Object>> consumers = new HashMap<>();
     private final KafkaConfigProvider kafkaConfigProvider;
     private final RegistryService registryService;
     private final JsonAvroConverter jsonAvroConverter;
+    private final JsonConverter jsonConverter;
     private final KTestConfig kTestConfig;
+    private final ObjectMapper objectMapper;
 
     @Inject
     public ClusterClient(final KafkaConfigProvider pKafkaConfigProvider, final RegistryService pRegistryService,
-                         final JsonAvroConverter pJsonAvroConverter, final KTestConfig pKTestConfig) {
+                         final JsonAvroConverter pJsonAvroConverter, final JsonConverter pJsonConverter,
+                         final KTestConfig pKTestConfig, final ObjectMapper pObjectMapper) {
         kafkaConfigProvider = pKafkaConfigProvider;
         registryService = pRegistryService;
         jsonAvroConverter = pJsonAvroConverter;
+        jsonConverter = pJsonConverter;
         kTestConfig = pKTestConfig;
+        objectMapper = pObjectMapper;
     }
 
     @PreDestroy
@@ -92,14 +98,14 @@ public class ClusterClient {
                 final var remainingPartitions = searchRange.partitionsHavingNext();
                 if (remainingPartitions.isEmpty()) {
                     return null;
-                } else if (!remainingPartitions.equals(previous)) {
+                } else if (!Set.copyOf(remainingPartitions).equals(Set.copyOf(previous))) {
                     consumer.assign(remainingPartitions);
                     previous = List.copyOf(remainingPartitions);
                 }
                 final var pollDuration = kTestConfig.broker(pTopic.broker()).defaultPollDurationMs();
                 final var recs = consumer.poll(Duration.ofMillis(pollDuration));
                 LOG.trace("{}  Comparing with {} records from topic {}.", pLogPrefix, recs.count(), pTopic.id());
-                consumer.commitAsync();
+                consumer.commitSync();
                 if (recs.isEmpty()) {
                     return null;
                 }
@@ -154,14 +160,14 @@ public class ClusterClient {
         }
         final var expectedKey = pExpected.keyNode();
         if (expectedKey != null) {
-            final var actualKey = pActual.key();
+            final var actualKey = pActual.key() instanceof Map ? objectMapper.valueToTree(pActual.key()) : pActual.key();
             if (actualKey == null || !JsonAssert.contains(expectedKey.toString(), actualKey.toString()).isEmpty()) {
                 return false;
             }
         }
         final var expectedValue = pExpected.valueNode();
         if (expectedValue != null) {
-            final var actualValue = pActual.value();
+            final var actualValue = pActual.value() instanceof Map ? objectMapper.valueToTree(pActual.value()) : pActual.value();
             return actualValue != null && JsonAssert.contains(expectedValue.toString(), actualValue.toString()).isEmpty();
         }
         return true;
@@ -208,11 +214,11 @@ public class ClusterClient {
         if (availableSchema == null || expectedSerde == Serde.STRING) {
             return jsonNode instanceof final TextNode textNode ? textNode.asText() : jsonNode.toString();
         }
-        // Currently only Avro schema is supported for conversion
-        if (availableSchema.isAvro()) {
-            return jsonAvroConverter.toAvro(jsonNode, availableSchema.avroSchema());
-        }
-        // JSON schema not yet implemented for conversion
-        return jsonNode instanceof final TextNode textNode ? textNode.asText() : jsonNode.toString();
+
+        return switch (availableSchema.serde()) {
+            case AVRO -> jsonAvroConverter.toAvro(jsonNode, availableSchema.avroSchema());
+            case JSON -> jsonConverter.toJsonSerializable(jsonNode, availableSchema.jsonSchema());
+            default -> jsonNode instanceof final TextNode textNode ? textNode.asText() : jsonNode.toString();
+        };
     }
 }

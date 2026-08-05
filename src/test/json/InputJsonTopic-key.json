@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ktest://InputJsonTopic-key.json",
+  "type": "object",
+  "properties": {
+    "cid": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["USER", "ORDER", "PRODUCT"]
+    }
+  },
+  "required": ["cid", "type"]
+}

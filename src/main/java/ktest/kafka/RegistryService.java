@@ -1,8 +1,12 @@
 package ktest.kafka;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.confluent.kafka.schemaregistry.SchemaProvider;
+import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import io.confluent.kafka.schemaregistry.json.JsonSchemaProvider;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -16,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @ApplicationScoped
@@ -26,11 +31,13 @@ public class RegistryService {
     private final Map<String, SchemaWrapper> schemas = new HashMap<>();
     private final KTestConfig kConfig;
     private final KafkaConfigProvider kafkaConfigProvider;
+    private final ObjectMapper objectMapper;
 
     @Inject
-    RegistryService(final KTestConfig pConfig, final KafkaConfigProvider pKafkaConfigProvider) {
+    RegistryService(final KTestConfig pConfig, final KafkaConfigProvider pKafkaConfigProvider, final ObjectMapper pObjectMapper) {
         kConfig = pConfig;
         kafkaConfigProvider = pKafkaConfigProvider;
+        objectMapper = pObjectMapper;
     }
 
     @PreDestroy
@@ -68,7 +75,7 @@ public class RegistryService {
                 if (rawSchema != null) {
                     res = switch (rawSchema.schemaType()) {
                         case "AVRO" -> SchemaWrapper.ofAvro(new Schema.Parser().parse(rawSchema.canonicalString()));
-                        case "JSON" -> SchemaWrapper.ofJson(rawSchema.canonicalString());
+                        case "JSON" -> SchemaWrapper.ofJson(objectMapper.readTree(rawSchema.canonicalString()));
                         default -> null;
                     };
                 }
@@ -89,7 +96,8 @@ public class RegistryService {
 
         return registries.computeIfAbsent(registryRef, _ -> {
             LOG.trace("{}  Connecting to registry {}({}).", pLogPrefix, registryRef, registryConfig.url());
-            return new CachedSchemaRegistryClient(registryConfig.url(), 256, kafkaConfigProvider.of(pTopic));
+            final List<SchemaProvider> providers = List.of(new AvroSchemaProvider(), new JsonSchemaProvider());
+            return new CachedSchemaRegistryClient(registryConfig.url(), 256, providers, kafkaConfigProvider.of(pTopic));
         });
     }
 }

@@ -24,7 +24,7 @@ public class Decode64 extends Func {
         try {
             final var res = Base64.getDecoder().decode((String) params[0]);
             return new Txt(new String(res));
-        } catch (final IllegalArgumentException e) {
+        } catch (final IllegalArgumentException _) {
             throw new ScriptException("Invalid base64 string in " + command() + ": " + params[0]);
         }
     }

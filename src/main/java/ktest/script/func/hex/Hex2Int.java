@@ -24,7 +24,7 @@ public class Hex2Int extends Func {
         final var hexStr = params[0].toString();
         try {
             return new Int(new BigInteger(hexStr, 16).longValue());
-        } catch (final NumberFormatException e) {
+        } catch (final NumberFormatException _) {
             throw new ScriptException("A valid hexadecimal string is expected in " + command() + ": " + hexStr + " found.");
         }
     }

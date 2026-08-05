@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ktest://InputJsonTopic-value.json",
+  "type": "object",
+  "properties": {
+    "nonNullableString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nonNullableBoolean": {
+      "type": "boolean"
+    },
+    "nonNullableInt": {
+      "type": "integer"
+    },
+    "nonNullableLong": {
+      "type": "integer",
+      "minimum": -9223372036854775808,
+      "maximum": 9223372036854775807
+    },
+    "nonNullableFloat": {
+      "type": "number"
+    },
+    "nonNullableDouble": {
+      "type": "number"
+    },
+    "nonNullableEnum": {
+      "type": "string",
+      "enum": ["SEND", "PRESENT", "ABSENT", "TODO"]
+    },
+    "nonNullableArrayOfString": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "nullableString": {
+      "type": ["null", "string"]
+    },
+    "nullableBoolean": {
+      "type": ["null", "boolean"]
+    },
+    "nullableInt": {
+      "type": ["null", "integer"]
+    },
+    "nullableLong": {
+      "type": ["null", "integer"]
+    },
+    "nullableFloat": {
+      "type": ["null", "number"]
+    },
+    "nullableDouble": {
+      "type": ["null", "number"]
+    },
+    "nullableSubRecord": {
+      "type": ["null", "object"],
+      "properties": {
+        "SubLong": {
+          "type": "integer"
+        },
+        "SubString": {
+          "type": "string"
+        },
+        "nonNullableSubSubRecord": {
+          "type": "object",
+          "properties": {
+            "nullableSubSubLong": {
+              "type": ["null", "integer"]
+            },
+            "nullableSubSubString": {
+              "type": ["null", "string"]
+            }
+          },
+          "required": ["nullableSubSubLong", "nullableSubSubString"]
+        }
+      },
+      "required": ["SubLong", "SubString", "nonNullableSubSubRecord"]
+    }
+  },
+  "required": [
+    "nonNullableString",
+    "nonNullableBoolean",
+    "nonNullableInt",
+    "nonNullableLong",
+    "nonNullableFloat",
+    "nonNullableDouble",
+    "nonNullableEnum",
+    "nonNullableArrayOfString",
+    "nullableString",
+    "nullableBoolean",
+    "nullableInt",
+    "nullableLong",
+    "nullableFloat",
+    "nullableDouble",
+    "nullableSubRecord"
+  ]
+}

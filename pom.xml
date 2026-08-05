@@ -6,12 +6,12 @@
 
     <groupId>ktest</groupId>
     <artifactId>ktest</artifactId>
-    <version>1.0.31</version>
+    <version>1.0.32</version>
 
     <properties>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.37.4</quarkus.platform.version>
+        <quarkus.platform.version>3.38.1</quarkus.platform.version>
         <clean-plugin.version>3.5.0</clean-plugin.version>
         <compiler-plugin.version>3.15.0</compiler-plugin.version>
         <resources-plugin.version>3.5.0</resources-plugin.version>
@@ -20,11 +20,12 @@
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <avro-serializer.version>8.2.2</avro-serializer.version>
+        <confluent-serializer.version>8.2.2</confluent-serializer.version>
         <jsonassert.version>1.5.3</jsonassert.version>
         <fastexcel.version>0.20.2</fastexcel.version>
         <bouncy-castle.version>2.1.23</bouncy-castle.version>
         <brotli.version>0.1.2</brotli.version>
+        <xz.version>1.12</xz.version>
     </properties>
 
     <dependencyManagement>
@@ -57,9 +58,19 @@
             <artifactId>jackson-dataformat-yaml</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-csv</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
             <version>${jsonassert.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.vaadin.external.google</groupId>
+                    <artifactId>android-json</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- For Kafka. -->
         <dependency>
@@ -72,6 +83,10 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-confluent-registry-json-schema</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-client</artifactId>
         </dependency>
         <dependency>
@@ -81,13 +96,23 @@
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
-            <version>${avro-serializer.version}</version>
+            <version>${confluent-serializer.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>jakarta.ws.rs</groupId>
                     <artifactId>jakarta.ws.rs-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-json-schema-provider</artifactId>
+            <version>${confluent-serializer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-json-schema-serializer</artifactId>
+            <version>${confluent-serializer.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -110,6 +135,11 @@
             <groupId>org.brotli</groupId>
             <artifactId>dec</artifactId>
             <version>${brotli.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tukaani</groupId>
+            <artifactId>xz</artifactId>
+            <version>${xz.version}</version>
         </dependency>
         <!-- For retry support. -->
         <dependency>

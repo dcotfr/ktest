@@ -47,7 +47,7 @@ class SRunCommandTest {
     @Test
     @Launch({"srun", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.31", pResult.getOutput());
+        assertEquals("I ktest v1.0.32", pResult.getOutput());
     }
 
     @Test
@@ -136,6 +136,9 @@ class SRunCommandTest {
         assertTrue(rec.headers().isEmpty());
         assertEquals("\"K1\"", rec.keyNode().toString());
         assertNull(rec.value());
+
+        assertEquals(1, pResult.getOutputStream().stream().filter(log -> log.contains("Success: 3")).count());
+        assertEquals(1, pResult.getOutputStream().stream().filter(log -> log.contains("Failure: 1")).count());
     }
 
     @Test
@@ -182,5 +185,12 @@ class SRunCommandTest {
                 .filter(log -> log.startsWith("I  - Success: 1"))
                 .count();
         assertEquals(1, found);
+    }
+
+    @Test
+    @Launch(value = {"srun", "-e=pi", "-f=src/test/resources/jsonFile.yml"}, exitCode = 1)
+    void jsonFileTest(final LaunchResult pResult) {
+        assertEquals(1, pResult.getOutputStream().stream().filter(log -> log.contains("Success: 1")).count());
+        assertEquals(1, pResult.getOutputStream().stream().filter(log -> log.contains("Failure: 1")).count());
     }
 }

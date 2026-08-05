@@ -1,0 +1,96 @@
+name: Test Case 1
+tags:
+  - tag2
+beforeAll: |
+  STEP1_1_CID = uuid()
+steps:
+  - name: Step n°1.1
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputJsonTopic
+    keySerde: JSON
+    valueSerde: JSON
+    action: SEND
+    record:
+      key: |
+        cid: ${STEP1_1_CID}
+        type: USER
+      value: |
+        nonNullableString: MandatoryString
+        nonNullableBoolean: true
+        nonNullableInt: 125
+        nonNullableLong: 9876543210
+        nonNullableFloat: 3.14
+        nonNullableDouble: 3.14159265358
+        nonNullableEnum: TODO
+        nonNullableArrayOfString: [ Str1, Str2, Str3 ]
+        nullableString: OptionalString
+        nullableInt: 521
+        nullableFloat: 6.28
+        nullableSubRecord:
+          SubLong: 123456789
+          SubString: subString
+          nonNullableSubSubRecord:
+            nullableSubSubString: subSubString
+    after: pause(500)
+  - name: Step n°1.2
+    before: pause(500)
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputJsonTopic
+    action: PRESENT
+    record:
+      key: |
+        cid: ${STEP1_1_CID}
+        type: USER
+      value: |
+        nonNullableString: MandatoryString
+        nonNullableBoolean: true
+        nonNullableInt: 125
+        nonNullableLong: 9876543210
+        nonNullableFloat: 3.14
+        nonNullableDouble: 3.14159265358
+        nonNullableEnum: TODO
+        nonNullableArrayOfString: [ Str1, Str2, Str3 ]
+        nullableString: OptionalString
+        nullableInt: 521
+        nullableFloat: 6.28
+        nullableSubRecord:
+          SubLong: 123456789
+          SubString: subString
+          nonNullableSubSubRecord:
+            nullableSubSubString: subSubString
+---
+name: Test Case 2
+tags:
+  - tag2
+beforeAll: |
+  STEP2_1_CID = uuid()
+steps:
+  - name: Step n°2.1
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputJsonTopic
+    keySerde: JSON
+    valueSerde: JSON
+    action: SEND
+    record:
+      key: |
+        cid: ${STEP2_1_CID}
+        type: USER
+      value: |
+        nonNullableString: MandatoryString
+        nonNullableBoolean: true
+        nonNullableInt: 125
+        nonNullableLong: 9876543210
+        nonNullableFloat: 3.14
+        nonNullableDouble: 3.14159265358
+        nonNullableEnum: TODO
+        nonNullableArrayOfString: [ Str1, Str2, Str3 ]
+    after: pause(500)
+  - name: Step n°2.2
+    before: pause(500)
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputJsonTopic
+    action: ABSENT
+    record:
+      key: |
+        cid: ${STEP2_1_CID}
+        type: USER

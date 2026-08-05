@@ -60,10 +60,13 @@ public final class FoundRecord {
     }
 
     private static Object toInternalJson(final Object pObject) {
-        final var str = pObject != null ? pObject.toString() : null;
-        if (str == null) {
+        if (pObject == null) {
             return null;
         }
+        if (pObject instanceof Map) {
+            return MAPPER.valueToTree(pObject);
+        }
+        final var str = pObject.toString();
         if ((str.startsWith("{") && str.endsWith("}")) || (str.startsWith("[") && str.endsWith("]"))) {
             try {
                 return MAPPER.readTree(str);
