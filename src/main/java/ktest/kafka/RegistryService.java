@@ -7,12 +7,15 @@ import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.schemaregistry.json.JsonSchemaProvider;
+import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchema;
+import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchemaProvider;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import ktest.core.KTestException;
 import ktest.core.Strings;
 import ktest.domain.config.KTestConfig;
+import org.apache.avro.AvroTypeException;
 import org.apache.avro.Schema;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
@@ -62,7 +65,7 @@ public class RegistryService {
         if (registryClient == null) {
             return null;
         }
-        synchronized (registryClient) {
+        synchronized (this) {
             if (schemas.containsKey(schemaKey)) {
                 return schemas.get(schemaKey);
             }
@@ -76,10 +79,13 @@ public class RegistryService {
                     res = switch (rawSchema.schemaType()) {
                         case "AVRO" -> SchemaWrapper.ofAvro(new Schema.Parser().parse(rawSchema.canonicalString()));
                         case "JSON" -> SchemaWrapper.ofJson(objectMapper.readTree(rawSchema.canonicalString()));
+                        case "PROTOBUF" ->
+                                SchemaWrapper.ofProtobuf(new ProtobufSchema(rawSchema.canonicalString()).toDescriptor());
                         default -> null;
                     };
                 }
-            } catch (final IOException | RestClientException e) {
+            } catch (final IOException | RestClientException | IllegalArgumentException | IllegalStateException |
+                           AvroTypeException e) {
                 throw new KTestException("Error while getting schema of " + schemaKey, e);
             }
             schemas.put(schemaKey, res);
@@ -96,7 +102,7 @@ public class RegistryService {
 
         return registries.computeIfAbsent(registryRef, _ -> {
             LOG.trace("{}  Connecting to registry {}({}).", pLogPrefix, registryRef, registryConfig.url());
-            final List<SchemaProvider> providers = List.of(new AvroSchemaProvider(), new JsonSchemaProvider());
+            final var providers = List.<SchemaProvider>of(new AvroSchemaProvider(), new JsonSchemaProvider(), new ProtobufSchemaProvider());
             return new CachedSchemaRegistryClient(registryConfig.url(), 256, providers, kafkaConfigProvider.of(pTopic));
         });
     }

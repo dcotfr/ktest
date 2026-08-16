@@ -37,7 +37,7 @@ class ScanCommandTest {
     @Test
     @Launch({"scan", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.32", pResult.getOutput());
+        assertEquals("I ktest v1.0.33", pResult.getOutput());
     }
 
     @Test
@@ -71,13 +71,14 @@ class ScanCommandTest {
         assertEquals("I Scanning last record of CompactTopic@pi_broker", pResult.getOutputStream().get(1));
         assertEquals("W No record found in CompactTopic@pi_broker", pResult.getOutputStream().get(2));
         assertEquals("I Scanning last record of InputJsonTopic@pi_broker", pResult.getOutputStream().get(3));
-        assertEquals("I Scanning last record of InputTopic@pi_broker", pResult.getOutputStream().get(4));
-        assertEquals("I Scanning last record of InputTopicStr@pi_broker", pResult.getOutputStream().get(5));
-        assertEquals("I Scanning last record of OutputTopic@pi_broker", pResult.getOutputStream().get(6));
-        assertEquals("W No record found in OutputTopic@pi_broker", pResult.getOutputStream().get(7));
-        assertEquals("I Scanning last record of OutputTopicStr@pi_broker", pResult.getOutputStream().get(8));
-        assertEquals("W No record found in OutputTopicStr@pi_broker", pResult.getOutputStream().get(9));
-        assertEquals("I Sample test case created in ktsample-test.yml file.", pResult.getOutputStream().get(10));
+        assertEquals("I Scanning last record of InputProtobufTopic@pi_broker", pResult.getOutputStream().get(4));
+        assertEquals("I Scanning last record of InputTopic@pi_broker", pResult.getOutputStream().get(5));
+        assertEquals("I Scanning last record of InputTopicStr@pi_broker", pResult.getOutputStream().get(6));
+        assertEquals("I Scanning last record of OutputTopic@pi_broker", pResult.getOutputStream().get(7));
+        assertEquals("W No record found in OutputTopic@pi_broker", pResult.getOutputStream().get(8));
+        assertEquals("I Scanning last record of OutputTopicStr@pi_broker", pResult.getOutputStream().get(9));
+        assertEquals("W No record found in OutputTopicStr@pi_broker", pResult.getOutputStream().get(10));
+        assertEquals("I Sample test case created in ktsample-test.yml file.", pResult.getOutputStream().get(11));
 
         validateFile();
     }

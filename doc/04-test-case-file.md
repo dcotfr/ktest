@@ -14,19 +14,19 @@ Test cases are described using YAML files. Multiple test cases can be in the sam
 
 ## Step Structure
 
-| Field         | Description                                      |
-|---------------|--------------------------------------------------|
-| `name`        | Step name                                        |
-| `before`      | (Optional) Script executed before this step      |
-| `after`       | (Optional) Script executed after this step       |
-| `broker`      | Broker name from config                          |
-| `topic`       | Topic name                                       |
-| `keySerde`    | (Optional) Key serde: `STRING`, `AVRO`, `JSON`   |
-| `valueSerde`  | (Optional) Value serde: `STRING`, `AVRO`, `JSON` |
-| `valueSchema` | (Optional) Forced schema name                    |
-| `keySchema`   | (Optional) Forced key schema name                |
-| `action`      | Action: `SEND`, `PRESENT`, `ABSENT`, `TODO`      |
-| `record`      | Record definition                                |
+| Field         | Description                                                  |
+|---------------|--------------------------------------------------------------|
+| `name`        | Step name                                                    |
+| `before`      | (Optional) Script executed before this step                  |
+| `after`       | (Optional) Script executed after this step                   |
+| `broker`      | Broker name from config                                      |
+| `topic`       | Topic name                                                   |
+| `keySerde`    | (Optional) Key serde: `STRING`, `AVRO`, `JSON`, `PROTOBUF`   |
+| `valueSerde`  | (Optional) Value serde: `STRING`, `AVRO`, `JSON`, `PROTOBUF` |
+| `valueSchema` | (Optional) Forced schema name                                |
+| `keySchema`   | (Optional) Forced key schema name                            |
+| `action`      | Action: `SEND`, `PRESENT`, `ABSENT`, `TODO`                  |
+| `record`      | Record definition                                            |
 
 ## Record Structure
 

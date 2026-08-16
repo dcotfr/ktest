@@ -3,6 +3,9 @@ package ktest.kafka;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import ktest.core.KTestException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
@@ -59,12 +62,23 @@ public final class FoundRecord {
         return value;
     }
 
-    private static Object toInternalJson(final Object pObject) {
+    static Object toInternalJson(final Object pObject) {
         if (pObject == null) {
             return null;
         }
         if (pObject instanceof Map) {
             return MAPPER.valueToTree(pObject);
+        }
+        if (pObject instanceof DynamicMessage dynamicMessage) {
+            try {
+                final var jsonStr = JsonFormat.printer()
+                        .preservingProtoFieldNames()
+                        .omittingInsignificantWhitespace()
+                        .print(dynamicMessage);
+                return MAPPER.readTree(jsonStr);
+            } catch (final InvalidProtocolBufferException | JsonProcessingException e) {
+                throw new KTestException("Failed to create FoundRecord from PROTOBUF.", e);
+            }
         }
         final var str = pObject.toString();
         if ((str.startsWith("{") && str.endsWith("}")) || (str.startsWith("[") && str.endsWith("]"))) {

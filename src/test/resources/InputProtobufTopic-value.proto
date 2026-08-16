@@ -1,0 +1,11 @@
+syntax = "proto3";
+package fr.dcotton.ktest;
+message InputTopicValue {
+  string sender = 1;
+  string event_type = 2;
+  Body body = 3;
+}
+message Body {
+  string code = 1;
+  string label = 2;
+}

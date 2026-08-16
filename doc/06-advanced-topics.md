@@ -10,7 +10,7 @@ For example, you can group all the `action: SEND` steps and then use a `before: 
 
 In the absence of specific instructions, ktest attempts to retrieve a potential schema for the keys/values: if found, the schema is used, otherwise, serialization defaults to String.
 
-This problem can be resolved by enforcing a type with the options `keySerde: STRING or AVRO` and/or `valueSerde: STRING or AVRO` in the step definitions.
+This problem can be resolved by enforcing a type with the options `keySerde: STRING, AVRO, JSON or PROTOBUF` and/or `valueSerde: STRING, AVRO, JSON or PROTOBUF` in the step definitions.
 
 ### What are the scopes of script variables?
 

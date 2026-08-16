@@ -21,9 +21,12 @@ import static ktest.MainCommand.VERSION;
         "io.confluent.kafka.serializers.schema.id.HeaderSchemaIdSerializer",
         "io.confluent.kafka.serializers.schema.id.PrefixSchemaIdDeserializer",
         "io.confluent.kafka.serializers.schema.id.PrefixSchemaIdSerializer",
+        "io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer",
+        "io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer",
+        "io.confluent.kafka.serializers.subject.DefaultReferenceSubjectNameStrategy",
         "sun.security.provider.ConfigFile"})
 public class MainCommand {
-    public static final String VERSION = "ktest v1.0.32";
+    public static final String VERSION = "ktest v1.0.33";
 
     MainCommand() {
     }

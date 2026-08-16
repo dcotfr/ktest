@@ -10,8 +10,12 @@ import ktest.core.KTestException;
 import ktest.domain.TestRecord;
 import ktest.domain.config.KTestConfig;
 import ktest.json.JsonAssert;
-import ktest.kafka.avrogen.JsonAvroConverter;
-import ktest.kafka.jsongen.JsonConverter;
+import ktest.kafka.SchemaWrapper.Avro;
+import ktest.kafka.SchemaWrapper.Json;
+import ktest.kafka.SchemaWrapper.Protobuf;
+import ktest.kafka.avro.Json2AvroConverter;
+import ktest.kafka.json.Json2JsonConverter;
+import ktest.kafka.proto.Json2ProtoConverter;
 import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -41,19 +45,21 @@ public class ClusterClient {
     private final Map<String, KafkaConsumer<Object, Object>> consumers = new HashMap<>();
     private final KafkaConfigProvider kafkaConfigProvider;
     private final RegistryService registryService;
-    private final JsonAvroConverter jsonAvroConverter;
-    private final JsonConverter jsonConverter;
+    private final Json2AvroConverter json2AvroConverter;
+    private final Json2JsonConverter json2JsonConverter;
+    private final Json2ProtoConverter json2ProtoConverter;
     private final KTestConfig kTestConfig;
     private final ObjectMapper objectMapper;
 
     @Inject
     public ClusterClient(final KafkaConfigProvider pKafkaConfigProvider, final RegistryService pRegistryService,
-                         final JsonAvroConverter pJsonAvroConverter, final JsonConverter pJsonConverter,
+                         final Json2AvroConverter pJson2AvroConverter, final Json2JsonConverter pJson2JsonConverter, final Json2ProtoConverter pProtobufConverter,
                          final KTestConfig pKTestConfig, final ObjectMapper pObjectMapper) {
         kafkaConfigProvider = pKafkaConfigProvider;
         registryService = pRegistryService;
-        jsonAvroConverter = pJsonAvroConverter;
-        jsonConverter = pJsonConverter;
+        json2AvroConverter = pJson2AvroConverter;
+        json2JsonConverter = pJson2JsonConverter;
+        json2ProtoConverter = pProtobufConverter;
         kTestConfig = pKTestConfig;
         objectMapper = pObjectMapper;
     }
@@ -160,14 +166,14 @@ public class ClusterClient {
         }
         final var expectedKey = pExpected.keyNode();
         if (expectedKey != null) {
-            final var actualKey = pActual.key() instanceof Map ? objectMapper.valueToTree(pActual.key()) : pActual.key();
+            final var actualKey = FoundRecord.toInternalJson(pActual.key());
             if (actualKey == null || !JsonAssert.contains(expectedKey.toString(), actualKey.toString()).isEmpty()) {
                 return false;
             }
         }
         final var expectedValue = pExpected.valueNode();
         if (expectedValue != null) {
-            final var actualValue = pActual.value() instanceof Map ? objectMapper.valueToTree(pActual.value()) : pActual.value();
+            final var actualValue = FoundRecord.toInternalJson(pActual.value());
             return actualValue != null && JsonAssert.contains(expectedValue.toString(), actualValue.toString()).isEmpty();
         }
         return true;
@@ -211,14 +217,20 @@ public class ClusterClient {
         if (expectedSerde == Serde.AVRO && availableSchema == null) {
             throw new KTestException("Expected Avro schema not found for " + pTopic.topic() + (pKey ? "-key@" : "-value@") + pTopic.broker(), null);
         }
+        if (expectedSerde == Serde.PROTOBUF && availableSchema == null) {
+            throw new KTestException("Expected Protobuf schema not found for " + pTopic.topic() + (pKey ? "-key@" : "-value@") + pTopic.broker(), null);
+        }
         if (availableSchema == null || expectedSerde == Serde.STRING) {
             return jsonNode instanceof final TextNode textNode ? textNode.asText() : jsonNode.toString();
         }
+        if (availableSchema != null && availableSchema.serde() != expectedSerde && expectedSerde != Serde.STRING) {
+            throw new KTestException("Expected " + expectedSerde + " schema but found " + availableSchema.serde() + " for " + pTopic.id(), null);
+        }
 
-        return switch (availableSchema.serde()) {
-            case AVRO -> jsonAvroConverter.toAvro(jsonNode, availableSchema.avroSchema());
-            case JSON -> jsonConverter.toJsonSerializable(jsonNode, availableSchema.jsonSchema());
-            default -> jsonNode instanceof final TextNode textNode ? textNode.asText() : jsonNode.toString();
+        return switch (availableSchema) {
+            case Avro avro -> json2AvroConverter.toAvro(jsonNode, avro.schema());
+            case Json json -> json2JsonConverter.toJsonSerializable(jsonNode, json.schema());
+            case Protobuf proto -> json2ProtoConverter.toProtobuf(jsonNode, proto.schema());
         };
     }
 }

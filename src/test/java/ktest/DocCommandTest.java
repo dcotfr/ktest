@@ -24,7 +24,7 @@ class DocCommandTest {
     @Test
     @Launch({"doc", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.32", pResult.getOutput());
+        assertEquals("I ktest v1.0.33", pResult.getOutput());
     }
 
     @Test
@@ -40,7 +40,7 @@ class DocCommandTest {
                         "  aeskey  ()                                     \"ygrS4...ijP8=\"                        Returns a new random base-64-encoded AES256 key.",
                         " FAKER:",
                         "  regexgen(\"E-[A-Z]{2,4}#{2}\")                   \"E-AJD##\"                              Returns a new random string matching provided regex.",
-                        "  uuid    ()                                     \"fd48147a-58ba-461b-b71c-f44c89ba67ca\" Returns a new random UUID.",
+                        "  uuid    ()                                     \"fd48147a-58ba-461b-b71c-f44c89ba67ca\" Returns a new random type 4 UUID.",
                         " HASH:",
                         "  crc32   (\"SampleString\")                       \"3ca8bf4\"                              Returns the CRC-32 hash of the string parameter.",
                         "  decode64(\"VGV4dA==\")                           \"Text\"                                 Returns the decoded text of a base64 encoding string.",

@@ -13,7 +13,7 @@ COPY upx-${UPX_VERSION} /usr/bin/upx
 RUN chmod +x /usr/bin/upx
 ENV JAVA_HOME=/opt/graalvm GRAALVM_HOME=/opt/graalvm
 RUN microdnf --setopt=install_weak_deps=0 --setopt=tsflags=nodocs install -y fontconfig freetype-devel && microdnf clean all && rpm -q fontconfig freetype-devel # buildkit
-COPY graalvm-jdk-25i2-25.0.4_linux-x64_bin.tar.gz /tmp/graalvm.tar.gz
+COPY graalvm-jdk-25i3-25.0.4.1_linux-x64_bin.tar.gz /tmp/graalvm.tar.gz
 RUN mkdir -p /opt/graalvm && tar xzf /tmp/graalvm.tar.gz -C /opt/graalvm --strip-components=1 && rm -Rf /tmp/graalvm.tar.gz # buildkit
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/graalvm/bin
 RUN microdnf clean all && [ ! -d /var/cache/yum ] || rm -rf /var/cache/yum # buildkit

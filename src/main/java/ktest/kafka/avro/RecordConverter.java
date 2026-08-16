@@ -1,0 +1,44 @@
+package ktest.kafka.avro;
+
+import org.apache.avro.Schema;
+import org.apache.avro.data.RecordBuilderBase;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecordBuilder;
+
+import java.util.Deque;
+import java.util.Map;
+
+final class RecordConverter extends AvroTypeConverterWithStrictJavaTypeCheck<Map<String, Object>> {
+    private final JsonToAvroReader jsonToAvroReader;
+
+    RecordConverter(final JsonToAvroReader pJsonToAvroReader) {
+        super(Map.class);
+        jsonToAvroReader = pJsonToAvroReader;
+    }
+
+    @Override
+    public Object convertValue(final Schema.Field pField, final Schema pSchema, final Map<String, Object> pJsonValue, final Deque<String> pPath) {
+        final var builder = createRecordBuilder(pSchema);
+        pJsonValue.forEach((key, value) -> {
+            final var subField = pSchema.getField(key);
+            if (subField != null) {
+                final var fieldValue = jsonToAvroReader.read(subField, subField.schema(), value, pPath);
+                setField(builder, subField, fieldValue);
+            }
+        });
+        return builder.build();
+    }
+
+    RecordBuilderBase<GenericData.Record> createRecordBuilder(final Schema pSchema) {
+        return new GenericRecordBuilder(pSchema);
+    }
+
+    void setField(final RecordBuilderBase<GenericData.Record> pBuilder, final Schema.Field pSubField, final Object pFieldValue) {
+        ((GenericRecordBuilder) pBuilder).set(pSubField, pFieldValue);
+    }
+
+    @Override
+    public boolean canManage(final Schema pSchema, final Deque<String> pPath) {
+        return pSchema.getType() == Schema.Type.RECORD;
+    }
+}

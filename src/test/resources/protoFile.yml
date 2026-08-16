@@ -1,0 +1,67 @@
+name: Test Case 1
+tags:
+  - tag2
+beforeAll: |
+  STEP1_1_CID = uuid()
+steps:
+  - name: Step n°1.1
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputProtobufTopic
+    keySerde: STRING
+    valueSerde: PROTOBUF
+    action: SEND
+    record:
+      key: ${STEP1_1_CID}
+      value: |
+        sender: ktest
+        event_type: protoTest
+        body:
+          code: ${STEP1_1_CID}
+          label: essai
+    after: pause(500)
+  - name: Step n°1.2
+    before: pause(500)
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputProtobufTopic
+    action: PRESENT
+    record:
+      key: ${STEP1_1_CID}
+      value: |
+        sender: ktest
+        event_type: protoTest
+        body:
+          code: ${STEP1_1_CID}
+          label: essai
+---
+name: Test Case 2
+tags:
+  - tag2
+beforeAll: |
+  STEP2_1_CID = uuid()
+steps:
+  - name: Step n°2.1
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputProtobufTopic
+    keySerde: STRING
+    valueSerde: PROTOBUF
+    action: SEND
+    record:
+      key: ${STEP2_1_CID}
+      value: |
+        sender: ktest
+        event_type: protoTest
+        body:
+          code: ${STEP2_1_CID}
+          label: essai
+    after: pause(500)
+  - name: Step n°2.2
+    before: pause(500)
+    broker: ${KAFKA_LOCAL_CONTEXT}
+    topic: ${KAFKA_PREFIX}InputProtobufTopic
+    action: ABSENT
+    record:
+      value: |
+        sender: ktest
+        event_type: protoTest
+        body:
+          label: essai

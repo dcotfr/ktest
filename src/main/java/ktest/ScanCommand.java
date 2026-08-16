@@ -147,8 +147,8 @@ public class ScanCommand implements Runnable {
     }
 
     private static String formattedContent(final Serde pSerde, final Object pContent) {
-        if (pSerde == Serde.STRING) {
-            return pContent.toString();
+        if (pSerde == Serde.STRING || pSerde == Serde.BYTES) {
+            return pContent == null ? "null" : pContent.toString();
         }
 
         final var writer = new StringWriter();
