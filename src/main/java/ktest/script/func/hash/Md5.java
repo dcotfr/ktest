@@ -17,7 +17,8 @@ import static ktest.script.func.FuncType.HASH;
 @ApplicationScoped
 public class Md5 extends Func {
     protected Md5() {
-        super("md5", new FuncDoc(HASH, "\"SampleString\"", "\"ec1dd92925cb06934c047fb3f5380cba\"", "Returns the MD5 hash of the string parameter."));
+        super("md5", new FuncDoc(HASH, "\"SampleString\"", "\"ec1dd92925cb06934c047fb3f5380cba\"", "Returns the MD5 hash of the string parameter.",
+                "DSL Function that returns the MD5 hash of the string parameter as string"));
     }
 
     @Override

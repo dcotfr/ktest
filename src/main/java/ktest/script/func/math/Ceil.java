@@ -13,7 +13,8 @@ import static ktest.script.func.FuncType.MATH;
 @ApplicationScoped
 public class Ceil extends Func {
     protected Ceil() {
-        super("ceil", new FuncDoc(MATH, "3.14", "4", "Returns the least integer value >= to given number."));
+        super("ceil", new FuncDoc(MATH, "3.14", "4", "Returns the least integer value >= to given number.",
+                "DSL Function returning the ceiling (smallest integer ≥ input) of a numeric value"));
     }
 
     @Override

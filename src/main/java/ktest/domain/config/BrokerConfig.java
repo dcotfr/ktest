@@ -6,6 +6,7 @@ import ktest.core.Strings;
 import ktest.domain.Named;
 
 public record BrokerConfig(@NotNull String name,
+                           String description,
                            @JsonProperty(value = "bootstrap.servers", required = true) String bootstrapServers,
                            @JsonProperty("sasl.jaas.config") String saslJaasConfig,
                            @JsonProperty("sasl.mechanism") String saslMechanism,

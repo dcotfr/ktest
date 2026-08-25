@@ -15,7 +15,8 @@ import static ktest.script.func.FuncType.HASH;
 @ApplicationScoped
 public class Encode64 extends Func {
     protected Encode64() {
-        super("encode64", new FuncDoc(HASH, "\"SampleString\"", "\"U2FtcGxlU3RyaW5n\"", "Returns the base64 encoding of a string."));
+        super("encode64", new FuncDoc(HASH, "\"SampleString\"", "\"U2FtcGxlU3RyaW5n\"", "Returns the base64 encoding of a string.",
+                "DSL Function that returns the base64 encoding of a string as string"));
     }
 
     @Override

@@ -1,4 +1,7 @@
 package ktest.script.func;
 
-public record FuncDoc(FuncType type, String param, String result, String description) {
+public record FuncDoc(FuncType type, String param, String result, String description, String mcpDescription) {
+    public FuncDoc(FuncType type, String param, String result, String description) {
+        this(type, param, result, description, null);
+    }
 }

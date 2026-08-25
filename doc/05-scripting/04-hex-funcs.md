@@ -12,7 +12,7 @@ Returns the integer value of an hexadecimal string.
 
 ## int2hex
 
-Returns the hexadecimal representation of a number.
+Returns the hexadecimal representation of number.
 
 | Parameter | Description   |
 |-----------|---------------|

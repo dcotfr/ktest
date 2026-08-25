@@ -49,7 +49,6 @@ public class ClusterClient {
     private final Json2JsonConverter json2JsonConverter;
     private final Json2ProtoConverter json2ProtoConverter;
     private final KTestConfig kTestConfig;
-    private final ObjectMapper objectMapper;
 
     @Inject
     public ClusterClient(final KafkaConfigProvider pKafkaConfigProvider, final RegistryService pRegistryService,
@@ -61,7 +60,6 @@ public class ClusterClient {
         json2JsonConverter = pJson2JsonConverter;
         json2ProtoConverter = pProtobufConverter;
         kTestConfig = pKTestConfig;
-        objectMapper = pObjectMapper;
     }
 
     @PreDestroy
@@ -126,16 +124,6 @@ public class ClusterClient {
             }
         }
         return null;
-    }
-
-    public TopicRef scanSerdes(final String pLogPrefix, final String pBroker, final String pTopic) {
-        final var temporaryTopicRef = new TopicRef(pBroker, pTopic, Serde.BYTES, Serde.BYTES);
-        final var keySchema = registryService.lastActiveSchema(pLogPrefix, temporaryTopicRef, true, null);
-        final var valueSchema = registryService.lastActiveSchema(pLogPrefix, temporaryTopicRef, false, null);
-        final var keySerde = keySchema != null ? keySchema.serde() : Serde.STRING;
-        final var valueSerde = valueSchema != null ? valueSchema.serde() : Serde.STRING;
-        kafkaConfigProvider.reset();
-        return new TopicRef(pBroker, pTopic, keySerde, valueSerde);
     }
 
     private SearchRange resetConsumer(final String pLogPrefix, final KafkaConsumer<?, ?> pConsumer, final String pTopicName, final int pBackOffset) {

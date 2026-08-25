@@ -23,11 +23,11 @@ public class KafkaConfigProvider {
         engineFactory = pEngineFactory;
     }
 
-    void reset() {
+    public void reset() {
         kafkaConfigs.clear();
     }
 
-    Map<String, String> of(final TopicRef pTopic) {
+    public Map<String, String> of(final TopicRef pTopic) {
         return kafkaConfigs.computeIfAbsent(pTopic.id(), k -> {
             final var res = new HashMap<String, String>();
 
@@ -47,6 +47,7 @@ public class KafkaConfigProvider {
             res.put("connections.max.idle.ms", "900000");
             res.put("enable.auto.commit", "false");
             res.put("auto.register.schemas", "false");
+            res.put("auto.create.topics.enable", "false");
             res.put("key.subject.name.strategy", CustomSubjectNameStrategy.class.getName());
             res.put("value.subject.name.strategy", CustomSubjectNameStrategy.class.getName());
             evalAndPutIfPresent(engine, res, "sasl.jaas.config", brokerConfig.saslJaasConfig());

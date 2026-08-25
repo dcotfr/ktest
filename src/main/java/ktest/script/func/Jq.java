@@ -14,7 +14,8 @@ public class Jq extends Func {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     protected Jq() {
-        super("jq", new FuncDoc(MISC, "\"{\\\"a\\\":{\\\"b\\\":3.4}}\", \"/a/b\"", "3.4", "Returns the value of an attribute from a json string."));
+        super("jq", new FuncDoc(MISC, "\"{\\\"a\\\":{\\\"b\\\":3.4}}\", \"/a/b\"", "3.4", "Returns the value of an attribute from a json string.",
+                "DSL Function that accept two parameter, one JSON string and a JSON path and returns the value of matching attribute"));
     }
 
     @Override

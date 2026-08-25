@@ -12,7 +12,8 @@ import static ktest.script.func.FuncType.TEXT;
 @ApplicationScoped
 public class Length extends Func {
     protected Length() {
-        super("length", new FuncDoc(TEXT, "\"Short text\"", "10", "Returns the length of a string."));
+        super("length", new FuncDoc(TEXT, "\"Short text\"", "10", "Returns the length of a string.",
+                "DSL Function that accepts a string and returns its character count"));
     }
 
     @Override

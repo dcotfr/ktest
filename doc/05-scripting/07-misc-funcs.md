@@ -21,6 +21,8 @@ Returns the value of an ENV variable (with optional default).
 
 **Example:** `env("SHELL", "default")` → `/bin/bash`
 
+Not available in MCP mode.
+
 ## goto
 
 Jump and continue to named Step.
@@ -30,6 +32,8 @@ Jump and continue to named Step.
 | `stepName` | Name of the target step |
 
 **Example:** `goto("NameOfStep")` → (jumps to step)
+
+Not available in MCP mode.
 
 ## jq
 

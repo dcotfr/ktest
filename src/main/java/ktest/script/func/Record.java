@@ -10,7 +10,8 @@ import static ktest.script.func.FuncType.MISC;
 @ApplicationScoped
 public class Record extends Func {
     protected Record() {
-        super("record", new FuncDoc(MISC, "", "{\"topic\": \"...}", "Returns a json description of the last record found."));
+        super("record", new FuncDoc(MISC, "", "{\"topic\": \"...\"}", "Returns a json description of the last record found.",
+                "DSL Function that returns a JSON string representation of the content of the last found Kafka message"));
     }
 
     @Override

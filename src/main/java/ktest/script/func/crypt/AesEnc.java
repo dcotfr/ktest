@@ -21,7 +21,8 @@ import static ktest.script.func.FuncType.CRYPT;
 @ApplicationScoped
 public class AesEnc extends Func {
     protected AesEnc() {
-        super("aesenc", new FuncDoc(CRYPT, "\"ClearText\", \"B64Key\"", "\"B64CryptedOut\"", "Returns the base64 form of the value encrypted with AES256."));
+        super("aesenc", new FuncDoc(CRYPT, "\"ClearText\", \"B64Key\"", "\"B64CryptedOut\"", "Returns the base64 form of the value encrypted with AES256.",
+                "DSL Function that returns the base64 form of the parameter string, encrypted with AES256"));
     }
 
     @Override

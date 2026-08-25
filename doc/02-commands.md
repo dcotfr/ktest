@@ -97,6 +97,36 @@ Scan topic(s) to extract a sample test case.
 
 ---
 
+## mcp - MCP server mode
+
+Starts in MCP stdio server mode.
+
+**Usage:** `ktest mcp [-hV] [-c=<config>]`
+
+### Options
+
+| Option                  | Description                                               | Default        |
+|-------------------------|-----------------------------------------------------------|----------------|
+| `-c, --config=<config>` | Path of the config file                                   | `ktconfig.yml` |
+| `-h, --help`            | Show this help message and exit                           |                |
+| `-V, --version`         | Print version information and exit                        |                |
+
+### Connect
+
+Example of a definition to connect to the MCP server:
+```json
+"ktest-mcp": {
+  "type": "stdio",
+  "command": "/ktest",
+  "args": [ "mcp", "-c", "/ktconfig.yml" ],
+  "disabled": false,
+  "autoApprove": [],
+  "timeout": 60
+}
+```
+
+---
+
 ## Related Documentation
 
 - [Configuration File](03-config-file.md) - ktconfig.yml reference

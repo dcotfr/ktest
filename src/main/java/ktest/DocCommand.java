@@ -25,6 +25,7 @@ public class DocCommand implements Runnable {
             + "      ...\n"
             + "  brokers:\n"
             + "    - name: pi_broker\n"
+            + "      description: Integration Kafka broker deployed on Pi\n"
             + "      bootstrap.servers: 192.168.0.105:9092\n"
             + "      registry: pi_registry\n"
             + "      sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username=\"USER\" password=\"PASSWORD\";\n"
@@ -35,6 +36,7 @@ public class DocCommand implements Runnable {
             + "      ...\n"
             + "  environments:\n"
             + "    - name: pi\n"
+            + "      description: Default integration test environment using `pi_broker` broker\n"
             + "      onStart: |\n"
             + "        BROKER_USED=\"pi_broker\"\n"
             + "        ...\n"
@@ -84,14 +86,14 @@ public class DocCommand implements Runnable {
     static final String CONDITIONS_DOC = BRIGHTYELLOW + "Conditions/Tokens:" + WHITE + "\n"
             + "  ?    cnd?stm           Executes a statement only if condition is true (=1).\n"
             + "  ?:   c?true:else       Ternary if: execute 'true' statement if condition is true, else execute 'else' statement.\n"
-            + "  ==   \"A\"==\"A\"    1     Equal: true if arguments are equals.\n"
-            + "  !=     5!=5      0     Not Equal: true if arguments are differents.\n"
+            + "  ==   \"A\"==\"A\"    1     Equal: true if arguments are equal.\n"
+            + "  !=     5!=5      0     Not Equal: true if arguments are different.\n"
             + "  <=    2<=1+1     1     Lesser or Equal: true if left argument is smaller or equal to right argument.\n"
             + "  <      2<2       0     Lesser: true if left argument is strictly smaller than right argument.\n"
             + "  >=     0>=1      0     Greater or Equal: true if left argument is greater or equal to right argument.\n"
             + "  >      3>2       1     Greater: true if left argument is strictly greater than right argument.\n";
     static final String SPECIALS_DOC = BRIGHTYELLOW + "Specials/Tokens:" + WHITE + "\n"
-            + "  ;                      Ends the current in-line statement an starts a new one.\n";
+            + "  ;                      Ends the current in-line statement and starts a new one.\n";
 
     private final Context context;
 
@@ -127,11 +129,13 @@ public class DocCommand implements Runnable {
                 System.out.println(" " + f.doc().type() + ":");
                 previousType = f.doc().type();
             }
-            System.out.print("  " + f.command() + " ".repeat(maxCmd - f.command().length()));
             final var doc = f.doc();
+            System.out.print((f.doc().mcpDescription() == null ? " •" : "  ") + f.command() + " ".repeat(maxCmd - f.command().length()));
+
             System.out.print('(' + doc.param() + ')' + " ".repeat(maxPar - f.doc().param().length() + 1));
             System.out.print(doc.result() + " ".repeat(maxRes - doc.result().length() + 1));
             System.out.println(doc.description());
         }
+        System.out.println(WHITE + "(• = not available in MCP mode)" + WHITE);
     }
 }

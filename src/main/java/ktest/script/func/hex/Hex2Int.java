@@ -15,7 +15,8 @@ import static ktest.script.func.FuncType.HEX;
 @ApplicationScoped
 public class Hex2Int extends Func {
     protected Hex2Int() {
-        super("hex2int", new FuncDoc(HEX, "\"7fff\"", "32767", "Returns the integer value of an hexadecimal string."));
+        super("hex2int", new FuncDoc(HEX, "\"7fff\"", "32767", "Returns the integer value of an hexadecimal string.",
+                "DSL Function that convert an hexadecimal string into a numeric value"));
     }
 
     @Override

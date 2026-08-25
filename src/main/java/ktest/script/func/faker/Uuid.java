@@ -15,7 +15,8 @@ public class Uuid extends Func {
     private static final UuidFaker UUID_FAKER = new UuidFaker();
 
     protected Uuid() {
-        super("uuid", new FuncDoc(FAKER, "", "\"fd48147a-58ba-461b-b71c-f44c89ba67ca\"", "Returns a new random type 4 UUID."));
+        super("uuid", new FuncDoc(FAKER, "", "\"fd48147a-58ba-461b-b71c-f44c89ba67ca\"", "Returns a new random type 4 UUID.",
+                "DSL Function that returns a new random type 4 UUID"));
     }
 
     @Override

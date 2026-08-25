@@ -20,7 +20,8 @@ import static ktest.script.func.FuncType.CRYPT;
 @ApplicationScoped
 public class AesDec extends Func {
     protected AesDec() {
-        super("aesdec", new FuncDoc(CRYPT, "\"B64CryptedIn\", \"B64Key\"", "\"ClearText\"", "Returns the decrypted value of base64-AES256 encrypted value."));
+        super("aesdec", new FuncDoc(CRYPT, "\"B64CryptedIn\", \"B64Key\"", "\"ClearText\"", "Returns the decrypted value of base64-AES256 encrypted value.",
+                "DSL Function that returns the decrypted string of a base64-AES256 encrypted string"));
     }
 
     @Override

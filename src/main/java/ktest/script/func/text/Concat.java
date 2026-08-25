@@ -12,7 +12,8 @@ import static ktest.script.func.FuncType.TEXT;
 @ApplicationScoped
 public class Concat extends Func {
     protected Concat() {
-        super("concat", new FuncDoc(TEXT, "\"Aaa\", \"Bbb\",...", "\"AaaBbb\"", "Returns the concatenation of multiple strings."));
+        super("concat", new FuncDoc(TEXT, "\"Aaa\", \"Bbb\",...", "\"AaaBbb\"", "Returns the concatenation of multiple strings.",
+                "DSL Function that concatenates a list of comma-separated string values provided as input and returns the resulting concatenated string"));
     }
 
     @Override

@@ -13,7 +13,8 @@ import static ktest.script.func.FuncType.MATH;
 @ApplicationScoped
 public class Pow extends Func {
     protected Pow() {
-        super("pow", new FuncDoc(MATH, "2, 8", "256", "Returns the value of the 1st number raised to the power of the 2nd."));
+        super("pow", new FuncDoc(MATH, "2, 8", "256", "Returns the value of the 1st number raised to the power of the 2nd.",
+                "DSL Function returning a numeric value raised to the power of a given exponent"));
     }
 
     @Override

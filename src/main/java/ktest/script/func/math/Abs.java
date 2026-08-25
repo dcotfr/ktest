@@ -15,7 +15,8 @@ import static ktest.script.func.FuncType.MATH;
 @ApplicationScoped
 public class Abs extends Func {
     protected Abs() {
-        super("abs", new FuncDoc(MATH, "-3.14", "3.14", "Returns the absolute value of a number."));
+        super("abs", new FuncDoc(MATH, "-3.14", "3.14", "Returns the absolute value of a number.",
+                "DSL Function returning the absolute value of a numeric parameter"));
     }
 
     @Override

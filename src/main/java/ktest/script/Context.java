@@ -4,26 +4,29 @@ import io.quarkus.arc.All;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
+import ktest.McpMode;
 import ktest.kafka.FoundRecord;
 import ktest.script.func.Func;
-import ktest.script.token.Flt;
-import ktest.script.token.Int;
-import ktest.script.token.Token;
-import ktest.script.token.Txt;
+import ktest.script.func.FuncDoc;
+import ktest.script.func.FuncType;
+import ktest.script.token.*;
 
 import java.util.*;
 
 @Dependent
 public final class Context {
+    private static final Func NO_OP = new NoOpFunc();
     private final Map<String, Func> functions = new TreeMap<>();
     private final Map<String, Token<?>> variables = new TreeMap<>();
     private final List<Func> funcs;
+    private final McpMode mcpMode;
     private FoundRecord lastRecord;
     private boolean pauseDisabled;
 
     @Inject
-    Context(@All final List<Func> pFuncs) {
+    Context(@All final List<Func> pFuncs, final McpMode pMcpMode) {
         funcs = pFuncs;
+        mcpMode = pMcpMode;
     }
 
     @PostConstruct
@@ -68,7 +71,11 @@ public final class Context {
     }
 
     public Func function(final String pName) {
-        return functions.get(pName);
+        final var f = functions.get(pName);
+        if (f != null && mcpMode.isEnabled() && f.doc().mcpDescription() == null) {
+            return NO_OP;
+        }
+        return f;
     }
 
     public boolean pauseDisabled() {
@@ -94,5 +101,16 @@ public final class Context {
 
     public Context variable(final String pName, final String pValue) {
         return variable(pName, new Txt(pValue));
+    }
+
+    private static final class NoOpFunc extends Func {
+        NoOpFunc() {
+            super("noop", new FuncDoc(FuncType.MISC, "", "", ""));
+        }
+
+        @Override
+        public Token<?> apply(final Context pContext, final Stm pParam) {
+            return new Txt("");
+        }
     }
 }

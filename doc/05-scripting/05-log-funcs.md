@@ -10,6 +10,8 @@ Logs the concatenation of evaluated expression(s) as DEBUG output.
 
 **Example:** `debug(2+3)` → `5`
 
+Not available in MCP mode.
+
 ## error
 
 Logs the concatenation of evaluated expression(s) as ERROR output.
@@ -19,6 +21,8 @@ Logs the concatenation of evaluated expression(s) as ERROR output.
 | `...`     | Expressions to log |
 
 **Example:** `error("Failed")` → `Failed`
+
+Not available in MCP mode.
 
 ## info
 
@@ -30,6 +34,8 @@ Logs the concatenation of evaluated expression(s) as INFO output.
 
 **Example:** `info("r=", 2*3)` → `r=6`
 
+Not available in MCP mode.
+
 ## trace
 
 Logs the concatenation of evaluated expression(s) as TRACE output.
@@ -40,6 +46,8 @@ Logs the concatenation of evaluated expression(s) as TRACE output.
 
 **Example:** `trace("A", "b")` → `Ab`
 
+Not available in MCP mode.
+
 ## warn
 
 Logs the concatenation of evaluated expression(s) as WARN output.
@@ -49,3 +57,5 @@ Logs the concatenation of evaluated expression(s) as WARN output.
 | `...`     | Expressions to log |
 
 **Example:** `warn()` → (empty)
+
+Not available in MCP mode.

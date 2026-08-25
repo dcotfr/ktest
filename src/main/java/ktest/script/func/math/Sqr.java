@@ -14,7 +14,8 @@ import static ktest.script.func.FuncType.MATH;
 @ApplicationScoped
 public class Sqr extends Func {
     protected Sqr() {
-        super("sqr", new FuncDoc(MATH, "2", "1.4142135623730951", "Returns the square root of the number."));
+        super("sqr", new FuncDoc(MATH, "2", "1.4142135623730951", "Returns the square root of the number.",
+                "DSL Function returning the square root of a numeric value"));
     }
 
     @Override

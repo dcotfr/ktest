@@ -13,7 +13,8 @@ import static ktest.script.func.FuncType.MATH;
 @ApplicationScoped
 public class Floor extends Func {
     protected Floor() {
-        super("floor", new FuncDoc(MATH, "3.14", "3", "Returns the greatest integer value <= to given number."));
+        super("floor", new FuncDoc(MATH, "3.14", "3", "Returns the greatest integer value <= to given number.",
+                "DSL Function returning the floor (largest integer ≤ input) of a numeric value"));
     }
 
     @Override

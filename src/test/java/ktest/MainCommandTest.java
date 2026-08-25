@@ -22,13 +22,14 @@ class MainCommandTest {
                 "I   prun  Parallel run of test case(s).",
                 "I   doc   Display of the full documentation.",
                 "I   eval  Evaluates a script and displays its final result.",
-                "I   scan  Scan topic(s) to extract a sample test case.");
+                "I   scan  Scan topic(s) to extract a sample test case.",
+                "I   mcp   Start as MCP tool server.");
         assertEquals(expected, pResult.getOutput());
     }
 
     @Test
     @Launch("-V")
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.33", pResult.getOutput());
+        assertEquals("I ktest v1.0.34", pResult.getOutput());
     }
 }

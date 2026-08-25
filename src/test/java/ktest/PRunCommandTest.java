@@ -30,7 +30,7 @@ class PRunCommandTest {
     @Test
     @Launch({COMMAND, "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.33", pResult.getOutput());
+        assertEquals("I ktest v1.0.34", pResult.getOutput());
     }
 
     @Test
@@ -129,7 +129,7 @@ class PRunCommandTest {
     }
 
     @Test
-    @Launch(value = {COMMAND, "-e=pi", "-f=src/test/resources/thread.yml"}, exitCode = 0)
+    @Launch(value = {COMMAND, "-e=pi", "-f=src/test/resources/thread.yml"})
     void threadTest(final LaunchResult pResult) {
         // Nothing to test
     }

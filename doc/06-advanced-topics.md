@@ -105,3 +105,8 @@ steps:
     valueSchema: forced-schema-name
     record:
     ...
+```
+
+### How to enrich MCP context?
+
+Environment and broker definitions can have a description field in the `ktconfig.yaml` configuration file, which is included in the MCP server responses.

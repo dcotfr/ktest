@@ -12,7 +12,8 @@ import static ktest.script.func.FuncType.TEXT;
 @ApplicationScoped
 public class Right extends Func {
     protected Right() {
-        super("right", new FuncDoc(TEXT, "\"Sample\", 3", "\"ple\"", "Returns the x last characters of a string."));
+        super("right", new FuncDoc(TEXT, "\"Sample\", 3", "\"ple\"", "Returns the x last characters of a string.",
+                "DSL Function that accepts a string and a positive integer x and returns the last x characters of the string"));
     }
 
     @Override

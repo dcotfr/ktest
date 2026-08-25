@@ -6,25 +6,26 @@
 
     <groupId>ktest</groupId>
     <artifactId>ktest</artifactId>
-    <version>1.0.33</version>
+    <version>1.0.34</version>
 
     <properties>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.38.3</quarkus.platform.version>
+        <quarkus.platform.version>3.39.1</quarkus.platform.version>
         <clean-plugin.version>3.5.0</clean-plugin.version>
-        <compiler-plugin.version>3.15.0</compiler-plugin.version>
+        <compiler-plugin.version>3.16.0</compiler-plugin.version>
         <resources-plugin.version>3.5.0</resources-plugin.version>
         <surefire-plugin.version>3.5.6</surefire-plugin.version>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <confluent-serializer.version>8.3.1</confluent-serializer.version>
-        <jsonassert.version>1.5.3</jsonassert.version>
-        <fastexcel.version>0.20.2</fastexcel.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <bouncy-castle.version>2.1.24</bouncy-castle.version>
         <brotli.version>0.1.2</brotli.version>
+        <confluent-serializer.version>8.3.1</confluent-serializer.version>
+        <fastexcel.version>0.20.2</fastexcel.version>
+        <jsonassert.version>1.5.3</jsonassert.version>
+        <mcp.version>2.0.0</mcp.version>
         <xz.version>1.12</xz.version>
     </properties>
 
@@ -34,6 +35,13 @@
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>${quarkus.platform.artifact-id}</artifactId>
                 <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkiverse.mcp</groupId>
+                <artifactId>quarkus-mcp-server-bom</artifactId>
+                <version>${mcp.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -162,10 +170,27 @@
             <artifactId>fastexcel</artifactId>
             <version>${fastexcel.version}</version>
         </dependency>
+        <!-- For MCP mode. -->
+        <dependency>
+            <groupId>io.quarkiverse.mcp</groupId>
+            <artifactId>quarkus-mcp-server-stdio</artifactId>
+            <version>${mcp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.victools</groupId>
+            <artifactId>jsonschema-module-jackson</artifactId>
+            <version>4.38.0</version>
+        </dependency>
         <!-- For tests. -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.mcp</groupId>
+            <artifactId>quarkus-mcp-server-test</artifactId>
+            <version>${mcp.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -196,6 +221,9 @@
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
                     <argLine>@{argLine} --enable-preview --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
                 </configuration>
             </plugin>
             <plugin>
@@ -233,6 +261,9 @@
                                 </java.util.logging.manager>
                                 <maven.home>${maven.home}</maven.home>
                             </systemPropertyVariables>
+                            <includes>
+                                <include>**/*IT.java</include>
+                            </includes>
                         </configuration>
                     </execution>
                 </executions>

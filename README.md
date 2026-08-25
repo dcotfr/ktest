@@ -1,6 +1,7 @@
 # ktest - Kafka testing utility [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dcotfr_ktest&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dcotfr_ktest)
 
-Utility for defining and executing Kafka message test cases by sending, checking presence or absence of messages in topics with dynamic script-based content.
+Utility for defining and executing Kafka message test cases by sending, checking presence or absence of messages in
+topics with dynamic script-based content.
 
 ## Quick Start
 
@@ -25,6 +26,7 @@ Utility for defining and executing Kafka message test cases by sending, checking
 | `doc`   | Display full documentation                |
 | `eval`  | Evaluates a script                        |
 | `scan`  | Scan topic(s) to extract sample test case |
+| `mcp`   | Start as MCP tool server                  |
 
 ## License
 

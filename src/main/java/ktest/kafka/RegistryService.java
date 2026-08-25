@@ -55,12 +55,12 @@ public class RegistryService {
     }
 
     @Retry
-    SchemaWrapper lastActiveSchema(final String pLogPrefix, final TopicRef pTopic, final boolean pKey, final String pForcedSchema) {
-        String schemaName = pForcedSchema;
+    public SchemaWrapper lastActiveSchema(final String pLogPrefix, final TopicRef pTopic, final boolean pKey, final String pForcedSchema) {
+        var schemaName = pForcedSchema;
         if (Strings.isNullOrEmpty(pForcedSchema)) {
             schemaName = pTopic.topic() + (pKey ? "-key" : "-value");
         }
-        final String schemaKey = schemaName + "@" + pTopic.broker();
+        final var schemaKey = schemaName + "@" + pTopic.broker();
         final var registryClient = registryClient(pLogPrefix, pTopic);
         if (registryClient == null) {
             return null;

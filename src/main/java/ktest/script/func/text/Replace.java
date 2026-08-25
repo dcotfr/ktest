@@ -12,7 +12,8 @@ import static ktest.script.func.FuncType.TEXT;
 @ApplicationScoped
 public class Replace extends Func {
     protected Replace() {
-        super("replace", new FuncDoc(TEXT, "\"ABAB\", \"B\", \"a\"", "\"AaAa\"", "Returns a new string with old substring replaced by new substring."));
+        super("replace", new FuncDoc(TEXT, "\"ABAB\", \"B\", \"a\"", "\"AaAa\"", "Returns a new string with old substring replaced by new substring.",
+                "DSL Function that accepts a source string, a search string, and a replacement string as input, and returns the source string with all occurrences of the search string replaced by the replacement string"));
     }
 
     @Override

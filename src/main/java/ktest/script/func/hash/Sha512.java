@@ -17,7 +17,8 @@ import static ktest.script.func.FuncType.HASH;
 @ApplicationScoped
 public class Sha512 extends Func {
     protected Sha512() {
-        super("sha512", new FuncDoc(HASH, "\"SampleString\"", "\"aee8e20df4b3ce73...e7e03c6fcda75961\"", "Returns the SHA-512 hash of the string parameter."));
+        super("sha512", new FuncDoc(HASH, "\"SampleString\"", "\"aee8e20df4b3ce73...e7e03c6fcda75961\"", "Returns the SHA-512 hash of the string parameter.",
+                "DSL Function that returns the SHA-512 hash of the string parameter as string"));
     }
 
     @Override

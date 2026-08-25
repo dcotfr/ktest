@@ -12,7 +12,8 @@ import static ktest.script.func.FuncType.TEXT;
 @ApplicationScoped
 public class Left extends Func {
     protected Left() {
-        super("left", new FuncDoc(TEXT, "\"Sample\", 3", "\"Sam\"", "Returns the x first characters of a string."));
+        super("left", new FuncDoc(TEXT, "\"Sample\", 3", "\"Sam\"", "Returns the x first characters of a string.",
+                "DSL Function that takes a string and a positive integer x as parameters and returns the first x characters of the string"));
     }
 
     @Override

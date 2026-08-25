@@ -8,7 +8,7 @@ Generates a random string matching the provided regex pattern.
 |-----------|------------------------|
 | `pattern` | Regex pattern to match |
 
-**Example:** `regexgen("E-[A-Z]{2,4}#")` → `"E-AJD#"`
+**Example:** `regexgen("E-[A-Z]{2,4}#{2}")` → `"E-AJD##"`
 
 ## uuid
 

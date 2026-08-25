@@ -12,7 +12,8 @@ import static ktest.script.func.FuncType.TEXT;
 @ApplicationScoped
 public class Lower extends Func {
     protected Lower() {
-        super("lower", new FuncDoc(TEXT, "\"ToLower\"", "\"tolower\"", "Returns the lower cased string."));
+        super("lower", new FuncDoc(TEXT, "\"ToLower\"", "\"tolower\"", "Returns the lower cased string.",
+                "DSL Function that accepts a string as input and returns the string in lowercase"));
     }
 
     @Override

@@ -12,7 +12,8 @@ import static ktest.script.func.FuncType.HEX;
 @ApplicationScoped
 public class Int2Hex extends Func {
     protected Int2Hex() {
-        super("int2hex", new FuncDoc(HEX, "32767", "\"7fff\"", "Returns the hexadecimal representation of number."));
+        super("int2hex", new FuncDoc(HEX, "32767", "\"7fff\"", "Returns the hexadecimal representation of number.",
+                "DSL Function that convert a numeric value into an hexadecimal string"));
     }
 
     @Override

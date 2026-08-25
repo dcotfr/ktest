@@ -15,7 +15,8 @@ import static ktest.script.func.FuncType.MATH;
 @ApplicationScoped
 public class Min extends Func {
     protected Min() {
-        super("min", new FuncDoc(MATH, "5, -2, 0", "-2", "Returns the minimal value of 1 or more numbers."));
+        super("min", new FuncDoc(MATH, "5, -2, 0", "-2", "Returns the minimal value of 1 or more numbers.",
+                "DSL Function returning the minimum value from a comma-separated list of numeric parameters"));
     }
 
     @Override

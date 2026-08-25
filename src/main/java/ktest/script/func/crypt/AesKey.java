@@ -17,7 +17,8 @@ import static ktest.script.func.FuncType.CRYPT;
 @ApplicationScoped
 public class AesKey extends Func {
     protected AesKey() {
-        super("aeskey", new FuncDoc(CRYPT, "", "\"ygrS4...ijP8=\"", "Returns a new random base-64-encoded AES256 key."));
+        super("aeskey", new FuncDoc(CRYPT, "", "\"ygrS4...ijP8=\"", "Returns a new random base-64-encoded AES256 key.",
+                "DSL Function that returns a new random base-64-encoded AES256 key"));
     }
 
     @Override

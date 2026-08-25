@@ -25,28 +25,30 @@ Schema registries used for Avro schema resolution.
 
 Kafka broker configurations.
 
-| Field               | Description                              |
-|---------------------|------------------------------------------|
-| `name`              | Broker identifier name                   |
-| `bootstrap.servers` | Kafka bootstrap servers address          |
-| `registry`          | (Optional) Registry name reference       |
-| `sasl.jaas.config`  | (Optional) SASL JAAS configuration       |
-| `sasl.mechanism`    | (Optional) SASL mechanism                |
-| `security.protocol` | (Optional) Security protocol             |
-| `group.id`          | (Optional) Consumer group ID             |
-| `send.timeout.sec`  | (Optional) Send timeout in seconds       |
-| `poll.duration.ms`  | (Optional) Poll duration in milliseconds |
+| Field               | Description                                   |
+|---------------------|-----------------------------------------------|
+| `name`              | Broker identifier name                        |
+| `description`       | Description of the Kafka Broker (used by MCP) |
+| `bootstrap.servers` | Kafka bootstrap servers address               |
+| `registry`          | (Optional) Registry name reference            |
+| `sasl.jaas.config`  | (Optional) SASL JAAS configuration            |
+| `sasl.mechanism`    | (Optional) SASL mechanism                     |
+| `security.protocol` | (Optional) Security protocol                  |
+| `group.id`          | (Optional) Consumer group ID                  |
+| `send.timeout.sec`  | (Optional) Send timeout in seconds            |
+| `poll.duration.ms`  | (Optional) Poll duration in milliseconds      |
 
 ## Environments
 
 Environment-specific settings and scripts.
 
-| Field     | Description                                      |
-|-----------|--------------------------------------------------|
-| `name`    | Environment name (used with `-e` option)         |
-| `options` | (Optional) Preset options                        |
-| `onStart` | (Optional) Script executed before all test cases |
-| `onEnd`   | (Optional) Script executed after all test cases  |
+| Field         | Description                                       |
+|---------------|---------------------------------------------------|
+| `name`        | Test Environment name (used with `-e` option)     |
+| `description` | Description of the Test Environment (used by MCP) |
+| `options`     | (Optional) Preset options                         |
+| `onStart`     | (Optional) Script executed before all test cases  |
+| `onEnd`       | (Optional) Script executed after all test cases   |
 
 ### Preset Options
 
@@ -72,6 +74,7 @@ registries:
 
 brokers:
   - name: pi_broker
+    description: Integration Kafka broker deployed on Pi
     bootstrap.servers: 192.168.0.105:9092
     registry: pi_registry
     sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username='USER' password='${env("PASSWORD")}';
@@ -85,6 +88,7 @@ brokers:
 
 environments:
   - name: pi
+    description: Default integration test environment using `pi_broker` broker
     options:
       backOffset: 100
       matrix: excel.xlsx

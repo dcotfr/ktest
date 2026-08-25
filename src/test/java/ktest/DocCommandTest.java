@@ -24,7 +24,7 @@ class DocCommandTest {
     @Test
     @Launch({"doc", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.33", pResult.getOutput());
+        assertEquals("I ktest v1.0.34", pResult.getOutput());
     }
 
     @Test
@@ -53,11 +53,11 @@ class DocCommandTest {
                         "  hex2int (\"7fff\")                               32767                                  Returns the integer value of an hexadecimal string.",
                         "  int2hex (32767)                                \"7fff\"                                 Returns the hexadecimal representation of number.",
                         " LOG:",
-                        "  debug   (2+3)                                  5                                      Logs the concatenation of evaluated expression(s) as DEBUG output.",
-                        "  error   (\"Failed\")                             Failed                                 Logs the concatenation of evaluated expression(s) as ERROR output.",
-                        "  info    (\"r=\", 2*3)                            r=6                                    Logs the concatenation of evaluated expression(s) as INFO output.",
-                        "  trace   (\"A\", \"b\")                             Ab                                     Logs the concatenation of evaluated expression(s) as TRACE output.",
-                        "  warn    ()                                                                            Logs the concatenation of evaluated expression(s) as WARN output.",
+                        " •debug   (2+3)                                  5                                      Logs the concatenation of evaluated expression(s) as DEBUG output.",
+                        " •error   (\"Failed\")                             Failed                                 Logs the concatenation of evaluated expression(s) as ERROR output.",
+                        " •info    (\"r=\", 2*3)                            r=6                                    Logs the concatenation of evaluated expression(s) as INFO output.",
+                        " •trace   (\"A\", \"b\")                             Ab                                     Logs the concatenation of evaluated expression(s) as TRACE output.",
+                        " •warn    ()                                                                            Logs the concatenation of evaluated expression(s) as WARN output.",
                         " MATH:",
                         "  abs     (-3.14)                                3.14                                   Returns the absolute value of a number.",
                         "  ceil    (3.14)                                 4                                      Returns the least integer value >= to given number.",
@@ -70,11 +70,11 @@ class DocCommandTest {
                         "  sqr     (2)                                    1.4142135623730951                     Returns the square root of the number.",
                         " MISC:",
                         "  coalesce(a, \"\", 5.2)                           5.2                                    Returns the first defined and non empty value.",
-                        "  env     (\"SHELL\", \"default\")                   \"/bin/bash\"                            Returns the value of an ENV variable (with optional default).",
-                        "  goto    (\"NameOfStep\")                                                                Jump and continue to named Step.",
+                        " •env     (\"SHELL\", \"default\")                   \"/bin/bash\"                            Returns the value of an ENV variable (with optional default).",
+                        " •goto    (\"NameOfStep\")                                                                Jump and continue to named Step.",
                         "  jq      (\"{\\\"a\\\":{\\\"b\\\":3.4}}\", \"/a/b\")        3.4                                    Returns the value of an attribute from a json string.",
                         "  pause   (3000)                                                                        Pause treatment during provided milliseconds.",
-                        "  record  ()                                     {\"topic\": \"...}                        Returns a json description of the last record found.",
+                        "  record  ()                                     {\"topic\": \"...\"}                       Returns a json description of the last record found.",
                         " TEXT:",
                         "  concat  (\"Aaa\", \"Bbb\",...)                     \"AaaBbb\"                               Returns the concatenation of multiple strings.",
                         "  left    (\"Sample\", 3)                          \"Sam\"                                  Returns the x first characters of a string.",
@@ -88,7 +88,8 @@ class DocCommandTest {
                         " TIME:",
                         "  now     ()                                     1708808432990                          Returns the current time in millis.",
                         "  time2txt(\"yyyy-MM-dd HH:mm:ss\", 1708854821321) \"2024-02-25 10:53:41\"                  Returns the formatted date/string of a timestamp at current TimeZone.",
-                        "  txt2time(\"yyyy/MM/dd\", \"2024/07/17\")           1721174400000                          Returns the timestamp of a formatted date string.")
+                        "  txt2time(\"yyyy/MM/dd\", \"2024/07/17\")           1721174400000                          Returns the timestamp of a formatted date string.",
+                        "(• = not available in MCP mode)")
                 .replace(AnsiColor.BRIGHTYELLOW, "").replace(AnsiColor.WHITE, "");
         assertEquals(expected, pResult.getOutput());
     }

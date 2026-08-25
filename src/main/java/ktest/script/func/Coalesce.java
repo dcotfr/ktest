@@ -12,7 +12,8 @@ import static ktest.script.func.FuncType.MISC;
 @ApplicationScoped
 public class Coalesce extends Func {
     protected Coalesce() {
-        super("coalesce", new FuncDoc(MISC, "a, \"\", 5.2", "5.2", "Returns the first defined and non empty value."));
+        super("coalesce", new FuncDoc(MISC, "a, \"\", 5.2", "5.2", "Returns the first defined and non empty value.",
+                "DSL Function that accepts a list of parameters (strings, numeric values, variable names, ...) separated by commas and returns the first defined and non-null value"));
     }
 
     @Override

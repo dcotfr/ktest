@@ -16,7 +16,8 @@ import static ktest.script.func.FuncType.TIME;
 @ApplicationScoped
 public class Time2Txt extends Func {
     protected Time2Txt() {
-        super("time2txt", new FuncDoc(TIME, "\"yyyy-MM-dd HH:mm:ss\", 1708854821321", "\"2024-02-25 10:53:41\"", "Returns the formatted date/string of a timestamp at current TimeZone."));
+        super("time2txt", new FuncDoc(TIME, "\"yyyy-MM-dd HH:mm:ss\", 1708854821321", "\"2024-02-25 10:53:41\"", "Returns the formatted date/string of a timestamp at current TimeZone.",
+                "DSL Function that accepts a date format string, following Java's SimpleDateFormat pattern, and a timestamp in milliseconds, and returns a formatted date string corresponding to the timestamp at current TimeZone"));
     }
 
     @Override

@@ -8,7 +8,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public record EnvironmentConfig(@NotNull String name, PresetOptions options, String onStart, String onEnd) implements Named {
+public record EnvironmentConfig(@NotNull String name, String description, PresetOptions options, String onStart,
+                                String onEnd) implements Named {
     public Integer actualAutoPause(final PresetOptions pCliOptions) {
         if (pCliOptions != null && pCliOptions.autoPause != 0) {
             return pCliOptions.autoPause;

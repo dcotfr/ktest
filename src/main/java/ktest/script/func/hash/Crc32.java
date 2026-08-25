@@ -14,7 +14,8 @@ import static ktest.script.func.FuncType.HASH;
 @ApplicationScoped
 public class Crc32 extends Func {
     protected Crc32() {
-        super("crc32", new FuncDoc(HASH, "\"SampleString\"", "\"3ca8bf4\"", "Returns the CRC-32 hash of the string parameter."));
+        super("crc32", new FuncDoc(HASH, "\"SampleString\"", "\"3ca8bf4\"", "Returns the CRC-32 hash of the string parameter.",
+                "DSL Function that returns the CRC-32 hash of the input string as a string"));
     }
 
     @Override

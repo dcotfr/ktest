@@ -15,7 +15,8 @@ import static ktest.script.func.FuncType.HASH;
 @ApplicationScoped
 public class Decode64 extends Func {
     protected Decode64() {
-        super("decode64", new FuncDoc(HASH, "\"VGV4dA==\"", "\"Text\"", "Returns the decoded text of a base64 encoding string."));
+        super("decode64", new FuncDoc(HASH, "\"VGV4dA==\"", "\"Text\"", "Returns the decoded text of a base64 encoding string.",
+                "DSL Function that returns the decoded text of a base64 encoding string"));
     }
 
     @Override

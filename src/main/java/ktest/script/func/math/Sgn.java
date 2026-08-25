@@ -13,7 +13,8 @@ import static ktest.script.func.FuncType.MATH;
 @ApplicationScoped
 public class Sgn extends Func {
     protected Sgn() {
-        super("sgn", new FuncDoc(MATH, "-9.63", "-1", "Returns the sign of the number (-1, 0 or 1)."));
+        super("sgn", new FuncDoc(MATH, "-9.63", "-1", "Returns the sign of the number (-1, 0 or 1).",
+                "DSL Function returning the sign of a numeric value (-1, 0, or 1)"));
     }
 
     @Override

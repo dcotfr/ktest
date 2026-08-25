@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.protobuf.Descriptors;
 import org.apache.avro.Schema;
 
-sealed interface SchemaWrapper {
+public sealed interface SchemaWrapper {
     default Serde serde() {
         return switch (this) {
             case Avro _ -> Serde.AVRO;

@@ -11,7 +11,8 @@ import static ktest.script.func.FuncType.MISC;
 @ApplicationScoped
 public class Pause extends Func {
     protected Pause() {
-        super("pause", new FuncDoc(MISC, "3000", "", "Pause treatment during provided milliseconds."));
+        super("pause", new FuncDoc(MISC, "3000", "", "Pause treatment during provided milliseconds.",
+                "DSL Function that pauses test execution for a duration in milliseconds provided as a parameter"));
     }
 
     @Override

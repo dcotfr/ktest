@@ -18,12 +18,14 @@ class KTestConfigTest {
         assertEquals(3, environments.size());
         final var env = environments.getFirst();
         assertEquals("pi", env.name());
+        assertEquals("Default environment for `pi_broker` broker", env.description());
         assertEquals(4, env.onStartScript().size());
 
         final var brokers = kConfig.brokers();
         assertEquals(2, brokers.size());
         final var brk = kConfig.broker("pi_broker");
         assertEquals("pi_broker", brk.name());
+        assertEquals("Integration test broker on Pi", brk.description());
         assertEquals("${concat(\"192.168.0.105\", \":\", \"9092\")}", brk.bootstrapServers());
         assertEquals("pi_registry", brk.registry());
         assertNull(brk.saslJaasConfig());

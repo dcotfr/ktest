@@ -8,7 +8,7 @@ Returns the concatenation of multiple strings.
 |-----------|------------------------|
 | `...`     | Strings to concatenate |
 
-**Example:** `concat("Aaa", "Bbb")` → `AaaBbb`
+**Example:** `concat("Aaa", "Bbb",...)` → `AaaBbb`
 
 ## left
 

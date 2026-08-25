@@ -37,13 +37,13 @@ class ScanCommandTest {
     @Test
     @Launch({"scan", "-V"})
     void versionOptionTest(final LaunchResult pResult) {
-        assertEquals("I ktest v1.0.33", pResult.getOutput());
+        assertEquals("I ktest v1.0.34", pResult.getOutput());
     }
 
     @Test
     @Launch(value = {"scan", "-e=dev", "-i=topic1,topic2"}, exitCode = 1)
     void invalidInputs(final LaunchResult pResult) {
-        assertEquals("E Malformated inputs: topic1,topic2", pResult.getOutputStream().getFirst());
+        assertEquals("E Malformed inputs: topic1,topic2", pResult.getOutputStream().getFirst());
     }
 
     @Test

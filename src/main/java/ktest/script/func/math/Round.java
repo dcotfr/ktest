@@ -13,7 +13,8 @@ import static ktest.script.func.FuncType.MATH;
 @ApplicationScoped
 public class Round extends Func {
     protected Round() {
-        super("round", new FuncDoc(MATH, "2.43", "2", "Returns the nearest integer, rounding half away from zero."));
+        super("round", new FuncDoc(MATH, "2.43", "2", "Returns the nearest integer, rounding half away from zero.",
+                "DSL Function rounding a numeric value to the nearest integer"));
     }
 
     @Override

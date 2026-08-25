@@ -12,7 +12,8 @@ import static ktest.script.func.FuncType.TEXT;
 @ApplicationScoped
 public class RTrim extends Func {
     protected RTrim() {
-        super("rtrim", new FuncDoc(TEXT, "\" Test \"", "\" Test\"", "Returns the string with all right spaces removed."));
+        super("rtrim", new FuncDoc(TEXT, "\" Test \"", "\" Test\"", "Returns the string with all right spaces removed.",
+                "DSL Function that accepts a string as input and returns it with all trailing spaces removed"));
     }
 
     @Override

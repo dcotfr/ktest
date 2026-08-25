@@ -15,7 +15,8 @@ import static ktest.script.func.FuncType.MATH;
 @ApplicationScoped
 public class Max extends Func {
     protected Max() {
-        super("max", new FuncDoc(MATH, "5, -2", "5", "Returns the maximal value of 1 or more numbers."));
+        super("max", new FuncDoc(MATH, "5, -2", "5", "Returns the maximal value of 1 or more numbers.",
+                "DSL Function returning the maximum value from a comma-separated list of numeric parameters"));
     }
 
     @Override

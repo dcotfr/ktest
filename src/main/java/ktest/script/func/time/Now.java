@@ -12,7 +12,8 @@ import static ktest.script.func.FuncType.TIME;
 @ApplicationScoped
 public class Now extends Func {
     protected Now() {
-        super("now", new FuncDoc(TIME, "", "1708808432990", "Returns the current time in millis."));
+        super("now", new FuncDoc(TIME, "", "1708808432990", "Returns the current time in millis.",
+                "DSL Function that returns the current timestamp in milliseconds"));
     }
 
     @Override
